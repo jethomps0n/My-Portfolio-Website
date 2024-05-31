@@ -39,47 +39,31 @@ nav {
     background-color: hsla(181, 0%, 32%, 1);
     padding: 0.25rem 0.9rem;
     /* margin: 0 1.5px; */
-    margin: 0 0.0625rem;
-    transition: all 100ms ease-out 15ms;
+    position: relative;
+    /* margin: 0 0.0625rem; */
+    transition: all 150ms ease-out 15ms;
 }
 
 #firstNav{
     border-radius: 25px 0 0 25px;
-    margin-left: 0;
+    /* margin-left: 0; */
 }
 
 #lastNav {
     border-radius: 0 25px 25px 0;
-    margin-right: 0;
+    /* margin-right: 0; */
 }
 
 .nav:hover {
     /* Brightness decreases by 15% */
     background-color: hsla(181, 0%, 19%, 1);
     color: hsla(0, 0%, 85%, 1);
-    font-size: 0.9em;
-    margin: 0 4px;
 }
 
-#firstNav:hover {
-    /* Brightness decreases by 15% */
-    background-color: hsla(181, 0%, 19%, 1);
-    color: hsla(0, 0%, 85%, 1);
-    font-size: 0.9em;
-    margin-right: 8px;
+.nav:active {
+    background-color: red;
+    color: hsla(0, 0%, 100%, 1);
 }
-
-#lastNav:hover {
-    /* Brightness decreases by 15% */
-    background-color: hsla(181, 0%, 19%, 1);
-    color: hsla(0, 0%, 85%, 1);
-    font-size: 0.9em;
-    margin-left: 6.5px;
-    margin-bottom: 2px;
-}
-
-/* .nav:active {
-} */
 
 /* ----Main  section---- */
 .text {
