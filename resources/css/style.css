@@ -1,10 +1,38 @@
+@font-face {
+    font-family: "Reddit Sans";
+    src: url("../fonts/Reddit-Sans/RedditSans-Regular.woff2") format("woff2"),
+         url("../fonts/Reddit-Sans/RedditSans-Regular.ttf") format("truetype");
+    font-weight: 400;	
+}
+
+@font-face {
+    font-family: "Reddit Sans";
+    src: url("../fonts/Reddit-Sans/RedditSans-Light.woff2") format("woff2"),
+         url("../fonts/Reddit-Sans/RedditSans-Light.ttf") format("truetype");
+    font-weight: 300;	
+}
+
+@font-face {
+    font-family: "Reddit Sans";
+    src: url("../fonts/Reddit-Sans/RedditSans-Bold.woff2") format("woff2"),
+         url("../fonts/Reddit-Sans/RedditSans-Bold.ttf") format("truetype");
+    font-weight: 700;	
+}
+
+@font-face {
+    font-family: "Reddit Sans";
+    src: url("../fonts/Reddit-Sans/RedditSans-ExtraBold.woff2") format("woff2"),
+         url("../fonts/Reddit-Sans/RedditSans-ExtraBold.ttf") format("truetype");
+    font-weight: 800;	
+}
+
 html {
-    font-family: Tahoma, Verdana, Geneva, Tahoma, sans-serif;
+    font-family: "Reddit Sans", Tahoma, Verdana, Geneva, Tahoma, sans-serif;
     font-weight: normal;
     font-style: normal;
     background: #15264A;
     background: radial-gradient(circle 1200px at center, hsla(221, 56%, 19%, 1), hsla(358, 76%, 7%, 1));
-    /* background-image: url("../images/andy-ms-mxyqilwmiw.jpg"); */
+    background-size: cover;
     font-size: 24px;
     color: hsla(0, 0%, 100%, 1);
 }
@@ -33,7 +61,8 @@ header {
     justify-content: center;
     align-items: center;
     text-align: center;
-    gap: 42px;
+    gap: 37px;
+    height: 51px;
 }
 
 #navbar a {
@@ -41,25 +70,21 @@ header {
     color: hsla(0, 0%, 100%, 1);
 }
 
-#webTitle {
+#webTitle svg{
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
     margin: 0;
-    font-family: "tomboy-lp", sans-serif;
-    font-size: 1.45rem;
-    font-weight: 700;
-    font-style: normal;
     transition: all 100ms ease-out 5ms;
+    height: 44px;
+    width: auto;
+    position: relative;
+    top: 3px;
 }
 
-#webTitle span {
-    color: hsla(222, 69%, 75%, 1);
-}
-
-#webTitle:hover {
-    scale: 1.035;
+#webTitle svg:hover {
+    scale: 1.05;
 }
 
 nav {
@@ -67,12 +92,12 @@ nav {
     justify-content: center;
     align-items: center;
     font-size: 0.75rem;
-    gap: 35px;
+    gap: 30px;
 }
 
 #navbar .nav {
+    border: 2px solid hsla(0, 0%, 100%, 0);
     color: hsla(0, 0%, 80%, 1);
-    /* border: 1px solid white; */
     justify-content: center;
     align-items: center;
     padding: 0.3rem 0.95rem;
@@ -80,15 +105,25 @@ nav {
     border-radius: 25px;
 }
 
+#navbar .nav:visited {
+    color: hsla(0, 0%, 100%, 1);
+}
+
 #navbar .nav:hover {
-    backdrop-filter: blur(50px) brightness(1.3);
+    backdrop-filter: blur(50px) brightness(1.5);
     color: hsla(0, 0%, 100%, 1);
 }
 
 #navbar .nav:active {
-    background-color: red;
-    color: hsla(0, 0%, 100%, 1);
+    color: hsla(242, 61%, 80%, 1);
+    backdrop-filter: blur(50px) brightness(2);
     scale: 0.9;
+}
+
+#navbar .nav.visited {
+    color: hsla(242, 61%, 80%, 1);
+    backdrop-filter: blur(50px) brightness(2);
+    border: 2px solid hsla(0, 0%, 100%, 1);
 }
 
 .separator {
@@ -163,7 +198,7 @@ nav {
 .info .contentTitle {
     margin: 0;
     font-size: 1em;
-    font-weight: bold;
+    font-weight: 800;
 }
 
 .info .date {
