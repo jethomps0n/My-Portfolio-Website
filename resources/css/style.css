@@ -1,0 +1,98 @@
+html {
+    font-family: Tahoma, Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: normal;
+    font-style: normal;
+    background-color: hsla(181, 0%, 7%, 1);
+    font-size: 24px;
+    color: hsla(0, 0%, 100%, 1);
+}
+
+/* ----Header section (Navabar & Website Title)---- */
+header {
+    /* REMEMBER: There is an 8 pixel margin around the body */
+    margin: 68px auto auto 0;
+    /* margin: 0 auto;
+    position: relative;
+    top: 60px; */
+    text-align: center;
+}
+
+header a {
+    text-decoration: none;
+    color: hsla(0, 0%, 100%, 1);
+}
+
+#webTitle {
+    font-family: "tomboy-lp", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    margin-bottom: 32px;
+}
+
+nav {
+    font-size: 0.75rem;
+    margin-top: -15px;
+}
+
+.nav {
+    display: inline-block;
+    background-color: hsla(181, 0%, 32%, 1);
+    padding: 0.25rem 0.9rem;
+    /* margin: 0 1.5px; */
+    margin: 0 0.0625rem;
+    transition: all 100ms ease-out 15ms;
+}
+
+#firstNav{
+    border-radius: 25px 0 0 25px;
+    margin-left: 0;
+}
+
+#lastNav {
+    border-radius: 0 25px 25px 0;
+    margin-right: 0;
+}
+
+.nav:hover {
+    /* Brightness decreases by 15% */
+    background-color: hsla(181, 0%, 19%, 1);
+    color: hsla(0, 0%, 85%, 1);
+    font-size: 0.9em;
+    margin: 0 4px;
+}
+
+#firstNav:hover {
+    /* Brightness decreases by 15% */
+    background-color: hsla(181, 0%, 19%, 1);
+    color: hsla(0, 0%, 85%, 1);
+    font-size: 0.9em;
+    margin-right: 8px;
+}
+
+#lastNav:hover {
+    /* Brightness decreases by 15% */
+    background-color: hsla(181, 0%, 19%, 1);
+    color: hsla(0, 0%, 85%, 1);
+    font-size: 0.9em;
+    margin-left: 6.5px;
+    margin-bottom: 2px;
+}
+
+/* .nav:active {
+} */
+
+/* ----Main  section---- */
+.text {
+    text-align: left;
+    padding-left: 15%;
+    border: 1px solid red;
+}
+
+.container {
+    margin: 0 auto;
+    width: 60%;
+}
+
+img {
+    width: 100%;
+}
