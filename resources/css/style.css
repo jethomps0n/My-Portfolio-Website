@@ -146,7 +146,7 @@ nav {
     text-align: center;
     max-width: 1200px;
     margin: 0 auto 42px auto;
-    transition: all 200ms ease-out 0ms;
+    transition: all 300ms ease 0ms;
 }
 
 .frame {
@@ -234,7 +234,7 @@ nav {
 }
 
 .contentContainer:hover {
-    scale: 1.015;
+    scale: 1.02;
 }
 
 .contentContainer:hover .thumbnail{
