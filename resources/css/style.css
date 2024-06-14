@@ -76,7 +76,7 @@ header {
     align-items: center;
     text-align: center;
     margin: 0;
-    transition: all 100ms ease-out 5ms;
+    transition: all 130ms ease-out 5ms;
     height: 44px;
     width: auto;
     position: relative;
@@ -84,7 +84,7 @@ header {
 }
 
 #webTitle svg:hover {
-    scale: 1.05;
+    scale: 1.10;
 }
 
 nav {
