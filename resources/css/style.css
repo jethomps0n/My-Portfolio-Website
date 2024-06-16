@@ -150,6 +150,7 @@ nav {
 }
 
 .frame {
+    position: relative;
     justify-content: center;
     align-items: center;
     text-align: center;
@@ -166,14 +167,23 @@ nav {
 
 .thumbnail {
     display: flex;
+    position: absolute;
     width: 100%;
-    filter: blur(2px) brightness(0.7);
-    transition: all 165ms ease-in-out 5ms;
-    display: none;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(2px) brightness(0.8);
+    transition: all 200ms ease-in-out 0ms,
+        filter 165ms ease-in-out 5ms;
 }
 
 .thumbnail.active{
-    display: block;
+    opacity: 1;
+    visibility: visible;
+}
+
+.thumbnail.passive {
+    opacity: 0;
+    visibility: hidden;
 }
 
 .info {
@@ -243,7 +253,19 @@ nav {
 }
 
 .contentContainer:hover .thumbnail{
+    transition: all 450ms ease-in-out 600ms,
+        filter 165ms ease-in-out 5ms;
     filter: blur(0) brightness(1);
+}
+
+.contentContainer:hover .thumbnail.active{
+    visibility: hidden;
+    opacity: 0;
+}
+
+.contentContainer:hover .thumbnail.passive{
+    visibility: visible;
+    opacity: 1;
 }
 
 .contentContainer:hover .frame {

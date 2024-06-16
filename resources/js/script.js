@@ -1,31 +1,21 @@
 const contentContainer = document.querySelectorAll('.contentContainer');
 
-const onToggleActive = event => {
-    const thumbnail = event.currentTarget.querySelectorAll('.thumbnail');
-    setTimeout(() => {
-        thumbnail.forEach(element => {
-            if (element.classList.contains('active')) {
-                element.classList.remove('active');
-            } else {
-                element.classList.add('active');
-                element.currentTime = '0';
-            }
-        });
-    }, 1500);
+const vidOn = event => {
+    const video = event.currentTarget.querySelector('.passive');
+    if (video.checkVisibility({visibilityProperty: false})) {
+        video.currentTime = 0;
+        video.play();
+    }
 };
 
-const offToggleActive = event => {
-    const thumbnail = event.currentTarget.querySelectorAll('.thumbnail');
-    thumbnail.forEach(element => {
-        if (element.classList.contains('active')) {
-            element.classList.remove('active');
-        } else {
-            element.classList.add('active');
-        }
-    });
+const vidOff = event => {
+    const video = event.currentTarget.querySelector('.passive');
+    if (video.checkVisibility({visibilityProperty: false})) {
+        video.pause();
+    }
 };
 
 contentContainer.forEach(element => {
-    element.addEventListener('mouseenter', onToggleActive);
-    element.addEventListener('mouseleave', offToggleActive);
+    element.addEventListener('mouseenter', vidOn);
+    element.addEventListener('mouseleave', vidOff);
 });
