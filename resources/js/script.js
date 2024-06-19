@@ -1,21 +1,31 @@
 const contentContainer = document.querySelectorAll('.contentContainer');
+let hoverDelay = 600; //ms
+let timeout;
 
-const vidOn = event => {
+// Start the video from the beginning after 'hoverDelay' milleseconds
+const vidStart = event => {
     const video = event.currentTarget.querySelector('.passive');
     if (video.checkVisibility({visibilityProperty: false})) {
-        video.currentTime = 0;
-        video.play();
+        timeout = setTimeout(() => {
+            video.currentTime = 0;
+            video.play();
+        }, hoverDelay);
     }
 };
 
-const vidOff = event => {
+// Pause the video, clear 'timeout'
+const vidStop = event => {
     const video = event.currentTarget.querySelector('.passive');
     if (video.checkVisibility({visibilityProperty: false})) {
+        clearTimeout(timeout);
         video.pause();
+        // video.src = video.src;
     }
 };
 
 contentContainer.forEach(element => {
-    element.addEventListener('mouseenter', vidOn);
-    element.addEventListener('mouseleave', vidOff);
+    // Call 'vidStart' when hovering mouse over 'contentContainer'
+    element.addEventListener('mouseenter', vidStart);
+    // Call 'vidStop' when exiting mouse from 'contentContainer'
+    element.addEventListener('mouseleave', vidStop);
 });

@@ -147,6 +147,8 @@ nav {
     max-width: 1200px;
     margin: 0 auto 42px auto;
     transition: all 300ms ease 0ms;
+    container-type: inline-size;
+    container-name: contentBox;
 }
 
 .frame {
@@ -171,7 +173,7 @@ nav {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: blur(2px) brightness(0.8);
+    filter: blur(1px) brightness(0.75);
     transition: all 200ms ease-in-out 0ms,
         filter 165ms ease-in-out 5ms;
 }
@@ -184,6 +186,9 @@ nav {
 .thumbnail.passive {
     opacity: 0;
     visibility: hidden;
+    /* For Testing: */
+    /* visibility: visible;
+    opacity: 1; */
 }
 
 .info {
@@ -253,6 +258,7 @@ nav {
 }
 
 .contentContainer:hover .thumbnail{
+    /* 'hoverDelay' in script.js */
     transition: all 450ms ease-in-out 600ms,
         filter 165ms ease-in-out 5ms;
     filter: blur(0) brightness(1);
@@ -277,8 +283,31 @@ nav {
     border-color:  hsla(0, 0%, 100%, 1);
 }
 
-@media only screen and (max-width: 1300px){
+/* @media only screen and (max-width: 1300px){
     .info {
         font-size: 1.8vw;
+    }
+} */
+
+@container contentBox (max-width: 100vw) {
+    .info {
+      font-size: 4cqi;
+    }
+
+    .info .contentTitle {
+        margin: 0;
+    }
+    
+    .info .date {
+        margin: 0 0 2.45cqi 0;
+    }
+    
+    .info .role {
+        margin: 0 0 2.45cqi 0;
+    }
+    
+    .info .credits {
+        margin: 0;
+        padding: 0.865cqi 2.9cqi;
     }
 }
