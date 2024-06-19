@@ -29,3 +29,21 @@ contentContainer.forEach(element => {
     // Call 'vidStop' when exiting mouse from 'contentContainer'
     element.addEventListener('mouseleave', vidStop);
 });
+
+const loadMoreButton = document.querySelector('.button');
+const contentBoxIncrease = 3;
+const unloadBox = Array.from(document.querySelectorAll('.unloaded'));
+
+const load = event => {
+    for (let i=0; i < contentBoxIncrease; i++) {
+        if (unloadBox[0] == undefined) {
+            loadMoreButton.disabled = true;
+            loadMoreButton.classList.add('loadAll');
+            loadMoreButton.innerHTML = `You've reached the end of the page.`;
+            break;
+        }
+        unloadBox.shift().classList.remove('unloaded');
+    }
+};
+
+loadMoreButton.addEventListener('click', load);
