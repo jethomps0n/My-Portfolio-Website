@@ -31,19 +31,163 @@ html {
     font-weight: normal;
     font-style: normal;
     background: #15264A;
-    background: radial-gradient(circle 1200px at center, hsla(221, 56%, 19%, 1), hsla(358, 76%, 7%, 1));
+    background: radial-gradient(circle 1090px at center, hsla(221, 56%, 19%, 1), hsla(358, 76%, 7%, 1));
     background-size: cover;
     font-size: 24px;
     color: hsla(0, 0%, 100%, 1);
+    /* Pin this to bottom */
+    background-attachment: fixed;
+}
+
+/* ----Noise Grain Effect Section---- */
+#noise {
+    position: fixed;
+    top: 0;
+    left: 0;
+    
+    width: 100%;
+    height: 100%;
+    
+    pointer-events: none;
+    opacity: 0.3;
+
+    /* filter: brightness(100); */
+}
+
+#softnoise {
+    position: fixed;
+    top: 0;
+    left: 0;
+    
+    width: 100%;
+    height: 100%;
+    
+    pointer-events: none;
+    opacity: 0.07;
+
+    z-index: 100;
+    /* filter: brightness(100); */
+}
+
+/* ----Gradient Blur Section---- */
+.gradient-blur {
+    position: fixed;
+    inset: auto 0 0 0;
+    top: 0px;
+    height: 92px;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.gradient-blur > div,
+.gradient-blur::before,
+.gradient-blur::after {
+  position: absolute;
+  inset: 0;
+}
+
+.gradient-blur::before {
+  content: "";
+  z-index: 1;
+  backdrop-filter: blur(0.5px);
+  mask: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) 12.5%,
+    rgba(0, 0, 0, 1) 25%,
+    rgba(0, 0, 0, 0) 37.5%
+  );
+}
+
+.gradient-blur > div:nth-of-type(1) {
+    z-index: 2;
+    backdrop-filter: blur(1px);
+    mask: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0) 12.5%,
+      rgba(0, 0, 0, 1) 25%,
+      rgba(0, 0, 0, 1) 37.5%,
+      rgba(0, 0, 0, 0) 50%
+    );
+  }
+
+  .gradient-blur > div:nth-of-type(2) {
+    z-index: 3;
+    backdrop-filter: blur(2px);
+    mask: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0) 25%,
+      rgba(0, 0, 0, 1) 37.5%,
+      rgba(0, 0, 0, 1) 50%,
+      rgba(0, 0, 0, 0) 62.5%
+    );
+  }
+
+  .gradient-blur > div:nth-of-type(3) {
+    z-index: 4;
+    backdrop-filter: blur(4px);
+    mask: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0) 37.5%,
+      rgba(0, 0, 0, 1) 50%,
+      rgba(0, 0, 0, 1) 62.5%,
+      rgba(0, 0, 0, 0) 75%
+    );
+  }
+
+  .gradient-blur > div:nth-of-type(4) {
+    z-index: 5;
+    backdrop-filter: blur(8px);
+    mask: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0) 50%,
+      rgba(0, 0, 0, 1) 62.5%,
+      rgba(0, 0, 0, 1) 75%,
+      rgba(0, 0, 0, 0) 87.5%
+    );
+  }
+
+  .gradient-blur > div:nth-of-type(5) {
+    z-index: 6;
+    backdrop-filter: blur(16px);
+    mask: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0) 62.5%,
+      rgba(0, 0, 0, 1) 75%,
+      rgba(0, 0, 0, 1) 87.5%,
+      rgba(0, 0, 0, 0) 100%
+    );
+  }
+
+  .gradient-blur > div:nth-of-type(6) {
+    z-index: 7;
+    backdrop-filter: blur(32px);
+    mask: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0) 75%,
+      rgba(0, 0, 0, 1) 87.5%,
+      rgba(0, 0, 0, 1) 100%
+    );
+  }
+
+.gradient-blur::after {
+    content: "";
+    z-index: 8;
+    backdrop-filter: blur(64px);
+    mask: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0) 87.5%,
+      rgba(0, 0, 0, 1) 100%
+    );
 }
 
 /* ----Header Section (Navbar & Website Title)---- */
 header {
     /* REMEMBER: There is an 8 pixel margin around the body */
     height: auto;
-    margin: 0 auto;
+    margin: 25px auto 0 auto;
     position: sticky;
-    top: 8px;
+    top: 25px;
     display: flex;
     flex-direction: column;
     width: 1080px;
@@ -54,15 +198,18 @@ header {
 }
 
 #navbar {
-    padding-top: 16px;
-    padding-bottom: 16px;
+    padding: 16px;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     text-align: center;
     gap: 37px;
-    height: 51px;
+    height: 1.51666667rem; /* .nav font-size + vertical padding + vertical border */
+    background-color: hsla(201, 100%, 8%, 0.25);
+    /* border: 1px solid hsla(248, 9%, 45%, 1); */
+    border-radius: 40px;
+    backdrop-filter: blur(15px) brightness(0.7);
 }
 
 #navbar a {
@@ -105,12 +252,8 @@ nav {
     border-radius: 25px;
 }
 
-#navbar .nav:visited {
-    color: hsla(0, 0%, 100%, 1);
-}
-
 #navbar .nav:hover {
-    backdrop-filter: blur(50px) brightness(1.5);
+    backdrop-filter: blur(50px) brightness(6);
     color: hsla(0, 0%, 100%, 1);
 }
 
@@ -127,6 +270,11 @@ nav {
 }
 
 .separator {
+    /* position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto; */
     height: 1px;
     width: 100%;
     background-color: hsla(248, 9%, 45%, 1);
@@ -134,7 +282,6 @@ nav {
 }
 
 /* ----Main Content Section---- */
-
 #content {
     margin: 42px;
 }
@@ -316,7 +463,7 @@ nav {
     display: flex;
     justify-content: center;
     text-align: center;
-    margin: 0 auto;
+    margin: 0 auto 42px auto;
     max-width: 1284px;
     container-type: inline-size;
     container-name: loadBox;
@@ -341,7 +488,6 @@ nav {
 }
 
 .button:hover {
-    scale: 1.05;
     /* border: 1px solid hsla(0, 0%, 100%, 1); */
     border-color:hsla(0, 0%, 100%, 1);
     color: hsla(242, 61%, 80%, 1);
@@ -350,7 +496,6 @@ nav {
 }
 
 .button.loadAll:hover {
-    scale: 1;
     backdrop-filter: blur(0px) brightness(1);
 }
 
@@ -359,4 +504,25 @@ nav {
         font-size: 1.8cqi;
         padding: 0.865cqi 2.9cqi;
     }
+}
+
+/* Footer Section */
+footer {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    margin: 94px -8px -8px -8px;
+    container-type: inline-size;
+    container-name: footer;
+    background-color: #192b52;
+    /* background: radial-gradient(circle 1200px at center, hsla(221, 56%, 19%, 1), hsla(358, 76%, 7%, 1)); */
+}
+
+.footer {
+    display: flex;
+    flex-direction: column;
+    max-width: 1284px;
+    justify-content: center;
+    text-align: center;
+    padding: 100px;
 }
