@@ -475,6 +475,7 @@ nav {
     font-size: 0.9rem;
     box-sizing: border-box;
     border: 1px solid hsla(0, 0%, 80%, 1);
+    border-radius: 40px;
     color: hsla(0, 0%, 80%, 1);
     background-color: hsla(0, 0%, 0%, 0);
     font-weight: normal;
