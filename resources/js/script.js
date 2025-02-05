@@ -30,23 +30,77 @@ contentContainer.forEach(element => {
     element.addEventListener('mouseleave', vidStop);
 });
 
-const loadMoreButton = document.querySelector('.button');
-const contentBoxIncrease = 3;
-const unloadBox = Array.from(document.querySelectorAll('.unloaded'));
+document.addEventListener('DOMContentLoaded', () => {
+    const contentWrapper = document.getElementById('content'); 
+    const loadMoreButton = document.querySelector('.button'); 
+    let contentData = []; // Store fetched JSON data
+    let loadIndex = 0; // Track how many items have been loaded
 
-const load = event => {
-    for (let i=0; i < contentBoxIncrease; i++) {
-        if (unloadBox[0] == undefined) {
+    // Fetch the data from data.json
+    fetch('/resources/json/data.json')
+        .then(response => response.json()) 
+        .then(data => {
+            console.log("Fetched Data:", data); // Debugging: Log fetched data
+            contentData = data; // Store data
+            load(); // Load first 3 items
+        })
+        .catch(error => console.error("Error loading data.json:", error));
+
+    // Function to load content in increments of 3
+    const load = () => {
+        for (let i = 0; i < 3; i++) {
+            if (loadIndex >= contentData.length) {
+                loadMoreButton.disabled = true;
+                loadMoreButton.classList.add('loadAll');
+                loadMoreButton.innerHTML = "You've reached the end of the page.";
+                return;
+            }
+            addContent(contentData[loadIndex]); // Add content
+            loadIndex++;
+        }
+
+        if (loadIndex >= contentData.length) {
             loadMoreButton.disabled = true;
             loadMoreButton.classList.add('loadAll');
-            loadMoreButton.innerHTML = `You've reached the end of the page.`;
-            break;
+            loadMoreButton.innerHTML = "You've reached the end of the page.";
+            return;
         }
-        unloadBox.shift().classList.remove('unloaded');
-    }
-};
+    };
 
-loadMoreButton.addEventListener('click', load);
+    // Function to create and append content
+    const addContent = (data) => {
+        const newContentContainer = document.createElement('div');
+        newContentContainer.classList.add('contentContainer');
+
+        newContentContainer.innerHTML = `
+            <a class="frame" href="#!">
+                <img class="thumbnail active" src="${data.imgSrc}" alt="">
+                <video class="thumbnail passive" src="${data.videoSrc}" muted loop></video>
+            </a>
+            <div class="info">
+                <a class="expand" href="#!"></a>
+                <h2 class="contentTitle">${data.title}</h2>
+                <h3 class="date">${data.date}</h3>
+                <h3 class="role">${data.role}</h3>
+                <a class="credits" href="#!">Credits</a>
+            </div>
+        `;
+
+        contentWrapper.appendChild(newContentContainer);
+
+        // Call 'vidStart' when hovering mouse over 'contentContainer'
+        newContentContainer.addEventListener('mouseenter', vidStart);
+        // Call 'vidStop' when exiting mouse from 'contentContainer'
+        newContentContainer.addEventListener('mouseleave', vidStop);
+    };
+
+    // Wait for content.json to load before adding event listener
+    loadMoreButton.addEventListener('click', () => {
+        if (contentData.length > 0) {
+            load();
+        }
+    });
+});
 
 const noise = id => {
     let canvas, ctx;

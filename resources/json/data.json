@@ -1,0 +1,63 @@
+[
+    {
+        "imgSrc": "./resources/images/That-One-ROMCOM-From-2003-thumbnail.png",
+        "videoSrc": "./resources/videos/That-One-ROMCOM-From-2003-preview.webm",
+        "title": "That One ROMCOM From 2003",
+        "date": "April 11, 2024",
+        "role": "Editor/Production Assistant"
+    },
+    {
+        "imgSrc": "./resources/images/testThumbnail1.png",
+        "videoSrc": "./resources/videos/testVideo1.mp4",
+        "title": "The Walking Dead Game: RESCORE feat. John Paesano",
+        "date": "April 12, 2024",
+        "role": "Editor/Production Assistant"
+    },
+    {
+        "imgSrc": "./resources/images/testThumbnail2.png",
+        "videoSrc": "./resources/videos/testVideo2.mp4",
+        "title": "That One ROMCOM From 2003",
+        "date": "April 13, 2024",
+        "role": "Editor/Production Assistant"
+    }, {
+        "imgSrc": "./resources/images/That-One-ROMCOM-From-2003-thumbnail.png",
+        "videoSrc": "./resources/videos/That-One-ROMCOM-From-2003-preview.webm",
+        "title": "That One ROMCOM From 2003",
+        "date": "April 11, 2024",
+        "role": "Editor/Production Assistant"
+    },
+    {
+        "imgSrc": "./resources/images/testThumbnail1.png",
+        "videoSrc": "./resources/videos/testVideo1.mp4",
+        "title": "The Walking Dead Game: RESCORE feat. John Paesano",
+        "date": "April 12, 2024",
+        "role": "Editor/Production Assistant"
+    },
+    {
+        "imgSrc": "./resources/images/testThumbnail2.png",
+        "videoSrc": "./resources/videos/testVideo2.mp4",
+        "title": "That One ROMCOM From 2003",
+        "date": "April 13, 2024",
+        "role": "Editor/Production Assistant"
+    }, {
+        "imgSrc": "./resources/images/That-One-ROMCOM-From-2003-thumbnail.png",
+        "videoSrc": "./resources/videos/That-One-ROMCOM-From-2003-preview.webm",
+        "title": "That One ROMCOM From 2003",
+        "date": "April 11, 2024",
+        "role": "Editor/Production Assistant"
+    },
+    {
+        "imgSrc": "./resources/images/testThumbnail1.png",
+        "videoSrc": "./resources/videos/testVideo1.mp4",
+        "title": "The Walking Dead Game: RESCORE feat. John Paesano",
+        "date": "April 12, 2024",
+        "role": "Editor/Production Assistant"
+    },
+    {
+        "imgSrc": "./resources/images/testThumbnail2.png",
+        "videoSrc": "./resources/videos/testVideo2.mp4",
+        "title": "That One ROMCOM From 2003",
+        "date": "April 13, 2024",
+        "role": "Editor/Production Assistant"
+    }
+]
