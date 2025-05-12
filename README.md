@@ -1,1 +1,1 @@
-Source/Eleventy files and configurations.
+Source files and configurations. Powered by Eleventy.
