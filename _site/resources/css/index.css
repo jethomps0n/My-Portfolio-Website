@@ -1,0 +1,242 @@
+/* Content Box Section */
+
+.contentContainer {
+    position: relative;
+    display: flex;
+    justify-content: start;
+    align-items: start;
+    text-align: center;
+    max-width: 1200px;
+    margin: 0 auto 42px auto;
+    transition: all 300ms ease 0ms;
+    container-type: inline-size;
+    container-name: contentBox;
+    z-index: inherit;
+    will-change: transform, opacity;
+}
+
+.frame {
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-sizing: border-box;
+    display: flex;
+    aspect-ratio: 16/9;
+    width: 100%;
+    margin: 0 auto;
+    border: 3px solid hsla(0, 0%, 50%, 1);
+    border-radius: 25px;
+    filter: drop-shadow(0px 0px 0px hsla(0, 0%, 100%, 0));
+    overflow: hidden;
+    transition: all 300ms ease 0ms;
+}
+
+.thumbnail {
+    display: flex;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(1px) brightness(0.75);
+    transition: all 200ms ease-in-out 0ms,
+        filter 165ms ease-in-out 5ms;
+        will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform: translateZ(0); /* forces GPU layer */
+}
+
+.thumbnail.active{
+    opacity: 1;
+    visibility: visible;
+}
+
+.thumbnail.passive {
+    opacity: 0;
+    visibility: hidden;
+    /* For Testing: */
+    /* visibility: visible;
+    opacity: 1; */
+}
+
+.info {
+    display: flex;
+    justify-content: start;
+    align-items: start;
+    text-align: left;
+    flex-direction: column;
+    border-radius: 0px;
+    overflow: visible;
+    width: 25%;
+    height: auto;
+    max-height: 100%;
+    position: absolute;
+    top: 19%;
+    left: 11%;
+    /* font-size: 2rem; */
+}
+
+.info .expand {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.info .contentTitle {
+    /* margin: 0; */
+    font-size: 1em;
+    font-weight: 800;
+}
+
+.info .date {
+    color: hsla(0, 0%, 80%, 1);
+    /* margin: 0 0 30px 0; */
+    font-size: 0.45em;
+    font-weight: normal;
+}
+
+.info .role {
+    color: hsla(0, 0%, 80%, 1);
+    /* margin: 0 0 30px 0; */
+    font-size: 0.45em;
+    font-style: italic;
+    font-weight: normal;
+}
+
+.info a {
+    text-decoration: none;
+    color: hsla(0, 0%, 80%, 1);
+}
+
+.info .credits {
+    /* margin: 0;
+    padding: 10px 35px; */
+    font-size: 0.45em;
+    box-sizing: border-box;
+    border: 1px solid hsla(0, 0%, 80%, 1);
+    color: hsla(0, 0%, 80%, 1);
+    font-weight: normal;
+    z-index: 2;
+    transition: all 100ms ease-out 5ms;
+}
+
+.contentContainer:hover {
+    scale: 1.02;
+}
+
+.contentContainer:hover .thumbnail{
+    /* 'hoverDelay' in script.js */
+    transition: all 450ms ease-in-out 600ms,
+        filter 165ms ease-in-out 5ms;
+    filter: blur(0) brightness(1);
+}
+
+.contentContainer:hover .thumbnail.active{
+    visibility: hidden;
+    opacity: 0;
+}
+
+.contentContainer:hover .thumbnail.passive{
+    visibility: visible;
+    opacity: 1;
+}
+
+.contentContainer:hover .frame {
+    border-color: hsla(0, 0%, 100%, 1);
+    filter: drop-shadow(0px 0px 40px hsla(0, 0%, 45%, 0.2));
+}
+
+.credits:hover {
+    color: hsla(0, 0%, 100%, 1);
+    border-color:  hsla(0, 0%, 100%, 1);
+}
+
+@container contentBox (max-width: 100vw) {
+    .info {
+      font-size: 4cqi;
+    }
+
+    .info .contentTitle {
+        margin: 0;
+    }
+    
+    .info .date {
+        margin: 0 0 2.45cqi 0;
+    }
+    
+    .info .role {
+        margin: 0 0 2.45cqi 0;
+    }
+    
+    .info .credits {
+        margin: 0;
+        padding: 0.865cqi 2.9cqi;
+    }
+}
+
+@keyframes popIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  .contentContainer.pop-in {
+    animation: popIn 0.4s ease-out;
+    transform-origin: center center;
+  }
+
+/* ----Load More Button Section---- */
+#loadMore {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    margin: 0 auto 42px auto;
+    max-width: 1284px;
+    container-type: inline-size;
+    container-name: loadBox;
+}
+
+.button {
+    justify-content: center;
+    text-align: center;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+    border: 1px solid hsla(0, 0%, 80%, 1);
+    border-radius: 40px;
+    color: hsla(0, 0%, 80%, 1);
+    background-color: hsla(0, 0%, 0%, 0);
+    font-weight: normal;
+    padding: 10px 35px;
+    transition: all 100ms ease-out 5ms;
+}
+
+.button.loadAll {
+    color: hsla(242, 61%, 80%, 1);
+    border-width: 0px;
+}
+
+.button:hover {
+    /* border: 1px solid hsla(0, 0%, 100%, 1); */
+    border-color:hsla(0, 0%, 100%, 1);
+    color: hsla(242, 61%, 80%, 1);
+    backdrop-filter: blur(50px) brightness(2);
+    /* backdrop-filter: brightness(1.5); */
+}
+
+.button.loadAll:hover {
+    backdrop-filter: blur(0px) brightness(1);
+}
+
+@container loadBox (max-width: 100vw) {
+    .button {
+        font-size: 1.8cqi;
+        padding: 0.865cqi 2.9cqi;
+    }
+}
+  
