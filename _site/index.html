@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }}</title>
+    <title>Home | Jonathan Thompson</title>
     <link rel="icon" type="image/x-icon" href="/resources/images/favicon.png">
 
     <meta property="og:title" content="Jonathan Thompson" />
@@ -13,16 +13,16 @@
 
     <link rel="stylesheet" href="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.css">
     <link rel="stylesheet" href="/resources/css/global.css">
-    {% if pagecss %}
-        <link rel="stylesheet" href="{{ pagecss }}">
-    {% endif %}
+    
+        <link rel="stylesheet" href="/resources/css/index.css">
+    
 
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
     <script src="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.js" defer></script>
     <script src="/resources/js/global.js" defer></script>
-    {% if pagejs %}
-        <script src="{{ pagejs }}" defer></script>
-    {% endif %}
+    
+        <script src="/resources/js/index.js" defer></script>
+    
 </head>
 <body>
     <div class="effects">
@@ -77,7 +77,56 @@
         </div>
     </header>
     <main>
-        {{ content | safe }}
+        
+<div id="content">
+    
+    
+        <div class="contentContainer pop-in"> 
+            <a class="frame" href="#!">
+                <img class="thumbnail active" src="/resources/images/That-One-ROMCOM-From-2003-thumbnail.webp" alt="">
+                <video class="thumbnail passive" src="/resources/videos/That-One-ROMCOM-From-2003-preview.webm" muted loop></video>
+            </a>
+            <div class="info">
+                <a class="expand" href="#!"></a>
+                <h2 class="contentTitle">0 That One ROMCOM From 2003</h2>
+                <h3 class="date">April 11, 2024</h3>
+                <h3 class="role">Editor/Production Assistant</h3>
+                <a class="credits" href="#!">Credits</a>
+            </div>
+        </div>
+    
+        <div class="contentContainer pop-in"> 
+            <a class="frame" href="#!">
+                <img class="thumbnail active" src="/resources/images/That-One-ROMCOM-From-2003-thumbnail.webp" alt="">
+                <video class="thumbnail passive" src="/resources/videos/That-One-ROMCOM-From-2003-preview.webm" muted loop></video>
+            </a>
+            <div class="info">
+                <a class="expand" href="#!"></a>
+                <h2 class="contentTitle">1 That One ROMCOM From 2003</h2>
+                <h3 class="date">April 11, 2024</h3>
+                <h3 class="role">Editor/Production Assistant</h3>
+                <a class="credits" href="#!">Credits</a>
+            </div>
+        </div>
+    
+        <div class="contentContainer pop-in"> 
+            <a class="frame" href="#!">
+                <img class="thumbnail active" src="/resources/images/testThumbnail1.webp" alt="">
+                <video class="thumbnail passive" src="/resources/videos/testVideo1.mp4" muted loop></video>
+            </a>
+            <div class="info">
+                <a class="expand" href="#!"></a>
+                <h2 class="contentTitle">2 The Walking Dead Game: RESCORE feat. John Paesano</h2>
+                <h3 class="date">April 12, 2024</h3>
+                <h3 class="role">Editor/Production Assistant</h3>
+                <a class="credits" href="#!">Credits</a>
+            </div>
+        </div>
+    
+</div>
+<div id="loadMore">
+    <button type="button" class="button">Load More</button>
+</div>
         <footer>
             <div id="footer">
                 <div id="footer-middle">

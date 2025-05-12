@@ -31,10 +31,15 @@ contentContainer.forEach(element => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.contentContainer.pop-in').forEach(el => {
+        el.addEventListener('animationend', () => {
+            el.classList.remove('pop-in');
+        });
+    });
     const contentWrapper = document.getElementById('content'); 
     const loadMoreButton = document.querySelector('.button'); 
     let contentData = []; // Store fetched JSON data
-    let loadIndex = 0; // Track how many items have been loaded
+    let loadIndex = 3; // Track how many items have been loaded
 
     // Fetch the data from data.json
     fetch('/resources/json/data.json')
@@ -42,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => {
             console.log("Fetched Data:", data); // Debugging: Log fetched data
             contentData = data; // Store data
-            load(); // Load first 3 items
+            // load(); // Load first 3 items
         })
         .catch(error => console.error("Error loading data.json:", error));
 
@@ -70,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to create and append content
     const addContent = (data) => {
         const newContentContainer = document.createElement('div');
-        newContentContainer.classList.add('contentContainer');
+        newContentContainer.classList.add('contentContainer', 'pop-in');
 
         newContentContainer.innerHTML = `
             <a class="frame" href="#!">
@@ -87,6 +92,11 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         contentWrapper.appendChild(newContentContainer);
+
+        // Clean up animation class after it runs (optional)
+        setTimeout(() => {
+            newContentContainer.classList.remove('pop-in');
+        }, 400);
 
         // Call 'vidStart' when hovering mouse over 'contentContainer'
         newContentContainer.addEventListener('mouseenter', vidStart);

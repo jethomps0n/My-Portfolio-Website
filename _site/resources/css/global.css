@@ -79,6 +79,7 @@ header {
     /* REMEMBER: There is an 8 pixel margin around the body */
     height: auto;
     margin: 0 0 25px 0;
+    /* position: static; */
     position: sticky;
     top: 25px;
     display: flex;
@@ -103,6 +104,8 @@ header {
     border-radius: 40px;
     box-shadow: 0px 0px 100px 1px hsla(198, 100%, 48.8%, 0.25);
     backdrop-filter: blur(15px) brightness(0.7);
+    z-index: inherit;
+    contain: layout paint style;
 }
 
 #navbar a {
@@ -143,10 +146,11 @@ nav {
     padding: 0.3rem 0.95rem; /* 7.2px */
     transition: all 100ms ease-out 5ms;
     border-radius: 25px;
+    transform: translateZ(0);
 }
 
 #navbar .nav:hover {
-    backdrop-filter: blur(50px) brightness(6);
+    background-color: hsla(228, 48%, 60%, 1);
     color: hsla(0, 0%, 100%, 1);
 }
 
