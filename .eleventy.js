@@ -1,6 +1,6 @@
 module.exports = function (eleventyConfig) {
     eleventyConfig.addPassthroughCopy("src/resources");
-    eleventyConfig.addPassthroughCopy("README.md");
+    eleventyConfig.addPassthroughCopy("src/README.md");
   
     return {
       templateFormats: ["njk", "html", "md"],
