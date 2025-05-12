@@ -4,8 +4,8 @@
   "description": "Hi everyone! I am an aspiring student filmmaker in long need of a portfolio to showcase my work.",
   "main": "index.js",
  "scripts": {
-    "prebuild": "rm -rf _site",
-    "build": "eleventy --verbose",
+    "prebuild": "rm -rf /_site",
+    "build": "eleventy",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
