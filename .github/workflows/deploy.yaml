@@ -20,6 +20,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Clear old build
+        run: npm run prebuild
+
       - name: Build Eleventy site
         run: npm run build
 
