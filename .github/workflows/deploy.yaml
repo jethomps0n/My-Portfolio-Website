@@ -1,4 +1,4 @@
-name: Build and Deploy Eleventy to `main`
+name: Build and Deploy site to `main`
 
 on:
   push:
@@ -26,11 +26,33 @@ jobs:
       - name: Build Eleventy site
         run: npm run build
 
-      - name: Deploy to main branch
+      - name: Get latest commit message
+        id: get_message
+        run: |
+          echo "message=$(git log -1 --pretty=format:%s)" >> $GITHUB_OUTPUT
+
+      - name: Checkout main branch to compare output
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          path: old_site
+
+      - name: Compare new _site to old_site
+        id: check_diff
+        run: |
+          if diff -r _site old_site > /dev/null; then
+            echo "changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy if changes exist
+        if: steps.check_diff.outputs.changes == 'true'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./_site
           publish_branch: main
-          force_orphan: true
-          commit_message: "Deployed by ${{ github.actor }} from ${{ github.ref_name }} branch"
+          force_orphan: false
+          clean: true
+          commit_message: "${{ steps.get_message.outputs.message }}"
