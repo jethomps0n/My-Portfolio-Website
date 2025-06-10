@@ -6,10 +6,54 @@ pagejs: /resources/js/explore.js
 ---
 
 <div id="content">
-    <div id="query">
-        <div id="search-bar">
-            <input type="text" placeholder="Search...">
-            <button type="submit">Submit</button>
+    <div id="search-bar">
+        <input type="text" placeholder="Search...">
+        <button type="submit">Submit</button>
+    </div>
+    <div id="query-interface">
+        <form id="filters">
+            <h2>Filter By</h2>
+            <fieldset id="role">
+                <legend>ROLE</legend>
+                <div>
+                    <input type="checkbox" id="scales" title="Hello" name="scales" checked />
+                    <label for="scales">Scales</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="horns" name="horns" />
+                    <label for="horns">Horns</label>
+                </div>
+            </fieldset>
+            <fieldset id="type">
+                <legend>TYPE</legend>
+                <div>
+                    <input type="checkbox" id="scales" title="Hello" name="scales" checked />
+                    <label for="scales">Scales</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="horns" name="horns" />
+                    <label for="horns">Horns</label>
+                </div>
+            </fieldset>
+        </form>
+        <div id="output">
+            <div id="filter-bar">
+                <span id="count">Results 1-8 of 100</span>
+                <div id="sort">
+                    <label for="sort-select">Sort By</label>
+                    <select id="sort-select">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="A-Z">A-Z</option>
+                        <option value="Z-A">Z-A</option>
+                    </select>
+                </div>
+            </div>
+            <div id="results">
+                <div class="content-card">
+                    
+                </div>
+            </div>
         </div>
     </div>
 </div>
