@@ -79,56 +79,85 @@
     </header>
     <main>
         
-<div id="content">
-    <div id="search-bar">
-        <input type="text" placeholder="Search...">
-        <button type="submit">Submit</button>
+<div id="explore-page">
+    <div id="search-container">
+        <input id="search-input" type="text" placeholder="Search..." />
+        <button id="clear-search" aria-label="Clear search">&#x2715;</button>
+        <span id="search-icon">&#x1F50D;</span>
     </div>
+
     <div id="query-interface">
-        <form id="filters">
-            <h2>Filter By</h2>
-            <fieldset id="role">
-                <legend>ROLE</legend>
-                <div>
-                    <input type="checkbox" id="scales" title="Hello" name="scales" checked />
-                    <label for="scales">Scales</label>
+        <aside id="filter-section">
+            <div class="filter-header">
+                <h2>Filter By</h2>
+                <span id="filter-count">0</span>
+                <button id="clear-filters" type="button">Clear All</button>
+            </div>
+
+            <div class="filter-group" id="filter-role">
+                <h3>ROLE <button class="toggle" type="button">-</button></h3>
+                <div class="options">
+                    <label><input type="checkbox" value="Writer"> Writer</label>
+                    <label><input type="checkbox" value="Editor"> Editor</label>
+                    <label><input type="checkbox" value="Director"> Director</label>
+                    <label><input type="checkbox" value="Producer"> Producer</label>
+                    <button class="show-more" type="button">Show More &#x25BC;</button>
+                    <div class="more">
+                        <label><input type="checkbox" value="DP"> DP (Director of Photography)</label>
+                        <label><input type="checkbox" value="Camera Operator"> Camera Operator</label>
+                        <label><input type="checkbox" value="Production Assistant"> Production Assistant</label>
+                        <label><input type="checkbox" value="Sound Recordist"> Sound Recordist</label>
+                        <label><input type="checkbox" value="Miscellaneous"> Miscellaneous</label>
+                    </div>
                 </div>
-                <div>
-                    <input type="checkbox" id="horns" name="horns" />
-                    <label for="horns">Horns</label>
+            </div>
+
+            <div class="filter-group" id="filter-type">
+                <h3>TYPE <button class="toggle" type="button">-</button></h3>
+                <div class="options">
+                    <label><input type="checkbox" value="Short Film"> Short Films</label>
+                    <label><input type="checkbox" value="Rescore"> Rescores</label>
+                    <label><input type="checkbox" value="Documentary"> Documentaries</label>
+                    <label><input type="checkbox" value="Show"> Shows</label>
+                    <button class="show-more" type="button">Show More &#x25BC;</button>
+                    <div class="more">
+                        <label><input type="checkbox" value="Advertisement"> Advertisements</label>
+                    </div>
                 </div>
-            </fieldset>
-            <fieldset id="type">
-                <legend>TYPE</legend>
-                <div>
-                    <input type="checkbox" id="scales" title="Hello" name="scales" checked />
-                    <label for="scales">Scales</label>
+            </div>
+
+            <div class="filter-group" id="filter-date">
+                <h3>DATE RANGE <button class="toggle" type="button">-</button></h3>
+                <div class="options">
+                    <label><input type="radio" name="date" value="30"> Last 30 Days</label>
+                    <label><input type="radio" name="date" value="90"> Last 90 Days</label>
+                    <label><input type="radio" name="date" value="365"> Last Year</label>
+                    <div class="custom-range">
+                        <input type="date" id="start-date"> to
+                        <input type="date" id="end-date">
+                        <button id="set-custom" type="button">Set</button>
+                    </div>
                 </div>
-                <div>
-                    <input type="checkbox" id="horns" name="horns" />
-                    <label for="horns">Horns</label>
-                </div>
-            </fieldset>
-        </form>
-        <div id="output">
-            <div id="filter-bar">
-                <span id="count">Results 1-8 of 100</span>
-                <div id="sort">
+            </div>
+        </aside>
+
+        <section id="results-section">
+            <div id="active-filters"></div>
+            <div class="results-header">
+                <span id="results-count"></span>
+                <div class="sort">
                     <label for="sort-select">Sort By</label>
                     <select id="sort-select">
                         <option value="newest">Newest First</option>
                         <option value="oldest">Oldest First</option>
-                        <option value="A-Z">A-Z</option>
-                        <option value="Z-A">Z-A</option>
+                        <option value="az">A-Z</option>
+                        <option value="za">Z-A</option>
                     </select>
                 </div>
             </div>
-            <div id="results">
-                <div class="content-card">
-                    
-                </div>
-            </div>
-        </div>
+            <div id="results-list"></div>
+            <div id="pagination"></div>
+        </section>
     </div>
 </div>
     </main>
