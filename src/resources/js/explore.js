@@ -3,8 +3,10 @@ let allData = [];
 let filtered = [];
 let currentPage = 1;
 let selectedRoles = new Set();
+const knownRoles = ['Writer','Editor','Director','Producer','DP','Camera Operator','Production Assistant','Sound Recordist'];
 let selectedTypes = new Set();
 let dateRange = {start:null,end:null};
+let selectedDateRadio = null;
 let searchText = '';
 let sortMode = 'newest';
 
@@ -15,12 +17,61 @@ function parseDate(str){
 
 function loadData(){
     fetch('/resources/json/data.json')
-        .then(r=>r.json())
-        .then(d=>{allData=d;update();});
+        .then(r => r.json())
+        .then(d => { allData = d; update(); })
+        .catch(err => {
+            console.error('Failed to load data.json', err);
+        });
+}
+
+function applyURL(){
+    const params=new URLSearchParams(location.search);
+    const q=params.get('q')||'';
+    searchText=q.toLowerCase();
+    document.getElementById('search-input').value=q;
+    document.getElementById('clear-search').style.display=q?'block':'none';
+
+    const roles=params.get('roles');
+    if(roles){
+        roles.split(',').forEach(v=>{if(v){selectedRoles.add(v);const el=document.querySelector(`#filter-role input[value="${v}"]`);if(el) el.checked=true;}});
+    }
+    const types=params.get('types');
+    if(types){
+        types.split(',').forEach(v=>{if(v){selectedTypes.add(v);const el=document.querySelector(`#filter-type input[value="${v}"]`);if(el) el.checked=true;}});
+    }
+    const start=params.get('start');
+    const end=params.get('end');
+    if(start&&end){
+        dateRange.start=new Date(start+'T00:00');
+        dateRange.end=new Date(end+'T23:59');
+        document.getElementById('start-date').value=start;
+        document.getElementById('end-date').value=end;
+    }
+
+    sortMode=params.get('sort')||'newest';
+    document.getElementById('sort-select').value=sortMode;
+
+    currentPage=parseInt(params.get('page')||'1',10);
+}
+
+function updateURL(){
+    const params=new URLSearchParams();
+    if(searchText) params.set('q',searchText);
+    if(selectedRoles.size>0) params.set('roles',Array.from(selectedRoles).join(','));
+    if(selectedTypes.size>0) params.set('types',Array.from(selectedTypes).join(','));
+    if(dateRange.start&&dateRange.end){
+        params.set('start',dateRange.start.toISOString().split('T')[0]);
+        params.set('end',dateRange.end.toISOString().split('T')[0]);
+    }
+    if(sortMode!=='newest') params.set('sort',sortMode);
+    if(currentPage>1) params.set('page',currentPage);
+    const newUrl=location.pathname+(params.toString()?`?${params.toString()}`:'');
+    history.replaceState(null,'',newUrl);
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
     bindEvents();
+    applyURL();
     loadData();
 });
 
@@ -47,7 +98,10 @@ function bindEvents(){
     });
     document.querySelector('#filter-role .show-more').addEventListener('click',e=>{
         const more = document.querySelector('#filter-role .more');
-        more.style.display = more.style.display==='block'?'none':'block';
+        const btn = e.target;
+        const expanded = more.style.display==='flex';
+        more.style.display = expanded?'none':'flex';
+        btn.innerHTML = expanded ? 'Show More &#x25BC;' : 'Show Less &#x25B2;';
     });
 
     document.querySelectorAll('#filter-type input[type=checkbox]').forEach(cb=>{
@@ -58,15 +112,42 @@ function bindEvents(){
     });
     document.querySelector('#filter-type .show-more').addEventListener('click',e=>{
         const more = document.querySelector('#filter-type .more');
-        more.style.display = more.style.display==='block'?'none':'block';
+        const btn = e.target;
+        const expanded = more.style.display==='flex';
+        more.style.display = expanded?'none':'flex';
+        btn.innerHTML = expanded ? 'Show More \u25BC' : 'Show Less \u25B2';
+    });
+
+    document.querySelectorAll('.filter-group .toggle').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+            const group=btn.closest('.filter-group');
+            const opts=group.querySelector('.options');
+            const hidden=opts.style.display==='none';
+            opts.style.display=hidden?'':'none';
+            btn.textContent=hidden?'-':'+';
+            btn.setAttribute('aria-expanded', hidden ? 'true' : 'false');
+        });
     });
 
     document.querySelectorAll('#filter-date input[type=radio]').forEach(r=>{
+        r.addEventListener('click',()=>{
+            if(selectedDateRadio===r){
+                r.checked=false;
+                selectedDateRadio=null;
+                dateRange={start:null,end:null};
+                update();
+            }else{
+                selectedDateRadio=r;
+            }
+        });
         r.addEventListener('change',()=>{
             if(r.checked){
                 const now = new Date();
+                now.setHours(23,59,59,999);
                 dateRange.end=now;
-                dateRange.start=new Date(now.getTime()-parseInt(r.value)*24*60*60*1000);
+                const start=new Date(now.getTime()-parseInt(r.value)*24*60*60*1000);
+                start.setHours(0,0,0,0);
+                dateRange.start=start;
                 document.getElementById('start-date').value='';
                 document.getElementById('end-date').value='';
                 currentPage=1;update();
@@ -77,8 +158,8 @@ function bindEvents(){
         const s=document.getElementById('start-date').value;
         const e=document.getElementById('end-date').value;
         if(s&&e){
-            dateRange.start=new Date(s);
-            dateRange.end=new Date(e);
+            dateRange.start=new Date(s+'T00:00');
+            dateRange.end=new Date(e+'T23:59');
             document.querySelectorAll('#filter-date input[type=radio]').forEach(r=>r.checked=false);
             currentPage=1;update();
         }
@@ -101,7 +182,16 @@ function update(){
         if(searchText && !(`${item.title} ${item.description}`.toLowerCase().includes(searchText))) return false;
         if(selectedRoles.size>0){
             const r=item.role||'';
-            for(const val of selectedRoles){if(!r.includes(val)) return false;}
+            let match=false;
+            if(selectedRoles.has('Miscellaneous')){
+                const misc = knownRoles.every(role=>!r.includes(role));
+                if(misc) match=true;
+            }
+            for(const val of selectedRoles){
+                if(val==='Miscellaneous') continue;
+                if(r.includes(val)){ match=true; break; }
+            }
+            if(!match) return false;
         }
         if(selectedTypes.size>0){
             if(!selectedTypes.has(item.type)) return false;
@@ -115,6 +205,7 @@ function update(){
     sortData();
     renderFilters();
     renderResults();
+    updateURL();
 }
 
 function sortData(){
@@ -133,26 +224,30 @@ function renderFilters(){
     const container=document.getElementById('active-filters');
     container.innerHTML='';
     let count=0;
+    const parts=[];
     if(selectedRoles.size>0){
-        const div=document.createElement('div');
-        div.textContent='ROLE: ';
-        selectedRoles.forEach(val=>{div.appendChild(makeTag(val,'role'));count++;});
-        container.appendChild(div);
+        const span=document.createElement('span');
+        span.textContent='ROLE: ';
+        selectedRoles.forEach(val=>{span.appendChild(makeTag(val,'role'));count++;});
+        parts.push(span);
     }
     if(selectedTypes.size>0){
-        if(container.childNodes.length) container.appendChild(document.createTextNode(' '));
-        const div=document.createElement('div');
-        div.textContent='TYPE: ';
-        selectedTypes.forEach(val=>{div.appendChild(makeTag(val,'type'));count++;});
-        container.appendChild(div);
+        const span=document.createElement('span');
+        span.textContent='TYPE: ';
+        selectedTypes.forEach(val=>{span.appendChild(makeTag(val,'type'));count++;});
+        parts.push(span);
     }
     if(dateRange.start && dateRange.end){
-        const div=document.createElement('div');
-        div.textContent='DATE: ';
-        div.appendChild(makeTag(`${dateRange.start.toLocaleDateString()} - ${dateRange.end.toLocaleDateString()}`,'date'));
-        container.appendChild(div);
+        const span=document.createElement('span');
+        span.textContent='DATE: ';
+        span.appendChild(makeTag(`${dateRange.start.toLocaleDateString()} - ${dateRange.end.toLocaleDateString()}`,'date'));
+        parts.push(span);
         count++;
     }
+    parts.forEach((p,i)=>{
+        container.appendChild(p);
+        if(i<parts.length-1) container.appendChild(document.createTextNode(', '));
+    });
     document.getElementById('filter-count').textContent=count;
 }
 
@@ -192,6 +287,7 @@ function renderResults(){
     });
     document.getElementById('results-count').innerHTML=`Results <b>${startIndex+1}</b>-<b>${endIndex}</b> of <b>${total}</b>`;
     renderPagination(total);
+    updateURL();
 }
 
 function renderPagination(total){
