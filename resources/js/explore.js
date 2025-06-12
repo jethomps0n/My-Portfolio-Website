@@ -296,7 +296,9 @@ function renderResults(){
             `<small>${item.role} · ${item.date}</small><p>${item.description||''}</p></div>`;
         results.appendChild(div);
         const info=div.querySelector('.result-info');
-        if(info.scrollHeight>info.clientHeight) info.classList.add('truncated');
+        if(info.scrollHeight>info.clientHeight){
+            truncateDescription(info);
+        }
     });
     document.getElementById('results-count').innerHTML=`Results <b>${startIndex+1}</b>-<b>${endIndex}</b> of <b>${total}</b>`;
     renderPagination(total);
@@ -346,4 +348,15 @@ function renderPagination(total){
         }
     });
     pag.appendChild(next);
+}
+
+function truncateDescription(info){
+    const p = info.querySelector('p');
+    let text = p.textContent.trim();
+    p.textContent = text;
+    if(info.scrollHeight <= info.clientHeight) return;
+    while(text.length > 0 && info.scrollHeight > info.clientHeight){
+        text = text.slice(0, -1).trimEnd();
+        p.textContent = text + '...';
+    }
 }
