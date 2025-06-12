@@ -237,6 +237,10 @@
     backdrop-filter: blur(0px) brightness(1);
 }
 
+.button:disabled {
+    pointer-events: none;
+}
+
 @container loadBox (max-width: 100vw) {
     .button {
         font-size: 1.8cqi;
