@@ -391,4 +391,6 @@ button.show-more:hover {
 #active-filters span {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
 }
