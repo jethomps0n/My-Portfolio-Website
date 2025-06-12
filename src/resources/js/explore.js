@@ -120,28 +120,52 @@ function bindEvents(){
         currentPage=1;update();
     });
 
+    searchInput.addEventListener('focus',()=>{
+        document.body.classList.add('input-focus');
+        if(typeof cursor!=='undefined' && cursor.hide){cursor.hide();}
+    });
+    searchInput.addEventListener('blur',()=>{
+        document.body.classList.remove('input-focus');
+        if(typeof cursor!=='undefined' && cursor.show){cursor.show();}
+    });
+
     document.querySelectorAll('#filter-role input[type=checkbox]').forEach(cb=>{
         cb.addEventListener('change',()=>{
             if(cb.checked){selectedRoles.add(cb.value);}else{selectedRoles.delete(cb.value);}
             currentPage=1;update();
         });
     });
-    document.querySelector('#filter-role .show-more').addEventListener('click',e=>{
-        const more = document.querySelector('#filter-role .more');
-        const btn = e.currentTarget;
-        const expanded = btn.classList.toggle('expanded');
-        if(expanded){
-            more.style.display='flex';
-            more.classList.add('expanded');
-            more.style.maxHeight=more.scrollHeight+'px';
-            btn.querySelector('.text').textContent='Show Less';
-        }else{
-            more.style.maxHeight=more.scrollHeight+'px';
-            requestAnimationFrame(()=>{ more.classList.remove('expanded'); more.style.maxHeight='0'; });
-            btn.querySelector('.text').textContent='Show More';
-        }
-        more.addEventListener('transitionend',()=>{ if(!expanded){ more.style.display='none'; } },{once:true});
-    });
+    function setupShowMore(id){
+        const group=document.getElementById(id);
+        const btn=group.querySelector('.show-more');
+        const more=group.querySelector('.more');
+        const opts=group.querySelector('.options');
+        btn.addEventListener('click',()=>{
+            const expanded=btn.classList.toggle('expanded');
+            if(expanded){
+                more.style.display='flex';
+                requestAnimationFrame(()=>{
+                    more.classList.add('expanded');
+                    more.style.maxHeight=more.scrollHeight+'px';
+                    opts.style.maxHeight=opts.scrollHeight+'px';
+                });
+                btn.querySelector('.text').textContent='Show Less';
+            }else{
+                more.style.maxHeight=more.scrollHeight+'px';
+                requestAnimationFrame(()=>{
+                    more.classList.remove('expanded');
+                    more.style.maxHeight='0';
+                    opts.style.maxHeight=opts.scrollHeight+'px';
+                });
+                btn.querySelector('.text').textContent='Show More';
+            }
+            more.addEventListener('transitionend',()=>{
+                if(!expanded) more.style.display='none';
+                opts.style.maxHeight=opts.scrollHeight+'px';
+            },{once:true});
+        });
+    }
+    setupShowMore('filter-role');
 
     document.querySelectorAll('#filter-type input[type=checkbox]').forEach(cb=>{
         cb.addEventListener('change',()=>{
@@ -149,22 +173,7 @@ function bindEvents(){
             currentPage=1;update();
         });
     });
-    document.querySelector('#filter-type .show-more').addEventListener('click',e=>{
-        const more = document.querySelector('#filter-type .more');
-        const btn = e.currentTarget;
-        const expanded = btn.classList.toggle('expanded');
-        if(expanded){
-            more.style.display='flex';
-            more.classList.add('expanded');
-            more.style.maxHeight=more.scrollHeight+'px';
-            btn.querySelector('.text').textContent='Show Less';
-        }else{
-            more.style.maxHeight=more.scrollHeight+'px';
-            requestAnimationFrame(()=>{ more.classList.remove('expanded'); more.style.maxHeight='0'; });
-            btn.querySelector('.text').textContent='Show More';
-        }
-        more.addEventListener('transitionend',()=>{ if(!expanded){ more.style.display='none'; } },{once:true});
-    });
+    setupShowMore('filter-type');
 
     document.querySelectorAll('.filter-group .toggle').forEach(btn=>{
         btn.addEventListener('click',()=>{
