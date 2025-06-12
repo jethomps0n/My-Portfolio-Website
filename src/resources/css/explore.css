@@ -206,8 +206,12 @@ button.toggle:hover{
 }
 
 .custom-range input {
-    width: 70px;
+    width: 95px;
     position: relative;
+}
+
+.custom-range span {
+    font-size: 0.6rem;
 }
 
 input[type="date"][data-placeholder]::before {
