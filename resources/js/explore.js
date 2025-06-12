@@ -253,7 +253,12 @@ function renderFilters(){
     }
     parts.forEach((p,i)=>{
         container.appendChild(p);
-        if(i<parts.length-1) container.appendChild(document.createTextNode(', '));
+        if(i < parts.length - 1) {
+            const comma = document.createElement('span');
+            comma.className = 'filter-comma';
+            comma.textContent = ',';
+            container.appendChild(comma);
+        }
     });
     document.getElementById('filter-count').textContent=count;
     container.style.display = parts.length ? 'block' : 'none';
@@ -264,7 +269,7 @@ function makeTag(text,kind){
     span.className='active-filter';
     span.textContent=text;
     const btn=document.createElement('button');
-    btn.textContent='x';
+    btn.textContent='⨯';
     btn.addEventListener('click',()=>{
         if(kind==='role') selectedRoles.delete(text);
         if(kind==='type') selectedTypes.delete(text);

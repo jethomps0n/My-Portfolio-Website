@@ -299,13 +299,13 @@ button.show-more:hover {
 .result-item {
     display: flex;
     gap: 20px;
-    padding: 12px 0;
+    padding: 8px 0;
 }
 
 .result-info {
     flex: 1;
     min-width: 0;
-    max-height: 210px;
+    max-height: 240px;
     overflow: hidden;
     position: relative;
     display: flex;
@@ -314,7 +314,7 @@ button.show-more:hover {
 
 .result-item img {
     aspect-ratio: 16/9;
-    height: 210px;
+    height: 240px;
     object-fit: cover;
     border-radius: 15px;
 }
@@ -368,16 +368,22 @@ button.show-more:hover {
     font-size: 0.75rem;
     display: inline-flex;
     align-items: center;
+    text-align: center;
+    justify-content: center;
     background: hsla(228, 48%, 60%, 0.25);
     border: 1px solid hsla(248, 9%, 45%, 0.8);
     padding: 2px 6px;
     border-radius: 8px;
     margin: auto 6px auto 0;
     line-height: 1;
+    max-height: 1rem;
+    transition: all 100ms ease-out;
 }
 
 .active-filter:hover button {
-    color: hsla(4, 81%, 51%, 1);
+    color: hsla(4, 100%, 56%, 1);
+    border-color: none;
+    backdrop-filter: none;
 }
 
 .active-filter:hover {
@@ -385,23 +391,28 @@ button.show-more:hover {
 }
 
 .active-filter button {
+    /* font-size: 0.85rem; */
+    scale: 1.14;
     display: inline-flex;
     background: none;
+    align-items: center;
     border: none;
-    margin-left: 4px;
+    margin: -2.5px 0 0 6px;
     padding: 0;
     cursor: pointer;
     color: hsla(0, 0%, 100%, 1);
+    transition: all 100ms ease-out;
 }
 
 #active-filters {
   margin-bottom: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: flex-start;
 }
 
 .active-filter-group strong {
     font-size: 0.75rem;
+}
+
+.filter-comma {
+    font-size: 0.75rem;
+    margin: 0 6px 0 -5px;
 }
