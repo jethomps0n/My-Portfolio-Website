@@ -101,7 +101,7 @@ function bindEvents(){
         const btn = e.currentTarget;
         const expanded = more.style.display==='flex';
         more.style.display = expanded?'none':'flex';
-        btn.innerHTML = expanded ? '<span class="text">Show More</span> <span class="arrow">\u9662</span>' : '<span class="text">Show Less</span> <span class="arrow">\u9652</span>';
+        btn.innerHTML = expanded ? '<span class="text">Show More</span> <span class="arrow">▼</span>' : '<span class="text">Show Less</span> <span class="arrow">▲</span>';
     });
 
     document.querySelectorAll('#filter-type input[type=checkbox]').forEach(cb=>{
@@ -115,7 +115,7 @@ function bindEvents(){
         const btn = e.currentTarget;
         const expanded = more.style.display==='flex';
         more.style.display = expanded?'none':'flex';
-        btn.innerHTML = expanded ? '<span class="text">Show More</span> <span class="arrow">\u9662</span>' : '<span class="text">Show Less</span> <span class="arrow">\u9652</span>';
+        btn.innerHTML = expanded ? '<span class="text">Show More</span> <span class="arrow">▼</span>' : '<span class="text">Show Less</span> <span class="arrow">▲</span>';
     });
 
     document.querySelectorAll('.filter-group .toggle').forEach(btn=>{
@@ -303,7 +303,7 @@ function renderPagination(total){
     pag.innerHTML='';
     const totalPages=Math.ceil(total/itemsPerPage)||1;
     const prev=document.createElement('button');
-    prev.textContent='\u25C0';
+    prev.textContent='‹';
     prev.disabled=currentPage===1;
     prev.addEventListener('click',()=>{if(currentPage>1){currentPage--;renderResults();}});
     pag.appendChild(prev);
@@ -317,7 +317,7 @@ function renderPagination(total){
         pag.appendChild(b);
     }
     const next=document.createElement('button');
-    next.textContent='\u25B6';
+    next.textContent='›';
     next.disabled=currentPage===totalPages;
     next.addEventListener('click',()=>{if(currentPage<totalPages){currentPage++;renderResults();}});
     pag.appendChild(next);
