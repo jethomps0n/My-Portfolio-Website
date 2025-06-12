@@ -329,7 +329,7 @@ button.show-more:hover {
 }
 
 .result-info h4 {
-    margin: 0 0 -5px 0;
+    margin: 0;
     font-size: 1rem;
     font-weight: 700;
 }
@@ -373,15 +373,15 @@ button.show-more:hover {
 }
 
 .active-filter {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     display: inline-flex;
     align-items: center;
     background: hsla(228, 48%, 60%, 0.25);
     border: 1px solid hsla(248, 9%, 45%, 0.8);
     padding: 2px 6px;
     border-radius: 8px;
-    margin-right: 6px;
-    margin-bottom: 4px;
+    margin: auto 6px auto 0;
+    line-height: 1;
 }
 
 .active-filter:hover button {
@@ -408,4 +408,8 @@ button.show-more:hover {
   flex-wrap: wrap;
   gap: 12px;
   align-items: flex-start;
+}
+
+.active-filter-group strong {
+    font-size: 0.75rem;
 }

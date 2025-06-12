@@ -231,18 +231,21 @@ function renderFilters(){
     const parts=[];
     if(selectedRoles.size>0){
         const span=document.createElement('span');
+        span.classList.add('active-filter-group');
         span.innerHTML='<strong>ROLE:</strong> ';
         selectedRoles.forEach(val=>{span.appendChild(makeTag(val,'role'));count++;});
         parts.push(span);
     }
     if(selectedTypes.size>0){
         const span=document.createElement('span');
+        span.classList.add('active-filter-group');
         span.innerHTML='<strong>TYPE:</strong> ';
         selectedTypes.forEach(val=>{span.appendChild(makeTag(val,'type'));count++;});
         parts.push(span);
     }
     if(dateRange.start && dateRange.end){
         const span=document.createElement('span');
+        span.classList.add('active-filter-group');
         span.innerHTML='<strong>DATE RANGE:</strong> ';
         span.appendChild(makeTag(`${dateRange.start.toLocaleDateString()} - ${dateRange.end.toLocaleDateString()}`,'date'));
         parts.push(span);
