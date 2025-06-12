@@ -9,6 +9,7 @@ let dateRange = {start:null,end:null};
 let selectedDateRadio = null;
 let searchText = '';
 let sortMode = 'newest';
+let firstRender = true;
 
 // Video preview hover behavior
 let hoverDelay = 600; // ms
@@ -92,6 +93,13 @@ function updateURL(){
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
+    document.querySelectorAll('.pop-in').forEach(el=>{
+        el.addEventListener('animationend',()=>el.classList.remove('pop-in'),{once:true});
+    });
+    document.querySelectorAll('.filter-group .options').forEach(o=>{
+        o.classList.add('expanded');
+        o.style.maxHeight = o.scrollHeight + 'px';
+    });
     bindEvents();
     applyURL();
     loadData();
@@ -121,9 +129,18 @@ function bindEvents(){
     document.querySelector('#filter-role .show-more').addEventListener('click',e=>{
         const more = document.querySelector('#filter-role .more');
         const btn = e.currentTarget;
-        const expanded = more.style.display==='flex';
-        more.style.display = expanded?'none':'flex';
-        btn.innerHTML = expanded ? '<span class="text">Show More</span> <span class="arrow">▼</span>' : '<span class="text">Show Less</span> <span class="arrow">▲</span>';
+        const expanded = btn.classList.toggle('expanded');
+        if(expanded){
+            more.style.display='flex';
+            more.classList.add('expanded');
+            more.style.maxHeight=more.scrollHeight+'px';
+            btn.querySelector('.text').textContent='Show Less';
+        }else{
+            more.style.maxHeight=more.scrollHeight+'px';
+            requestAnimationFrame(()=>{ more.classList.remove('expanded'); more.style.maxHeight='0'; });
+            btn.querySelector('.text').textContent='Show More';
+        }
+        more.addEventListener('transitionend',()=>{ if(!expanded){ more.style.display='none'; } },{once:true});
     });
 
     document.querySelectorAll('#filter-type input[type=checkbox]').forEach(cb=>{
@@ -135,19 +152,34 @@ function bindEvents(){
     document.querySelector('#filter-type .show-more').addEventListener('click',e=>{
         const more = document.querySelector('#filter-type .more');
         const btn = e.currentTarget;
-        const expanded = more.style.display==='flex';
-        more.style.display = expanded?'none':'flex';
-        btn.innerHTML = expanded ? '<span class="text">Show More</span> <span class="arrow">▼</span>' : '<span class="text">Show Less</span> <span class="arrow">▲</span>';
+        const expanded = btn.classList.toggle('expanded');
+        if(expanded){
+            more.style.display='flex';
+            more.classList.add('expanded');
+            more.style.maxHeight=more.scrollHeight+'px';
+            btn.querySelector('.text').textContent='Show Less';
+        }else{
+            more.style.maxHeight=more.scrollHeight+'px';
+            requestAnimationFrame(()=>{ more.classList.remove('expanded'); more.style.maxHeight='0'; });
+            btn.querySelector('.text').textContent='Show More';
+        }
+        more.addEventListener('transitionend',()=>{ if(!expanded){ more.style.display='none'; } },{once:true});
     });
 
     document.querySelectorAll('.filter-group .toggle').forEach(btn=>{
         btn.addEventListener('click',()=>{
             const group=btn.closest('.filter-group');
             const opts=group.querySelector('.options');
-            const hidden=opts.style.display==='none';
-            opts.style.display=hidden?'':'none';
-            btn.textContent=hidden?'-':'+';
-            btn.setAttribute('aria-expanded', hidden ? 'true' : 'false');
+            const expanded=btn.classList.toggle('open');
+            if(expanded){
+                opts.classList.add('expanded');
+                opts.style.maxHeight=opts.scrollHeight+'px';
+                btn.setAttribute('aria-expanded','true');
+            }else{
+                opts.style.maxHeight=opts.scrollHeight+'px';
+                requestAnimationFrame(()=>{opts.classList.remove('expanded');opts.style.maxHeight='0';});
+                btn.setAttribute('aria-expanded','false');
+            }
         });
     });
 
@@ -313,7 +345,7 @@ function renderResults(){
     const slice=filtered.slice(startIndex,endIndex);
     slice.forEach(item=>{
         const div=document.createElement('div');
-        div.className='result-item';
+        div.className='result-item ' + (firstRender ? 'pop-in' : 'fade-in');
         const a=document.createElement('a');
         a.href=item.pageSrc||'#';
         a.innerHTML=`<div class="thumb"><img class="thumbnail active" src="${item.imgSrc}" alt=""><video class="thumbnail passive" src="${item.videoSrc}" muted loop></video></div>`+
@@ -322,11 +354,13 @@ function renderResults(){
         a.addEventListener('mouseenter', previewStart);
         a.addEventListener('mouseleave', previewStop);
         div.appendChild(a);
+        div.addEventListener('animationend',()=>{div.classList.remove('pop-in');div.classList.remove('fade-in');},{once:true});
         results.appendChild(div);
     });
     document.getElementById('results-count').innerHTML=`Results <b>${startIndex+1}</b>-<b>${endIndex}</b> of <b>${total}</b>`;
     renderPagination(total);
     updateURL();
+    firstRender=false;
 }
 
 function scrollToTop(){
