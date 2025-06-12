@@ -15,7 +15,7 @@
     max-width: 1300px;
 }
 
-button, select {
+button {
     font-size: 0.65rem;
     background: hsla(228, 48%, 60%, 0.1);
     border: 1px solid hsla(248, 9%, 45%, 0.5);
@@ -35,19 +35,38 @@ button, select {
 .sort-wrapper{
     position: relative;
     display: inline-block;
+    cursor: pointer;
+    font-size: 0.65rem;
 }
 
-.select-arrow{
+select {
+    background: hsla(228, 48%, 60%, 0.1);
+    color: hsla(0, 0%, 80%, 1);
+    border: 1px solid hsla(248, 9%, 45%, 0.5);
+    padding: 6px 12px;
+    border-radius: 25px;
+    font-size: 0.65rem;
+    transition: all 100ms ease-out;
+    cursor: pointer;
+}
+
+.select-arrow {
     position: absolute;
-    right: 10px;
+    right: 12px;
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
-    font-size: 0.6rem;
+    font-size: 0.7em;
+    color: hsla(0, 0%, 80%, 1);
+    transition: all 100ms ease-out;
 }
 
 .sort-wrapper select{
-    padding-right: 20px;
+    padding-right: 40px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
 }
 
 .sort label {
@@ -58,6 +77,10 @@ button:hover, select:hover {
     border-color: hsla(0, 0%, 100%, 1);
     color: hsla(242, 61%, 80%, 1);
     backdrop-filter: blur(50px) brightness(2);
+}
+
+.sort-wrapper:hover .select-arrow {
+    color: hsla(242, 61%, 80%, 1); /* match the select:hover text color */
 }
 
 button:disabled {
@@ -121,7 +144,7 @@ button:disabled {
     border-radius: 25px;
     box-shadow: 0px 40px 100px 5px hsla(0, 0%, 0%, 0.25);
     backdrop-filter: blur(15px) brightness(0.7);
-    padding: 30px;
+    padding: 50px 30px;
     box-sizing: border-box;
 }
 
@@ -131,10 +154,14 @@ button:disabled {
     justify-content: space-between;
     /* gap: 8px; */
     flex-wrap: nowrap;
-    padding-bottom: 15px;
+    padding-bottom: 20px;
     border-bottom: 1px solid hsla(248, 9%, 45%, 1);
-    margin-bottom: 15px;
-    color: hsla(0, 0%, 80%, 1);
+    margin-bottom: 20px;
+    /* color: hsla(0, 0%, 80%, 1); */
+}
+
+.filter-header h2 {
+    margin: 0;
 }
 
 #filter-count {
@@ -156,6 +183,8 @@ button:disabled {
 }
 
 .filter-group:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
     border-bottom: none;
 }
 
@@ -163,7 +192,7 @@ button:disabled {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 0 0 8px 0;
+    margin: 0;
 }
 
 .filter-group .toggle {
@@ -185,6 +214,7 @@ button.toggle:hover{
     display: flex;
     flex-direction: column;
     gap: 4px;
+    margin-top: 8px;
 }
 
 .filter-group label {
@@ -206,7 +236,7 @@ button.toggle:hover{
 }
 
 .custom-range input {
-    width: 95px;
+    width: 105px;
     position: relative;
 }
 
@@ -214,16 +244,9 @@ button.toggle:hover{
     font-size: 0.6rem;
 }
 
-input[type="date"][data-placeholder]::before {
-    content: attr(data-placeholder);
-    color: hsla(0,0%,80%,1);
-    position: absolute;
-    left: 6px;
-}
-
-input[type="date"][data-placeholder]:focus::before,
-input[type="date"][data-placeholder][value]::before {
-    content: '';
+#set-custom {
+  font-size: 0.57rem;
+  padding: 5px 10px;
 }
 
 .show-more {
@@ -237,19 +260,22 @@ input[type="date"][data-placeholder][value]::before {
     width: 100%;
 }
 
-button.show-more:hover .text{
+button.show-more:hover {
     border-color: none;
     color: hsla(242, 61%, 80%, 1);
     backdrop-filter: none;
-    text-decoration: underline;
+    .text {
+        text-decoration: underline;
+    }
 }
 
 .show-more .arrow{
-    font-size: 0.8em;
+    font-size: 0.75em;
     display: inline-block;
-    vertical-align: middle;
-    margin-left: 4px;
+    /* vertical-align: middle; */
+    margin-left: -2px;
 }
+
 
 /* Results */
 #results-section {
@@ -303,30 +329,33 @@ button.show-more:hover .text{
 #pagination {
     display: flex;
     justify-content: center;
-    gap: 11px;
+    gap: 15px;
     margin-top: 10px;
 }
 
 #pagination button {
-    font-size: 0.9rem;
-    font-weight: 800;
+    font-size: 0.8rem;
+    box-sizing: border-box;
+    width: 40px;
+    height: 40px;
+    font-weight: 700;
     background: hsla(228, 48%, 60%, 0.1);
     border: 1px solid hsla(248, 9%, 45%, 0.5);
     color: hsla(0, 0%, 80%, 1);
-    padding: 6px 12px;
-    border-radius: 25px;
+    border-radius: 50%;
     cursor: pointer;
     transition: all 100ms ease-out;
 }
 
 #pagination button[disabled] {
     opacity: 0.5;
+    pointer-events: none;
 }
 
 .active-filter {
     font-size: 0.7rem;
-    align-items: center;
     display: inline-flex;
+    align-items: center;
     background: hsla(228, 48%, 60%, 0.25);
     border: 1px solid hsla(248, 9%, 45%, 0.8);
     padding: 2px 6px;
@@ -354,7 +383,7 @@ button.show-more:hover .text{
 
 #active-filters {
     margin-bottom: 8px;
-        display: flex;
+    display: flex;
     align-items: center;
     flex-wrap: wrap;
 }
