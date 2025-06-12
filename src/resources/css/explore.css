@@ -326,6 +326,53 @@ button.show-more:hover {
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
 }
 
+/* Thumbnail wrapper for image and video preview */
+.result-item .thumb {
+    position: relative;
+    aspect-ratio: 16/9;
+    height: 240px;
+    flex-shrink: 0;
+    border-radius: 15px;
+}
+
+.result-item .thumbnail {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: inherit;
+    transition: all 200ms ease-in-out 0ms;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+}
+
+.result-item .thumbnail.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.result-item .thumbnail.passive {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.result-item > a:hover .thumbnail {
+    transition: all 450ms ease-in-out 600ms;
+}
+
+.result-item > a:hover .thumbnail.active {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.result-item > a:hover .thumbnail.passive {
+    opacity: 1;
+    visibility: visible;
+}
+
 /* .result-item > a {
     display: flex;
     gap: 20px;
@@ -342,7 +389,7 @@ button.show-more:hover {
 .result-info {
     display: flex;
     box-sizing: border-box;
-    padding: 10px 0;
+    padding-top: 10px;
     min-width: 0;
     height: 240px;
     overflow: hidden;
@@ -350,13 +397,6 @@ button.show-more:hover {
     position: relative;
     display: flex;
     flex-direction: column;
-}
-
-.result-item img {
-    aspect-ratio: 16/9;
-    height: 240px;
-    object-fit: cover;
-    border-radius: 15px;
 }
 
 .result-info h4 {

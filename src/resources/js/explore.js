@@ -10,6 +10,28 @@ let selectedDateRadio = null;
 let searchText = '';
 let sortMode = 'newest';
 
+// Video preview hover behavior
+let hoverDelay = 600; // ms
+let hoverTimeout;
+
+const previewStart = event => {
+    const video = event.currentTarget.querySelector('.thumbnail.passive');
+    if (video && video.checkVisibility({visibilityProperty: false})) {
+        hoverTimeout = setTimeout(() => {
+            video.currentTime = 0;
+            video.play();
+        }, hoverDelay);
+    }
+};
+
+const previewStop = event => {
+    const video = event.currentTarget.querySelector('.thumbnail.passive');
+    if (video) {
+        clearTimeout(hoverTimeout);
+        video.pause();
+    }
+};
+
 function parseDate(str){
     const d = new Date(str);
     return d;
@@ -294,9 +316,11 @@ function renderResults(){
         div.className='result-item';
         const a=document.createElement('a');
         a.href=item.pageSrc||'#';
-        a.innerHTML=`<img src="${item.imgSrc}" alt="">`+
+        a.innerHTML=`<div class="thumb"><img class="thumbnail active" src="${item.imgSrc}" alt=""><video class="thumbnail passive" src="${item.videoSrc}" muted loop></video></div>`+
             `<div class="result-info"><h4>${item.title}</h4>`+
             `<small>${item.role} · ${item.date}</small><p>${item.description||''}</p></div>`;
+        a.addEventListener('mouseenter', previewStart);
+        a.addEventListener('mouseleave', previewStop);
         div.appendChild(a);
         results.appendChild(div);
     });
