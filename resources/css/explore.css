@@ -196,24 +196,52 @@ button:disabled {
 }
 
 .filter-group .toggle {
+    position: relative;
+    width: 1.2em;
+    height: 1.2em;
+    padding: 0;
     background: none;
     border: none;
     cursor: pointer;
     color: hsla(242, 61%, 80%, 1);
-    /* font-weight: bold; */
-    font-size: 1.3rem;
+    transition: color 0.2s ease;
 }
 
-button.toggle:hover{
-    border-color: none;
-    color: hsla(242, 61%, 80%, 1);
-    backdrop-filter: none;
+.filter-group .toggle::before,
+.filter-group .toggle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: currentColor;
+    transform: translate(-50%, -50%);
+    transition: transform 0.25s ease;
+}
+
+.filter-group .toggle::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.filter-group .toggle.open::after {
+    transform: translate(-50%, -50%) rotate(90deg) scaleX(0);
 }
 
 .filter-group .options {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    margin-top: 8px;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
+}
+
+.filter-group .options.expanded {
+    max-height: 1000px;
+    opacity: 1;
     margin-top: 8px;
 }
 
@@ -230,9 +258,16 @@ button.toggle:hover{
 }
 
 .filter-group .more {
-    display: none;
+    display: flex;
     flex-direction: column;
     gap: 4px;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease;
+}
+
+.filter-group .more.expanded {
+    max-height: 500px;
 }
 
 .custom-range input {
@@ -258,6 +293,9 @@ button.toggle:hover{
     margin-top: 4px;
     text-align: left;;
     width: 100%;
+    display: flex;
+    /* justify-content: space-between; */
+    align-items: center;
 }
 
 button.show-more:hover {
@@ -273,7 +311,17 @@ button.show-more:hover {
     font-size: 0.75em;
     display: inline-block;
     /* vertical-align: middle; */
-    margin-left: -2px;
+    margin: 2px 0 0 2px;
+    transition: transform 0.3s ease;
+}
+
+.show-more.expanded .arrow {
+    transform: rotate(180deg);
+}
+
+
+.show-more.expanded .arrow {
+    transform: rotate(180deg);
 }
 
 
@@ -498,4 +546,26 @@ button.show-more:hover {
 .filter-comma {
     font-size: 0.75rem;
     margin: 0 6px 0 -5px;
+}
+
+@keyframes popIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#search-container.pop-in,
+#filter-section.pop-in,
+#results-section.pop-in,
+.result-item.pop-in {
+    animation: popIn 0.4s ease-out;
+    transform-origin: top center;
+}
+
+.result-item.fade-in {
+    animation: fadeInUp 0.3s ease-out;
 }

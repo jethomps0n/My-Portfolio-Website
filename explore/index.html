@@ -80,13 +80,13 @@
     <main>
         
 <div id="explore-page">
-    <div id="search-container">
+    <div id="search-container" class="pop-in">
         <input id="search-input" type="text" placeholder="Search..." />
         <button id="clear-search" aria-label="Clear search">&#x2715;</button>
     </div>
 
     <div id="query-interface">
-        <aside id="filter-section">
+        <aside id="filter-section" class="pop-in">
             <div class="filter-header">
                 <h2>Filter By</h2>
                 <span id="filter-count">0</span>
@@ -94,7 +94,7 @@
             </div>
 
             <div class="filter-group" id="filter-role">
-                <h3>ROLE <button class="toggle" type="button" aria-controls="options-role" aria-expanded="true">-</button></h3>
+                <h3>ROLE <button class="toggle open" type="button" aria-controls="options-role" aria-expanded="true"></button></h3>
                 <div class="options" id="options-role">
                     <label><input type="checkbox" value="Writer"> Writer</label>
                     <label><input type="checkbox" value="Editor"> Editor</label>
@@ -112,7 +112,7 @@
             </div>
 
             <div class="filter-group" id="filter-type">
-                <h3>TYPE <button class="toggle" type="button" aria-controls="options-type" aria-expanded="true">-</button></h3>
+                <h3>TYPE <button class="toggle open" type="button" aria-controls="options-type" aria-expanded="true"></button></h3>
                 <div class="options" id="options-type">
                     <label><input type="checkbox" value="Short Film"> Short Films</label>
                     <label><input type="checkbox" value="Rescore"> Rescores</label>
@@ -126,7 +126,7 @@
             </div>
 
             <div class="filter-group" id="filter-date">
-                <h3>DATE RANGE <button class="toggle" type="button" aria-controls="options-date" aria-expanded="true">-</button></h3>
+                <h3>DATE RANGE <button class="toggle open" type="button" aria-controls="options-date" aria-expanded="true"></button></h3>
                 <div class="options" id="options-date">
                     <label><input type="radio" name="date" value="30"> Last 30 Days</label>
                     <label><input type="radio" name="date" value="90"> Last 90 Days</label>
@@ -140,7 +140,7 @@
             </div>
         </aside>
 
-        <section id="results-section">
+        <section id="results-section" class="pop-in">
             <div id="active-filters"></div>
             <div class="results-header">
                 <span id="results-count"></span>
