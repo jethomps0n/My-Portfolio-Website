@@ -107,7 +107,7 @@
                         <label><input type="checkbox" value="Sound Recordist"> Sound Recordist</label>
                         <label><input type="checkbox" value="Miscellaneous"> Miscellaneous</label>
                     </div>
-                    <button class="show-more" type="button">Show More &#x25BC;</button>
+                    <button class="show-more" type="button"><span class="text">Show More</span> <span class="arrow">&#9662;</span></button>
                 </div>
             </div>
 
@@ -121,7 +121,7 @@
                     <div class="more">
                         <label><input type="checkbox" value="Advertisement"> Advertisements</label>
                     </div>
-                    <button class="show-more" type="button">Show More &#x25BC;</button>
+                    <button class="show-more" type="button"><span class="text">Show More</span> <span class="arrow">&#9662;</span></button>
                 </div>
             </div>
 
@@ -132,8 +132,8 @@
                     <label><input type="radio" name="date" value="90"> Last 90 Days</label>
                     <label><input type="radio" name="date" value="365"> Last Year</label>
                     <div class="custom-range">
-                        <input type="date" id="start-date" placeholder="Start"> to
-                        <input type="date" id="end-date" placeholder="End">
+                        <input type="date" id="start-date" placeholder="Start" data-placeholder="Start"> to
+                        <input type="date" id="end-date" placeholder="End" data-placeholder="End">
                         <button id="set-custom" type="button">Set</button>
                     </div>
                 </div>
@@ -146,12 +146,15 @@
                 <span id="results-count"></span>
                 <div class="sort">
                     <label for="sort-select">Sort By</label>
-                    <select id="sort-select">
-                        <option value="newest">Newest First</option>
-                        <option value="oldest">Oldest First</option>
-                        <option value="az">A-Z</option>
-                        <option value="za">Z-A</option>
-                    </select>
+                    <div class="sort-wrapper">
+                        <select id="sort-select">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="az">A-Z</option>
+                            <option value="za">Z-A</option>
+                        </select>
+                        <span class="select-arrow">&#9662;</span>
+                    </div>
                 </div>
             </div>
             <div id="results-list"></div>

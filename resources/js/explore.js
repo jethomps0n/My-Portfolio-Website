@@ -98,10 +98,10 @@ function bindEvents(){
     });
     document.querySelector('#filter-role .show-more').addEventListener('click',e=>{
         const more = document.querySelector('#filter-role .more');
-        const btn = e.target;
+        const btn = e.currentTarget;
         const expanded = more.style.display==='flex';
         more.style.display = expanded?'none':'flex';
-        btn.innerHTML = expanded ? 'Show More &#x25BC;' : 'Show Less &#x25B2;';
+        btn.innerHTML = expanded ? '<span class="text">Show More</span> <span class="arrow">\u9662</span>' : '<span class="text">Show Less</span> <span class="arrow">\u9652</span>';
     });
 
     document.querySelectorAll('#filter-type input[type=checkbox]').forEach(cb=>{
@@ -112,10 +112,10 @@ function bindEvents(){
     });
     document.querySelector('#filter-type .show-more').addEventListener('click',e=>{
         const more = document.querySelector('#filter-type .more');
-        const btn = e.target;
+        const btn = e.currentTarget;
         const expanded = more.style.display==='flex';
         more.style.display = expanded?'none':'flex';
-        btn.innerHTML = expanded ? 'Show More \u25BC' : 'Show Less \u25B2';
+        btn.innerHTML = expanded ? '<span class="text">Show More</span> <span class="arrow">\u9662</span>' : '<span class="text">Show Less</span> <span class="arrow">\u9652</span>';
     });
 
     document.querySelectorAll('.filter-group .toggle').forEach(btn=>{
@@ -166,6 +166,10 @@ function bindEvents(){
     });
 
     document.getElementById('sort-select').addEventListener('change',e=>{sortMode=e.target.value;currentPage=1;update();});
+    ['start-date','end-date'].forEach(id=>{
+        const input=document.getElementById(id);
+        input.addEventListener('click',()=>{ if(input.showPicker) input.showPicker(); });
+    });
     document.getElementById('clear-filters').addEventListener('click',()=>{
         selectedRoles.clear();
         selectedTypes.clear();
@@ -249,6 +253,7 @@ function renderFilters(){
         if(i<parts.length-1) container.appendChild(document.createTextNode(', '));
     });
     document.getElementById('filter-count').textContent=count;
+    container.style.display = parts.length ? 'block' : 'none';
 }
 
 function makeTag(text,kind){
@@ -260,7 +265,10 @@ function makeTag(text,kind){
     btn.addEventListener('click',()=>{
         if(kind==='role') selectedRoles.delete(text);
         if(kind==='type') selectedTypes.delete(text);
-        if(kind==='date') dateRange={start:null,end:null};
+        if(kind==='date') {
+            dateRange={start:null,end:null};
+            document.querySelectorAll('#filter-date input[type=radio]').forEach(r=>r.checked=false);
+        }
         document.querySelectorAll('#filter-section input').forEach(i=>{
             if(i.value===text && (i.type==='checkbox'||i.type==='radio')) i.checked=false;
         });
@@ -295,7 +303,7 @@ function renderPagination(total){
     pag.innerHTML='';
     const totalPages=Math.ceil(total/itemsPerPage)||1;
     const prev=document.createElement('button');
-    prev.textContent='<';
+    prev.textContent='\u25C0';
     prev.disabled=currentPage===1;
     prev.addEventListener('click',()=>{if(currentPage>1){currentPage--;renderResults();}});
     pag.appendChild(prev);
@@ -309,7 +317,7 @@ function renderPagination(total){
         pag.appendChild(b);
     }
     const next=document.createElement('button');
-    next.textContent='>';
+    next.textContent='\u25B6';
     next.disabled=currentPage===totalPages;
     next.addEventListener('click',()=>{if(currentPage<totalPages){currentPage++;renderResults();}});
     pag.appendChild(next);
