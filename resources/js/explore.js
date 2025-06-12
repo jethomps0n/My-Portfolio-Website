@@ -298,6 +298,10 @@ function renderResults(){
     updateURL();
 }
 
+function scrollToTop(){
+    window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
 function renderPagination(total){
     const pag=document.getElementById('pagination');
     pag.innerHTML='';
@@ -305,7 +309,13 @@ function renderPagination(total){
     const prev=document.createElement('button');
     prev.textContent='‹';
     prev.disabled=currentPage===1;
-    prev.addEventListener('click',()=>{if(currentPage>1){currentPage--;renderResults();}});
+    prev.addEventListener('click',()=>{
+        if(currentPage>1){
+            currentPage--;
+            renderResults();
+            scrollToTop();
+        }
+    });
     pag.appendChild(prev);
     const start=Math.max(1,currentPage-1);
     const end=Math.min(totalPages,start+2);
@@ -313,12 +323,22 @@ function renderPagination(total){
         const b=document.createElement('button');
         b.textContent=i;
         if(i===currentPage) b.disabled=true;
-        b.addEventListener('click',()=>{currentPage=i;renderResults();});
+        b.addEventListener('click',()=>{
+            currentPage=i;
+            renderResults();
+            scrollToTop();
+        });
         pag.appendChild(b);
     }
     const next=document.createElement('button');
     next.textContent='›';
     next.disabled=currentPage===totalPages;
-    next.addEventListener('click',()=>{if(currentPage<totalPages){currentPage++;renderResults();}});
+    next.addEventListener('click',()=>{
+        if(currentPage<totalPages){
+            currentPage++;
+            renderResults();
+            scrollToTop();
+        }
+    });
     pag.appendChild(next);
 }
