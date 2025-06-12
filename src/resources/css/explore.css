@@ -312,15 +312,6 @@ button.show-more:hover {
     flex-direction: column;
 }
 
-.result-info.truncated::after {
-    content: '...';
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    padding-left: 4px;
-    background: hsla(221, 56%, 19%, 1);
-}
-
 .result-item img {
     aspect-ratio: 16/9;
     height: 210px;
@@ -344,6 +335,7 @@ button.show-more:hover {
     font-size: 0.65rem;
     color: hsla(0, 0%, 80%, 1);
     flex: 1;
+    overflow: hidden;
 }
 
 #pagination {
