@@ -1,4 +1,4 @@
-const itemsPerPage = 8;
+const itemsPerPage = 5;
 let allData = [];
 let filtered = [];
 let currentPage = 1;
@@ -227,19 +227,19 @@ function renderFilters(){
     const parts=[];
     if(selectedRoles.size>0){
         const span=document.createElement('span');
-        span.textContent='ROLE: ';
+        span.innerHTML='<strong>ROLE:</strong> ';
         selectedRoles.forEach(val=>{span.appendChild(makeTag(val,'role'));count++;});
         parts.push(span);
     }
     if(selectedTypes.size>0){
         const span=document.createElement('span');
-        span.textContent='TYPE: ';
+        span.innerHTML='<strong>TYPE:</strong> ';
         selectedTypes.forEach(val=>{span.appendChild(makeTag(val,'type'));count++;});
         parts.push(span);
     }
     if(dateRange.start && dateRange.end){
         const span=document.createElement('span');
-        span.textContent='DATE: ';
+        span.innerHTML='<strong>DATE RANGE:</strong> ';
         span.appendChild(makeTag(`${dateRange.start.toLocaleDateString()} - ${dateRange.end.toLocaleDateString()}`,'date'));
         parts.push(span);
         count++;
