@@ -292,6 +292,8 @@ function renderResults(){
             `<div class="result-info"><h4>${item.title}</h4>`+
             `<small>${item.role} · ${item.date}</small><p>${item.description||''}</p></div>`;
         results.appendChild(div);
+        const info=div.querySelector('.result-info');
+        if(info.scrollHeight>info.clientHeight) info.classList.add('truncated');
     });
     document.getElementById('results-count').innerHTML=`Results <b>${startIndex+1}</b>-<b>${endIndex}</b> of <b>${total}</b>`;
     renderPagination(total);
