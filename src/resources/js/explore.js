@@ -166,10 +166,6 @@ function bindEvents(){
     });
 
     document.getElementById('sort-select').addEventListener('change',e=>{sortMode=e.target.value;currentPage=1;update();});
-    ['start-date','end-date'].forEach(id=>{
-        const input=document.getElementById(id);
-        input.addEventListener('click',()=>{ if(input.showPicker) input.showPicker(); });
-    });
     document.getElementById('clear-filters').addEventListener('click',()=>{
         selectedRoles.clear();
         selectedTypes.clear();
@@ -296,15 +292,14 @@ function renderResults(){
     slice.forEach(item=>{
         const div=document.createElement('div');
         div.className='result-item';
-        div.innerHTML=`<img src="${item.imgSrc}" alt="">`+
+        const a=document.createElement('a');
+        a.href=item.pageSrc||'#';
+        a.innerHTML=`<img src="${item.imgSrc}" alt="">`+
             `<div class="result-info"><h4>${item.title}</h4>`+
             `<small>${item.role} · ${item.date}</small><p>${item.description||''}</p></div>`;
+        div.appendChild(a);
         results.appendChild(div);
-        const info=div.querySelector('.result-info');
-        const p=info.querySelector('p');
-        p.dataset.fulltext=p.textContent;
     });
-    applyTruncation();
     document.getElementById('results-count').innerHTML=`Results <b>${startIndex+1}</b>-<b>${endIndex}</b> of <b>${total}</b>`;
     renderPagination(total);
     updateURL();
@@ -353,41 +348,4 @@ function renderPagination(total){
         }
     });
     pag.appendChild(next);
-}
-
-function truncateDescription(info){
-    const p = info.querySelector('p');
-    const allowed = parseInt(getComputedStyle(info).maxHeight) || info.clientHeight;
-    const spaceAbove = p.offsetTop - info.offsetTop;
-    const maxPHeight = allowed - spaceAbove;
-    let text = p.textContent.trim();
-    p.textContent = text;
-    if(p.scrollHeight <= maxPHeight) return;
-    while(text.length > 0 && p.scrollHeight > maxPHeight){
-        text = text.slice(0, -1).trimEnd();
-        p.textContent = text + '...';
-    }
-}
-
-function applyTruncation(){
-    document.querySelectorAll('.result-info').forEach(info=>{
-        const p=info.querySelector('p');
-        const full=p.dataset.fulltext||p.textContent;
-        p.dataset.fulltext=full;
-        p.textContent=full;
-        truncateDescription(info);
-    });
-}
-
-let truncateThrottle;
-window.addEventListener('resize',()=>{
-    clearTimeout(truncateThrottle);
-    truncateThrottle=setTimeout(applyTruncation,150);
-});
-
-if(window.visualViewport){
-    window.visualViewport.addEventListener('resize',()=>{
-        clearTimeout(truncateThrottle);
-        truncateThrottle=setTimeout(applyTruncation,150);
-    });
 }
