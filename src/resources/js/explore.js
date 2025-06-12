@@ -296,10 +296,10 @@ function renderResults(){
             `<small>${item.role} · ${item.date}</small><p>${item.description||''}</p></div>`;
         results.appendChild(div);
         const info=div.querySelector('.result-info');
-        if(info.scrollHeight>info.clientHeight){
-            truncateDescription(info);
-        }
+        const p=info.querySelector('p');
+        p.dataset.fulltext=p.textContent;
     });
+    applyTruncation();
     document.getElementById('results-count').innerHTML=`Results <b>${startIndex+1}</b>-<b>${endIndex}</b> of <b>${total}</b>`;
     renderPagination(total);
     updateURL();
@@ -352,11 +352,37 @@ function renderPagination(total){
 
 function truncateDescription(info){
     const p = info.querySelector('p');
+    const allowed = parseInt(getComputedStyle(info).maxHeight) || info.clientHeight;
+    const spaceAbove = p.offsetTop - info.offsetTop;
+    const maxPHeight = allowed - spaceAbove;
     let text = p.textContent.trim();
     p.textContent = text;
-    if(info.scrollHeight <= info.clientHeight) return;
-    while(text.length > 0 && info.scrollHeight > info.clientHeight){
+    if(p.scrollHeight <= maxPHeight) return;
+    while(text.length > 0 && p.scrollHeight > maxPHeight){
         text = text.slice(0, -1).trimEnd();
         p.textContent = text + '...';
     }
+}
+
+function applyTruncation(){
+    document.querySelectorAll('.result-info').forEach(info=>{
+        const p=info.querySelector('p');
+        const full=p.dataset.fulltext||p.textContent;
+        p.dataset.fulltext=full;
+        p.textContent=full;
+        truncateDescription(info);
+    });
+}
+
+let truncateThrottle;
+window.addEventListener('resize',()=>{
+    clearTimeout(truncateThrottle);
+    truncateThrottle=setTimeout(applyTruncation,150);
+});
+
+if(window.visualViewport){
+    window.visualViewport.addEventListener('resize',()=>{
+        clearTimeout(truncateThrottle);
+        truncateThrottle=setTimeout(applyTruncation,150);
+    });
 }
