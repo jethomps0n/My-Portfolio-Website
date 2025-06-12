@@ -1,5 +1,9 @@
 /* Content Box Section */
 
+* {
+    z-index: 5;
+}
+
 .contentContainer {
     position: relative;
     display: flex;
@@ -113,12 +117,13 @@
     /* margin: 0;
     padding: 10px 35px; */
     font-size: 0.45em;
-    box-sizing: border-box;
-    border: 1px solid hsla(0, 0%, 80%, 1);
+    border: 1px solid hsla(0, 0%, 100%, 1);
     color: hsla(0, 0%, 80%, 1);
-    font-weight: normal;
+    padding: 6px 12px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 100ms ease-out;
     z-index: 2;
-    transition: all 100ms ease-out 5ms;
 }
 
 .contentContainer:hover {
@@ -148,8 +153,8 @@
 }
 
 .credits:hover {
-    color: hsla(0, 0%, 100%, 1);
-    border-color:  hsla(0, 0%, 100%, 1);
+    color: hsla(242, 61%, 80%, 1);
+    backdrop-filter: brightness(0.2);
 }
 
 @container contentBox (max-width: 100vw) {
@@ -206,14 +211,13 @@
     justify-content: center;
     text-align: center;
     font-size: 0.9rem;
-    box-sizing: border-box;
-    border: 1px solid hsla(0, 0%, 80%, 1);
-    border-radius: 40px;
+    background: hsla(228, 48%, 60%, 0.1);
+    border: 1px solid hsla(248, 9%, 45%, 0.5);
     color: hsla(0, 0%, 80%, 1);
-    background-color: hsla(0, 0%, 0%, 0);
-    font-weight: normal;
-    padding: 10px 35px;
-    transition: all 100ms ease-out 5ms;
+    padding: 6px 12px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 100ms ease-out;
 }
 
 .button.loadAll {
