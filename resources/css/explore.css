@@ -419,6 +419,7 @@ button.show-more:hover {
     bottom: 8px;
     right: 8px;
     background: hsla(214, 100%, 45%, 1);
+    /* background: hsla(228, 48%, 60%, 1); */
     color: hsla(0, 0%, 100%, 1);
     padding: 2px 8px;
     border-radius: 8px;
