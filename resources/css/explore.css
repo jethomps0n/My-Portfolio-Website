@@ -450,6 +450,20 @@ button.show-more:hover {
     visibility: visible;
 }
 
+.result-item > a.no-preview:hover .thumbnail {
+    transition: all 200ms ease-in-out 0ms;
+}
+
+.result-item > a.no-preview:hover .thumbnail.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.result-item > a.no-preview:hover .thumbnail.passive {
+    opacity: 0;
+    visibility: hidden;
+}
+
 /* .result-item > a {
     display: flex;
     gap: 20px;
