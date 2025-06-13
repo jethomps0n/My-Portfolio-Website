@@ -411,6 +411,21 @@ button.show-more:hover {
     transform: translateZ(0);
 }
 
+/* Badge for items with an attached screenplay */
+.result-item .thumb.screenplay-attached::after {
+    z-index: 5;
+    content: "Screenplay Attached";
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: hsla(214, 100%, 45%, 1);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-size: 0.65rem;
+    pointer-events: none;
+}
+
 .result-item .thumbnail.active {
     opacity: 1;
     visibility: visible;
