@@ -30,7 +30,7 @@ html {
     font-family: "Reddit Sans", Tahoma, Verdana, Geneva, Tahoma, sans-serif;
     font-weight: normal;
     font-style: normal;
-    background: #15264A;
+    /* background: #15264A; */
     background: radial-gradient(circle 1090px at center, hsla(221, 56%, 19%, 1), hsla(358, 76%, 7%, 1));
     background-size: cover;
     font-size: 24px;
