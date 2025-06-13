@@ -135,34 +135,25 @@ function bindEvents(){
             currentPage=1;update();
         });
     });
+    
     function setupShowMore(id){
         const group=document.getElementById(id);
         const btn=group.querySelector('.show-more');
         const more=group.querySelector('.more');
         const opts=group.querySelector('.options');
         btn.addEventListener('click',()=>{
-            const expanded=btn.classList.toggle('expanded');
-            if(expanded){
-                more.style.display='flex';
-                requestAnimationFrame(()=>{
-                    more.classList.add('expanded');
-                    more.style.maxHeight=more.scrollHeight+'px';
-                    opts.style.maxHeight=opts.scrollHeight+'px';
-                });
+            const expanding=!more.classList.contains('expanded');
+            btn.classList.toggle('expanded', expanding);
+            if(expanding){
+                more.classList.add('expanded');
                 btn.querySelector('.text').textContent='Show Less';
             }else{
-                more.style.maxHeight=more.scrollHeight+'px';
-                requestAnimationFrame(()=>{
-                    more.classList.remove('expanded');
-                    more.style.maxHeight='0';
-                    opts.style.maxHeight=opts.scrollHeight+'px';
-                });
+                more.classList.remove('expanded');
                 btn.querySelector('.text').textContent='Show More';
             }
-            more.addEventListener('transitionend',()=>{
-                if(!expanded) more.style.display='none';
-                opts.style.maxHeight=opts.scrollHeight+'px';
-            },{once:true});
+            requestAnimationFrame(()=>{
+                opts.style.maxHeight='300px';
+            });
         });
     }
     setupShowMore('filter-role');

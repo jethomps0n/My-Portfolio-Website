@@ -228,11 +228,16 @@ button:disabled {
     transform: translate(-50%, -50%) rotate(90deg) scaleX(0);
 }
 
+.filter-group .toggle:hover {
+    border-color: none;
+    color: hsla(242, 61%, 80%, 1);
+    backdrop-filter: none;
+}
+
 .filter-group .options {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    margin-top: 8px;
     overflow: hidden;
     max-height: 0;
     opacity: 0;
@@ -240,7 +245,7 @@ button:disabled {
 }
 
 .filter-group .options.expanded {
-    max-height: 1000px;
+    max-height: 300px;
     opacity: 1;
     margin-top: 8px;
 }
@@ -263,11 +268,11 @@ button:disabled {
     gap: 4px;
     overflow: hidden;
     max-height: 0;
-    transition: max-height 0.3s ease;
+    transition: max-height 0.35s cubic-bezier(.4,0,.2,1);
 }
 
 .filter-group .more.expanded {
-    max-height: 500px;
+    max-height: 300px;
 }
 
 .custom-range input {
@@ -291,11 +296,18 @@ button:disabled {
     cursor: pointer;
     padding: 0;
     margin-top: 4px;
-    text-align: left;;
+    text-align: left;
     width: 100%;
     display: flex;
+    vertical-align: center;
     /* justify-content: space-between; */
     align-items: center;
+}
+
+.show-more::before {
+    content: '';
+    display: inline-block;
+    margin-right: 4px;
 }
 
 button.show-more:hover {
@@ -307,23 +319,25 @@ button.show-more:hover {
     }
 }
 
-.show-more .arrow{
-    font-size: 0.75em;
-    display: inline-block;
-    /* vertical-align: middle; */
-    margin: 2px 0 0 2px;
-    transition: transform 0.3s ease;
+.show-more .text {
+    line-height: 1em;
+    display: flex;
+}
+
+.show-more .arrow {
+    line-height: 0.75em;
+    scale: 0.7;
+    display: flex;
+    transition: all 0.4s ease;
+    margin-top: 2px;
 }
 
 .show-more.expanded .arrow {
     transform: rotate(180deg);
+    margin-top: 3px;
+    padding-top: -8px;
+    /* margin: 8px 0 0 0px; */
 }
-
-
-.show-more.expanded .arrow {
-    transform: rotate(180deg);
-}
-
 
 /* Results */
 #results-section {
