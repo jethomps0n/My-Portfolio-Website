@@ -5,98 +5,108 @@
     "pageSrc": "/explore/That-One-ROMCOM-From-2003",
     "title": "00 That One ROMCOM From 2003",
     "date": "May 21, 2024",
-    "role": "Editor/Production Assistant",
+    "role": "Editor/Production Assistant/Actor",
     "description": "This is an adequate example description for this content block. I'm not really sure what to write here but I hope it serves as a good exampole for the width of the description along with any other indications and text that could be placed here. I'm not really sure what to write here but I hope it serves as a good exampole for the width of the description along with any other indications and text that could be placed here. I'm not really sure what to write here but I hope it serves as a good exampole for the width of the description along with any other indications and text that could be placed here.",
-    "type": "Short Film"
+    "type": "Short Film",
+    "Screenplay": "Yes"
   },
-    {
-      "imgSrc": "/resources/images/That-One-ROMCOM-From-2003-thumbnail.webp",
-      "videoSrc": "/resources/videos/That-One-ROMCOM-From-2003-preview.webm",
-      "pageSrc": "/explore/That-One-ROMCOM-From-2003",
-      "title": "1 That One ROMCOM From 2003",
+  {
+    "imgSrc": "/resources/images/That-One-ROMCOM-From-2003-thumbnail.webp",
+    "videoSrc": "/resources/videos/That-One-ROMCOM-From-2003-preview.webm",
+    "pageSrc": "/explore/That-One-ROMCOM-From-2003",
+    "title": "1 That One ROMCOM From 2003",
     "date": "April 11, 2024",
-    "role": "Editor/Production Assistant",
+    "role": "Actor",
     "description": "Description for The walking dead",
-    "type": "Advertisement"
+    "type": "Advertisement",
+    "Screenplay": "No"
   },
-    {
-      "imgSrc": "/resources/images/testThumbnail1.webp",
-      "videoSrc": "/resources/videos/testVideo1.mp4",
-      "pageSrc": "/explore/The-Walking-Dead-Game-RESCORE-feat-John-Paesano",
-      "title": "2 The Walking Dead Game: RESCORE feat. John Paesano",
+  {
+    "imgSrc": "/resources/images/testThumbnail1.webp",
+    "videoSrc": "/resources/videos/testVideo1.mp4",
+    "pageSrc": "/explore/The-Walking-Dead-Game-RESCORE-feat-John-Paesano",
+    "title": "2 The Walking Dead Game: RESCORE feat. John Paesano",
     "date": "April 12, 2024",
-    "role": "Editor/Production Assistant",
+    "role": "Editor/Production Assistant/Gaffer",
     "description": "Description for 2 The Walking Dead Game: RESCORE feat. John Paesano",
-    "type": "Rescore"
+    "type": "Rescore",
+    "Screenplay": "No"
   },
-    {
-      "imgSrc": "/resources/images/testThumbnail2.webp",
-      "videoSrc": "/resources/videos/testVideo2.mp4",
-      "pageSrc": "/explore/That-One-ROMCOM-From-2003",
-      "title": "3 That One ROMCOM From 2003",
+  {
+    "imgSrc": "/resources/images/testThumbnail2.webp",
+    "videoSrc": "/resources/videos/testVideo2.mp4",
+    "pageSrc": "/explore/That-One-ROMCOM-From-2003",
+    "title": "3 That One ROMCOM From 2003",
     "date": "April 13, 2024",
     "role": "Editor/Production Assistant",
     "description": "Description for 3 That One ROMCOM From 2003",
-    "type": "Documentary"
+    "type": "Documentary",
+    "Screenplay": "No"
   },
-    {
-      "imgSrc": "/resources/images/That-One-ROMCOM-From-2003-thumbnail.webp",
-      "videoSrc": "/resources/videos/That-One-ROMCOM-From-2003-preview.webm",
-      "pageSrc": "/explore/That-One-ROMCOM-From-2003",
-      "title": "4 That One ROMCOM From 2003",
+  {
+    "imgSrc": "/resources/images/That-One-ROMCOM-From-2003-thumbnail.webp",
+    "videoSrc": "/resources/videos/That-One-ROMCOM-From-2003-preview.webm",
+    "pageSrc": "/explore/That-One-ROMCOM-From-2003",
+    "title": "4 That One ROMCOM From 2003",
     "date": "April 11, 2024",
     "role": "Editor/Production Assistant",
     "description": "Description for 4 That One ROMCOM From 2003",
-    "type": "Short Film"
+    "type": "Short Film",
+    "Screenplay": "No"
   },
-    {
-      "imgSrc": "/resources/images/testThumbnail1.webp",
-      "videoSrc": "/resources/videos/testVideo1.mp4",
-      "pageSrc": "/explore/The-Walking-Dead-Game-RESCORE-feat-John-Paesano",
-      "title": "5 The Walking Dead Game: RESCORE feat. John Paesano",
+  {
+    "imgSrc": "/resources/images/testThumbnail1.webp",
+    "videoSrc": "/resources/videos/testVideo1.mp4",
+    "pageSrc": "/explore/The-Walking-Dead-Game-RESCORE-feat-John-Paesano",
+    "title": "5 The Walking Dead Game: RESCORE feat. John Paesano",
     "date": "April 12, 2024",
     "role": "Editor/Production Assistant",
     "description": "Description for 5 The Walking Dead Game: RESCORE feat. John Paesano",
-    "type": "Advertisement"
+    "type": "Advertisement",
+    "Screenplay": "No"
   },
-    {
-      "imgSrc": "/resources/images/testThumbnail2.webp",
-      "videoSrc": "/resources/videos/testVideo2.mp4",
-      "pageSrc": "/explore/That-One-ROMCOM-From-2003",
-      "title": "6 That One ROMCOM From 2003",
+  {
+    "imgSrc": "/resources/images/testThumbnail2.webp",
+    "videoSrc": "/resources/videos/testVideo2.mp4",
+    "pageSrc": "/explore/That-One-ROMCOM-From-2003",
+    "title": "6 That One ROMCOM From 2003",
     "date": "April 13, 2024",
     "role": "Editor/Production Assistant",
     "description": "Description for 6 That One ROMCOM From 2003",
-    "type": "Rescore"
+    "type": "Rescore",
+    "Screenplay": "No"
   },
-    {
-      "imgSrc": "/resources/images/That-One-ROMCOM-From-2003-thumbnail.webp",
-      "videoSrc": "/resources/videos/That-One-ROMCOM-From-2003-preview.webm",
-      "pageSrc": "/explore/That-One-ROMCOM-From-2003",
-      "title": "7 That One ROMCOM From 2003",
+  {
+    "imgSrc": "/resources/images/That-One-ROMCOM-From-2003-thumbnail.webp",
+    "videoSrc": "/resources/videos/That-One-ROMCOM-From-2003-preview.webm",
+    "pageSrc": "/explore/That-One-ROMCOM-From-2003",
+    "title": "7 That One ROMCOM From 2003",
     "date": "April 11, 2024",
     "role": "Editor/Production Assistant",
     "description": "Description for 7 That One ROMCOM From 2003",
-    "type": "Documentary"
+    "type": "Documentary",
+    "Screenplay": "No"
   },
-    {
-      "imgSrc": "/resources/images/testThumbnail1.webp",
-      "videoSrc": "/resources/videos/testVideo1.mp4",
-      "pageSrc": "/explore/The-Walking-Dead-Game-RESCORE-feat-John-Paesano",
-      "title": "The Walking Dead Game: RESCORE feat. John Paesano",
+  {
+    "imgSrc": "/resources/images/testThumbnail1.webp",
+    "videoSrc": "/resources/videos/testVideo1.mp4",
+    "pageSrc": "/explore/The-Walking-Dead-Game-RESCORE-feat-John-Paesano",
+    "title": "The Walking Dead Game: RESCORE feat. John Paesano",
     "date": "April 12, 2024",
     "role": "Editor/Production Assistant",
     "description": "Description for The Walking Dead Game: RESCORE feat. John Paesano",
-    "type": "Show"
+    "type": "Show",
+    "Screenplay": "No"
   },
-    {
-      "imgSrc": "/resources/images/testThumbnail2.webp",
-      "videoSrc": "/resources/videos/testVideo2.mp4",
-      "pageSrc": "/explore/That-One-ROMCOM-From-2003",
-      "title": "That One ROMCOM From 2003",
+  {
+    "imgSrc": "/resources/images/testThumbnail2.webp",
+    "videoSrc": "/resources/videos/testVideo2.mp4",
+    "pageSrc": "/explore/That-One-ROMCOM-From-2003",
+    "title": "That One ROMCOM From 2003",
     "date": "April 13, 2024",
     "role": "Editor/Production Assistant",
     "description": "Description for That One ROMCOM From 2003",
-    "type": "Advertisement"
+    "type": "Advertisement",
+    "Screenplay": "No"
   }
 ]

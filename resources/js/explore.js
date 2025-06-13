@@ -236,14 +236,14 @@ function update(){
         if(searchText && !(`${item.title} ${item.description}`.toLowerCase().includes(searchText))) return false;
         if(selectedRoles.size>0){
             const r=item.role||'';
+            const roleList=r.split('/').map(s=>s.trim()).filter(Boolean);
             let match=false;
             if(selectedRoles.has('Miscellaneous')){
-                const misc = knownRoles.every(role=>!r.includes(role));
-                if(misc) match=true;
+                if(roleList.some(role=>!knownRoles.includes(role))) match=true;
             }
             for(const val of selectedRoles){
                 if(val==='Miscellaneous') continue;
-                if(r.includes(val)){ match=true; break; }
+                if(roleList.includes(val)){ match=true; break; }
             }
             if(!match) return false;
         }
@@ -348,7 +348,8 @@ function renderResults(){
         div.className='result-item ' + (firstRender ? 'pop-in' : 'fade-in');
         const a=document.createElement('a');
         a.href=item.pageSrc||'#';
-        a.innerHTML=`<div class="thumb"><img class="thumbnail active" src="${item.imgSrc}" alt=""><video class="thumbnail passive" src="${item.videoSrc}" muted loop></video></div>`+
+        const thumbClass = item.Screenplay === 'Yes' ? 'thumb screenplay-attached' : 'thumb';
+        a.innerHTML=`<div class="${thumbClass}"><img class="thumbnail active" src="${item.imgSrc}" alt=""><video class="thumbnail passive" src="${item.videoSrc}" muted loop></video></div>`+
             `<div class="result-info"><h4>${item.title}</h4>`+
             `<small>${item.role} · ${item.date}</small><p>${item.description||''}</p></div>`;
         a.addEventListener('mouseenter', previewStart);
