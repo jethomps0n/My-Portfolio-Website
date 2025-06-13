@@ -192,6 +192,11 @@ footer {
     background: linear-gradient(transparent, 30%, hsla(249, 65%, 45%, 0.15) 80%);
 }
 
+footer a {
+  text-decoration: none;
+  color: hsla(0, 0%, 100%, 1);
+}
+
 #footer {
     display: flex;
     flex-direction: column;
