@@ -419,7 +419,7 @@ button.show-more:hover {
     bottom: 8px;
     right: 8px;
     background: hsla(214, 100%, 45%, 1);
-    color: #fff;
+    color: hsla(0, 0%, 100%, 1);
     padding: 2px 8px;
     border-radius: 8px;
     font-size: 0.65rem;
