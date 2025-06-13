@@ -348,12 +348,17 @@ function renderResults(){
         div.className='result-item ' + (firstRender ? 'pop-in' : 'fade-in');
         const a=document.createElement('a');
         a.href=item.pageSrc||'#';
-        const thumbClass = item.Screenplay === 'Yes' ? 'thumb screenplay-attached' : 'thumb';
+        const hasScreenplay = item.Screenplay === 'Yes' || item.Screenplay === 'Sole';
+        const thumbClass = hasScreenplay ? 'thumb screenplay-attached' : 'thumb';
+        const disablePreview = item.Screenplay === 'Sole';
+        if (disablePreview) a.classList.add('no-preview');
         a.innerHTML=`<div class="${thumbClass}"><img class="thumbnail active" src="${item.imgSrc}" alt=""><video class="thumbnail passive" src="${item.videoSrc}" muted loop></video></div>`+
             `<div class="result-info"><h4>${item.title}</h4>`+
             `<small>${item.role} · ${item.date}</small><p>${item.description||''}</p></div>`;
-        a.addEventListener('mouseenter', previewStart);
-        a.addEventListener('mouseleave', previewStop);
+        if(!disablePreview){
+            a.addEventListener('mouseenter', previewStart);
+            a.addEventListener('mouseleave', previewStop);
+        }
         div.appendChild(a);
         div.addEventListener('animationend',()=>{div.classList.remove('pop-in');div.classList.remove('fade-in');},{once:true});
         results.appendChild(div);
