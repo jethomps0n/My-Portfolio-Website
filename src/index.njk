@@ -9,16 +9,16 @@ pagejs: /resources/js/index.js
     {% set firstThree = data.slice(0, 3) %}
     {% for i in firstThree %}
         <div class="contentContainer pop-in"> 
-            <a class="frame" href="#!">
+            <a class="frame" href="/explore/{{ i.slug }}">
                 <img class="thumbnail active" src="{{ i.imgSrc }}" alt="">
                 <video class="thumbnail passive" src="{{ i.videoSrc }}" muted loop></video>
             </a>
             <div class="info">
-                <a class="expand" href="#!"></a>
+                <a class="expand" href="/explore/{{ i.slug }}"></a>
                 <h2 class="contentTitle">{{ i.title }}</h2>
                 <h3 class="date">{{ i.date }}</h3>
                 <h3 class="role">{{ i.role }}</h3>
-                <a class="credits" href="#!">Credits</a>
+                {# <a class="credits" href="#!">Credits</a> #}
             </div>
         </div>
     {% endfor %}

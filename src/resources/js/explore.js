@@ -347,7 +347,7 @@ function renderResults(){
         const div=document.createElement('div');
         div.className='result-item ' + (firstRender ? 'pop-in' : 'fade-in');
         const a=document.createElement('a');
-        a.href=item.pageSrc||'#';
+        a.href=`/explore/${item.slug}`||'#';
         const hasScreenplay = item.Screenplay === 'Yes' || item.Screenplay === 'Sole';
         const thumbClass = hasScreenplay ? 'thumb screenplay-attached' : 'thumb';
         const disablePreview = item.Screenplay === 'Sole';
