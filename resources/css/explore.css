@@ -492,14 +492,38 @@ button.show-more:hover {
 }
 
 .result-info h4 {
-    margin: 0;
+    margin: 0 0 5px 0;
     font-size: 1rem;
     font-weight: 700;
 }
 
 .result-info small {
     color: hsla(0, 0%, 80%, 1);
-    font-size: 0.65rem;
+    font-size: 0.55rem;
+}
+
+.result-info .role-tag {
+    display: inline-flex;
+    align-items: center;
+    background: hsla(228, 48%, 60%, 0.25);
+    border: 1px solid hsla(248, 9%, 45%, 0.8);
+    padding: 2px 6px;
+    border-radius: 6.5px;
+    margin-right: 4px;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 100ms ease-out;
+    position: relative;
+    z-index: 10;
+}
+
+.result-info .role-tag:last-child {
+    margin-right: 0;
+}
+
+.result-info .role-tag:hover {
+    color:hsla(0, 0%, 100%, 1);
+    border-color: hsla(0, 100%, 100%, 1);
 }
 
 .result-info p {
