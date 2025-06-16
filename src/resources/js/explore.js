@@ -3,7 +3,7 @@ let allData = [];
 let filtered = [];
 let currentPage = 1;
 let selectedRoles = new Set();
-const knownRoles = ['Writer','Editor','Director','Producer','DP','Camera Operator','Production Assistant','Sound Recordist'];
+const knownRoles = ['Writer','Editor','Director','Producer','DP','Camera Operator','Production Assistant','Sound Recordist', 'Actor'];
 let selectedTypes = new Set();
 let dateRange = {start:null,end:null};
 let selectedDateRadio = null;
@@ -336,6 +336,28 @@ function makeTag(text,kind){
     return span;
 }
 
+function makeRoleTag(text){
+    const span=document.createElement('span');
+    span.className='role-tag';
+    span.textContent=text;
+    span.addEventListener('click',e=>{
+        e.preventDefault();
+        e.stopPropagation();
+        selectedRoles.clear();
+        selectedTypes.clear();
+        dateRange={start:null,end:null};
+        document.querySelectorAll('#filter-section input').forEach(i=>{
+            if(i.type==='checkbox'||i.type==='radio') i.checked=false;
+        });
+        selectedRoles.add(text);
+        const el=document.querySelector(`#filter-role input[value="${text}"]`);
+        if(el) el.checked=true;
+        currentPage=1;update();
+        scrollToTop();
+    });
+    return span;
+}
+
 function renderResults(){
     const results=document.getElementById('results-list');
     results.innerHTML='';
@@ -352,9 +374,26 @@ function renderResults(){
         const thumbClass = hasScreenplay ? 'thumb screenplay-attached' : 'thumb';
         const disablePreview = item.Screenplay === 'Sole';
         if (disablePreview) a.classList.add('no-preview');
-        a.innerHTML=`<div class="${thumbClass}"><img class="thumbnail active" src="${item.imgSrc}" alt=""><video class="thumbnail passive" src="${item.videoSrc}" muted loop></video></div>`+
-            `<div class="result-info"><h4>${item.title}</h4>`+
-            `<small>${item.role} · ${item.date}</small><p>${item.description||''}</p></div>`;
+        a.innerHTML=`<div class="${thumbClass}"><img class="thumbnail active" src="${item.imgSrc}" alt=""><video class="thumbnail passive" src="${item.videoSrc}" muted loop></video></div>`;
+
+        const info=document.createElement('div');
+        info.className='result-info';
+        const h4=document.createElement('h4');
+        h4.textContent=item.title;
+        info.appendChild(h4);
+        const small=document.createElement('small');
+        const roles=(item.role||'').split('/').map(s=>s.trim()).filter(Boolean);
+        roles.forEach(r=>{
+            small.appendChild(makeRoleTag(r));
+        });
+        if(roles.length>0) small.appendChild(document.createTextNode(' · '));
+        small.appendChild(document.createTextNode(item.date));
+        info.appendChild(small);
+        const p=document.createElement('p');
+        p.textContent=item.description||'';
+        info.appendChild(p);
+        a.appendChild(info);
+
         if(!disablePreview){
             a.addEventListener('mouseenter', previewStart);
             a.addEventListener('mouseleave', previewStop);
