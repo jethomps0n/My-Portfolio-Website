@@ -1,0 +1,46 @@
+---
+pagination:
+  data: data
+  size: 1
+  alias: i
+  addAllPagesToCollections: true
+permalink: "/explore/{{ i.slug }}/"
+layout: base.njk
+eleventyComputed:
+    title: "{{ i.title }} | Jonathan Thompson"
+pagecss: /resources/css/project.css
+pagejs: /resources/js/project.js
+addjs: <script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"></script>
+---
+
+<div id="breadcrumbs"></div>
+<div id="project-page">
+    <div id="content">
+        <section id="project">
+            <div id="frame">
+                <lite-youtube videoid="{{ i.contentSrc }}"></lite-youtube>
+            </div>
+            <div id="info">
+                <h1 id="contentTitle">{{ i.title }}</h1>
+                <div id="tags"><div id="role"></div><span> | </span><div id="type"></div></div>
+                <small id="date">{{ i.date }}</small>
+        </section>
+        <aside id="credits">
+            <h2>Credits</h2>
+            <ul>
+                {% for credit in i.credits %}
+                    <li>{{ credit }}</li>
+                {% endfor %}
+            </ul>
+        </aside>
+    </div>
+    <div id="more">
+        <section id="description">
+            <p>{{ i.description }}</p>
+        </section>
+        <a href="#!" id="attachments">
+            <img id="screenplay" src="#!" alt="Screenplay">
+            <span id="view">view</span>
+        </a>
+    </div>
+</div>
