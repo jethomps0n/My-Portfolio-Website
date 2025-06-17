@@ -129,3 +129,27 @@ const cursor = new MouseFollower({
     hideTimeout: 300,
     hideMediaTimeout: 300
 });
+
+//-------FOOTER OTHER ROLE LINK-------------//
+document.addEventListener('DOMContentLoaded', () => {
+  const otherLink = document.getElementById('other-link');
+  if (!otherLink) return;
+  fetch('/resources/json/data.json')
+    .then(r => r.json())
+    .then(data => {
+      const mainRoles = ['Writer','Editor','Director','Producer','DP','Camera Operator','Production Assistant','Sound Recordist'];
+      const others = new Set();
+      data.forEach(item => {
+        const roles = (item.role || '').split('/').map(r => r.trim()).filter(Boolean);
+        roles.forEach(role => {
+          if (!mainRoles.includes(role)) others.add(role);
+        });
+      });
+      const query = Array.from(others).map(r => encodeURIComponent(r)).join(',');
+      otherLink.href = query ? `/explore/?roles=${query}` : '/explore';
+    })
+    .catch(err => {
+      console.error('Failed to compute other roles', err);
+      otherLink.href = '/explore';
+    });
+});
