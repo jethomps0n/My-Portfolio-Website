@@ -3,7 +3,6 @@ let allData = [];
 let filtered = [];
 let currentPage = 1;
 let selectedRoles = new Set();
-const knownRoles = ['Writer','Editor','Director','Producer','DP','Camera Operator','Production Assistant','Sound Recordist', 'Actor'];
 let selectedTypes = new Set();
 let dateRange = {start:null,end:null};
 let selectedDateRadio = null;
@@ -238,11 +237,7 @@ function update(){
             const r=item.role||'';
             const roleList=r.split('/').map(s=>s.trim()).filter(Boolean);
             let match=false;
-            if(selectedRoles.has('Miscellaneous')){
-                if(roleList.some(role=>!knownRoles.includes(role))) match=true;
-            }
             for(const val of selectedRoles){
-                if(val==='Miscellaneous') continue;
                 if(roleList.includes(val)){ match=true; break; }
             }
             if(!match) return false;
