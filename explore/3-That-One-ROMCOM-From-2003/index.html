@@ -12,7 +12,7 @@
     <meta property="og:url" content="itsjonathanthompson.com" />
 
     <link rel="stylesheet" href="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.css">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.3.31/pdf_viewer.min.css" integrity="sha512-g7H1r+f5vorBEZ6yKW88x++bC+Fucn7nEkfpSitAfJIFPNZghRQqoiyaV5zRNVKr1JGfIvfJjEg9J9sYDja6Nw==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="/resources/css/global.css">
     
         <link rel="stylesheet" href="/resources/css/project.css">
@@ -22,9 +22,7 @@
     <script src="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.js" defer></script>
     <script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"></script>
     <script src="/resources/js/global.js" defer></script>
-    
-        <script src="/resources/js/project.js" defer></script>
-    
+    <script type="module" src="/resources/js/project.js" defer></script>
 </head>
 <body>
     <div class="effects">
@@ -86,6 +84,7 @@
         <section id="project">
             <div id="frame">
                 <lite-youtube videoid="guJLfqTFfIw"></lite-youtube>
+                <canvas id="pdf-canvas" data-pdf="/resources/screenplays/example.pdf"></canvas>
             </div>
             <div id="info">
                 <h1 id="contentTitle">3 That One ROMCOM From 2003</h1>
@@ -108,7 +107,7 @@
             <p>Description for 3 That One ROMCOM From 2003</p>
         </section>
         <a href="#!" id="attachments">
-            <img id="screenplay" src="#!" alt="Screenplay">
+            <img id="screenplay" src="/resources/images/screenplay-image.png" alt="Screenplay">
             <span id="view">view</span>
         </a>
     </div>
