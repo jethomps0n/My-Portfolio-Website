@@ -22,9 +22,7 @@
     <script src="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.js" defer></script>
     {{ addjs | safe }}
     <script src="/resources/js/global.js" defer></script>
-    {% if pagejs %}
-        <script src="{{ pagejs }}" defer></script>
-    {% endif %}
+    {{ pagejs | safe }}
 </head>
 <body>
     <div class="effects">

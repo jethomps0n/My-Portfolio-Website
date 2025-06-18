@@ -9,7 +9,8 @@ layout: base.njk
 eleventyComputed:
     title: "{{ i.title }} | Jonathan Thompson"
 pagecss: /resources/css/project.css
-pagejs: /resources/js/project.js
+pagejs: <script type="module" src="/resources/js/project.js" defer></script>
+addcss: <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.3.31/pdf_viewer.min.css" integrity="sha512-g7H1r+f5vorBEZ6yKW88x++bC+Fucn7nEkfpSitAfJIFPNZghRQqoiyaV5zRNVKr1JGfIvfJjEg9J9sYDja6Nw==" crossorigin="anonymous" referrerpolicy="no-referrer">
 addjs: <script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"></script>
 ---
 
@@ -18,7 +19,8 @@ addjs: <script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/li
     <div id="content">
         <section id="project">
             <div id="frame">
-                <lite-youtube videoid="{{ i.contentSrc }}"></lite-youtube>
+                <lite-youtube videoid="{{ i.YTSrc }}"></lite-youtube>
+                <canvas id="pdf-canvas" data-pdf="{{ i.PDFSrc }}"></canvas>
             </div>
             <div id="info">
                 <h1 id="contentTitle">{{ i.title }}</h1>
@@ -39,7 +41,7 @@ addjs: <script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/li
             <p>{{ i.description }}</p>
         </section>
         <a href="#!" id="attachments">
-            <img id="screenplay" src="#!" alt="Screenplay">
+            <img id="screenplay" src="/resources/images/screenplay-image.png" alt="Screenplay">
             <span id="view">view</span>
         </a>
     </div>
