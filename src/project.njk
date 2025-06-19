@@ -14,18 +14,32 @@ addcss: <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.
 addjs: <script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"></script>
 ---
 
-<div id="breadcrumbs"></div>
 <div id="project-page">
-    <div id="content">
+    <div id="breadcrumbs"></div>
+    <div id="content-box">
         <section id="project">
             <div id="frame">
-                <lite-youtube videoid="{{ i.YTSrc }}"></lite-youtube>
+                {% if i.Screenplay == "Sole" %}
                 <canvas id="pdf-canvas" data-pdf="{{ i.PDFSrc }}"></canvas>
+                {% else %}
+                <lite-youtube videoid="{{ i.YTSrc }}"></lite-youtube>
+                {% endif %}
             </div>
             <div id="info">
                 <h1 id="contentTitle">{{ i.title }}</h1>
-                <div id="tags"><div id="role"></div><span> | </span><div id="type"></div></div>
-                <small id="date">{{ i.date }}</small>
+                <div id="specs">
+                    <div id="tags">
+                        {% set roles = i.role.split('/') %}
+                        <div class="roles">
+                            {% for r in roles %}
+                            <a class="role-tag" href="/explore/?roles={{ r | urlencode }}">{{ r }}</a>
+                            {% endfor %}
+                        </div>
+                        <span id="divider"> | </span>
+                        <a class="type-tag" href="/explore/?types={{ i.type | urlencode }}">{{ i.type }}</a>
+                    </div>
+                    <small id="date">{{ i.date }}</small>
+                </div>
         </section>
         <aside id="credits">
             <h2>Credits</h2>
@@ -37,12 +51,14 @@ addjs: <script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/li
         </aside>
     </div>
     <div id="more">
+        {% if i.Screenplay == "Yes" or i.Screenplay == "Sole" %}
+        <a href="{{ i.PDFSrc }}" target="_blank" id="attachments">
+            <img id="screenplay" src="/resources/images/screenplay-image.png" alt="Screenplay">
+            <div id="view-container"><span id="view">View</span></div>
+        </a>
+        {% endif %}
         <section id="description">
             <p>{{ i.description }}</p>
         </section>
-        <a href="{{ i.PDFSrc }}" target="_blank" id="attachments">
-            <img id="screenplay" src="/resources/images/screenplay-image.png" alt="Screenplay">
-            <span id="view">view</span>
-        </a>
     </div>
 </div>
