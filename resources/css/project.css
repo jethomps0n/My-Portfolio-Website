@@ -226,6 +226,12 @@
     flex-direction: column;
 }
 
+#pdf-container {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
 #pdf-canvas-container {
     flex: 1;
     overflow: auto;
@@ -234,29 +240,33 @@
     align-items: flex-start;
 }
 
-#pdf-canvas {
+#pdf-pages {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.pdf-page {
+    margin-bottom: 10px;
     display: block;
 }
 
 #pdf-sidebar {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 120px;
-    padding: 10px 5px;
+    width: 0;
+    padding: 0;
     box-sizing: border-box;
     overflow-y: auto;
     background: rgba(0, 0, 0, 0.4);
-    transform: translateX(-120px);
-    transition: transform 0.3s ease-out;
+    transition: width 0.3s ease-out, padding 0.3s ease-out;
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
 
 #pdf-sidebar.open {
-    transform: translateX(0);
+    width: 160px;
+    padding: 10px 5px;
 }
 
 .pdf-thumb {
