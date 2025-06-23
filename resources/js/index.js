@@ -78,12 +78,12 @@ document.addEventListener('DOMContentLoaded', () => {
         newContentContainer.classList.add('contentContainer', 'pop-in');
 
         newContentContainer.innerHTML = `
-            <a class="frame" href="#!">
+            <a class="frame" href="/explore/${data.slug}">
                 <img class="thumbnail active" src="${data.imgSrc}" alt="">
                 <video class="thumbnail passive" src="${data.videoSrc}" muted loop></video>
             </a>
             <div class="info">
-                <a class="expand" href="#!"></a>
+                <a class="expand" href="/explore/${data.slug}"></a>
                 <h2 class="contentTitle">${data.title}</h2>
                 <h3 class="date">${data.date}</h3>
                 <h3 class="role">${data.role}</h3>
