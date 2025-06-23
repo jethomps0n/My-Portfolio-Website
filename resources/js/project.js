@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let pdfDoc = null;
   let pageNum = 1;
   let zoom = 1;
+  let zoomMode = 'custom';
 
   const pageNumInput = document.getElementById('pdf-page-num');
   const pageCountSpan = document.getElementById('pdf-page-count');
@@ -32,10 +33,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderPage(num) {
     pdfDoc.getPage(num).then(page => {
-      const baseViewport = page.getViewport({ scale: 1 });
-      const containerHeight = canvasContainer.clientHeight;
-      const baseScale = containerHeight / baseViewport.height;
-      const viewport = page.getViewport({ scale: baseScale * zoom });
+      const base = page.getViewport({ scale: 1 });
+      let scale;
+      if (zoomMode === 'fit') {
+        scale = Math.min(
+          canvasContainer.clientWidth / base.width,
+          canvasContainer.clientHeight / base.height
+        );
+      } else if (zoomMode === 'width') {
+        scale = canvasContainer.clientWidth / base.width;
+      } else {
+        scale = zoom;
+      }
+      const viewport = page.getViewport({ scale });
       canvas.width = viewport.width;
       canvas.height = viewport.height;
       canvas.style.width = viewport.width + 'px';
@@ -96,19 +106,33 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   zoomInBtn.addEventListener('click', () => {
+    if (zoomMode !== 'custom') {
+      zoom = 1;
+      zoomMode = 'custom';
+    }
     zoom = Math.min(zoom + 0.25, 3);
     zoomSelect.value = zoom;
     renderPage(pageNum);
   });
 
   zoomOutBtn.addEventListener('click', () => {
+    if (zoomMode !== 'custom') {
+      zoom = 1;
+      zoomMode = 'custom';
+    }
     zoom = Math.max(zoom - 0.25, 0.5);
     zoomSelect.value = zoom;
     renderPage(pageNum);
   });
 
   zoomSelect.addEventListener('change', () => {
-    zoom = parseFloat(zoomSelect.value);
+    const val = zoomSelect.value;
+    if (val === 'fit' || val === 'width') {
+      zoomMode = val;
+    } else {
+      zoomMode = 'custom';
+      zoom = parseFloat(val);
+    }
     renderPage(pageNum);
   });
 
@@ -156,6 +180,8 @@ document.addEventListener('DOMContentLoaded', () => {
       modal.appendChild(frame);
       document.body.appendChild(modal);
       document.body.classList.add('no-scroll');
+      expandBtn.textContent = '✕';
+      expandBtn.title = 'Close';
     } else {
       if (frameNextSibling) {
         frameParent.insertBefore(frame, frameNextSibling);
@@ -165,6 +191,8 @@ document.addEventListener('DOMContentLoaded', () => {
       modal.remove();
       modal = null;
       document.body.classList.remove('no-scroll');
+      expandBtn.textContent = '⤢';
+      expandBtn.title = 'Expand';
     }
     renderPage(pageNum);
   });
