@@ -36,16 +36,20 @@
 
 #project {
     flex: 1;
-    border: 2px solid hsla(248,9%,45%,0.5);
+    /* border: 2px solid hsla(248,9%,45%,0.5);
     border-radius: 25px;
-    overflow: hidden;
+    overflow: hidden; */
     display: flex;
     flex-direction: column;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    /* box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35); */
 }
 
 #frame {
     width: 100%;
+    /* border: 2px solid hsla(248,9%,45%,0.5); */
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
     /* aspect-ratio: 16/9; */
     /* overflow: hidden; */
 }
@@ -59,12 +63,21 @@
 }
 
 #info {
-    padding: 20px;
     display: flex;
     flex-direction: column;
     gap: 6px;
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    /* margin-top: 20px; */
+    padding: 20px;
+    /* background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35); */
+}
+
+#specs {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin: 0 0 10px 0;
 }
 
 #contentTitle {
@@ -72,13 +85,7 @@
     font-weight: bold;
     color: hsla(0,0%,100%,1);
     margin: 0 0 0 0;
-}
-
-#specs {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin: 10px 0 0 0;
+    width: 80%;
 }
 
 #tags {
@@ -176,7 +183,7 @@
   width: 120px; /* 150px max = 100% */
   font-size: 80%; /* Every 0.666667px of width for 1% */
   margin-left: 20px;
-  border: 2px solid white;
+  /* border: 2px solid white; */
   border-radius: 10px;
   overflow: hidden;
   text-decoration: none;
