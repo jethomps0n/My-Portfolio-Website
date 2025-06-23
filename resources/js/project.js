@@ -6,11 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const viewer = document.getElementById('pdf-viewer');
   if (!viewer) return;
   const canvas = document.getElementById('pdf-canvas');
+  const canvasContainer = document.getElementById('pdf-canvas-container');
   const ctx = canvas.getContext('2d');
   const url = viewer.dataset.pdf;
   let pdfDoc = null;
   let pageNum = 1;
-  let scale = 1;
+  let zoom = 1;
 
   const pageNumInput = document.getElementById('pdf-page-num');
   const pageCountSpan = document.getElementById('pdf-page-count');
@@ -23,14 +24,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const printBtn = document.getElementById('pdf-print');
   const sidebar = document.getElementById('pdf-sidebar');
   const sidebarToggle = document.getElementById('pdf-sidebar-toggle');
+  const expandBtn = document.getElementById('pdf-expand');
+  const frame = document.getElementById('frame');
 
   function renderPage(num) {
     pdfDoc.getPage(num).then(page => {
-      const viewport = page.getViewport({ scale });
+      const baseViewport = page.getViewport({ scale: 1 });
+      const containerHeight = canvasContainer.clientHeight;
+      const baseScale = containerHeight / baseViewport.height;
+      const viewport = page.getViewport({ scale: baseScale * zoom });
       canvas.width = viewport.width;
       canvas.height = viewport.height;
-      const renderContext = { canvasContext: ctx, viewport };
-      page.render(renderContext);
+      canvas.style.width = viewport.width + 'px';
+      canvas.style.height = viewport.height + 'px';
+      page.render({ canvasContext: ctx, viewport });
       pageNumInput.value = num;
       pageCountSpan.textContent = pdfDoc.numPages;
     });
@@ -81,17 +88,19 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   zoomInBtn.addEventListener('click', () => {
-    scale = Math.min(scale + 0.25, 3);
+    zoom = Math.min(zoom + 0.25, 3);
+    zoomSelect.value = zoom;
     renderPage(pageNum);
   });
 
   zoomOutBtn.addEventListener('click', () => {
-    scale = Math.max(scale - 0.25, 0.5);
+    zoom = Math.max(zoom - 0.25, 0.5);
+    zoomSelect.value = zoom;
     renderPage(pageNum);
   });
 
   zoomSelect.addEventListener('change', () => {
-    scale = parseFloat(zoomSelect.value);
+    zoom = parseFloat(zoomSelect.value);
     renderPage(pageNum);
   });
 
@@ -115,5 +124,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   sidebarToggle.addEventListener('click', () => {
     sidebar.classList.toggle('open');
+  });
+
+  expandBtn.addEventListener('click', () => {
+    frame.classList.toggle('expanded');
+    renderPage(pageNum);
   });
 });
