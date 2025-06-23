@@ -54,8 +54,18 @@
 }
 
 #frame.expanded {
+    position: fixed;
+    top: 5vh;
+    left: 5vw;
+    right: 5vw;
+    bottom: 5vh;
+    width: auto;
+    height: auto;
     aspect-ratio: auto;
-    height: 80vh;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.9);
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.7);
+    border-radius: 25px;
 }
 
 #frame lite-youtube {
@@ -236,6 +246,7 @@
     overflow: auto;
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 #pdf-canvas {
@@ -268,6 +279,9 @@
     border: 1px solid hsla(248,9%,45%,0.5);
     cursor: pointer;
 }
+.pdf-thumb.active {
+    border-color: hsla(228,48%,60%,1);
+}
 
 #pdf-controls {
     display: flex;
@@ -276,12 +290,13 @@
     align-items: center;
     gap: 10px;
     padding: 10px 0;
+    order: -1;
 }
 
 #pdf-controls button,
 #pdf-controls select,
 #pdf-controls input {
-    font-size: 0.8rem;
+    font-size: 1rem;
     background: hsla(228,48%,60%,0.1);
     border: 1px solid hsla(248,9%,45%,0.5);
     color: hsla(0,0%,80%,1);
@@ -298,4 +313,12 @@
 
 #pdf-expand {
     margin-right: auto;
+}
+
+#pdf-download {
+    margin-left: auto;
+}
+
+body.no-scroll {
+    overflow: hidden;
 }

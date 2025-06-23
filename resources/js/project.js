@@ -40,6 +40,9 @@ document.addEventListener('DOMContentLoaded', () => {
       page.render({ canvasContext: ctx, viewport });
       pageNumInput.value = num;
       pageCountSpan.textContent = pdfDoc.numPages;
+      document.querySelectorAll('.pdf-thumb').forEach((t, idx) => {
+        t.classList.toggle('active', idx + 1 === num);
+      });
     });
   }
 
@@ -56,6 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
         c.height = v.height;
         p.render({ canvasContext: c.getContext('2d'), viewport: v });
         c.classList.add('pdf-thumb');
+        c.dataset.page = i;
+        if (i === pageNum) c.classList.add('active');
         c.addEventListener('click', () => {
           pageNum = i;
           renderPage(pageNum);
@@ -104,22 +109,37 @@ document.addEventListener('DOMContentLoaded', () => {
     renderPage(pageNum);
   });
 
-  downloadBtn.addEventListener('click', () => {
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = '';
-    link.click();
+  downloadBtn.addEventListener('click', async () => {
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = url.split('/').pop();
+      link.click();
+      URL.revokeObjectURL(link.href);
+    } catch (e) {
+      console.error('Download failed', e);
+    }
   });
 
-  printBtn.addEventListener('click', () => {
+  printBtn.addEventListener('click', async () => {
     const iframe = document.createElement('iframe');
     iframe.style.display = 'none';
-    iframe.src = url;
     document.body.appendChild(iframe);
-    iframe.onload = () => {
-      iframe.contentWindow.focus();
-      iframe.contentWindow.print();
-    };
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      iframe.src = URL.createObjectURL(blob);
+      iframe.onload = () => {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+        URL.revokeObjectURL(iframe.src);
+        document.body.removeChild(iframe);
+      };
+    } catch (e) {
+      console.error('Print failed', e);
+    }
   });
 
   sidebarToggle.addEventListener('click', () => {
@@ -127,7 +147,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   expandBtn.addEventListener('click', () => {
-    frame.classList.toggle('expanded');
+    const expanded = frame.classList.toggle('expanded');
+    document.body.classList.toggle('no-scroll', expanded);
     renderPage(pageNum);
   });
 });
