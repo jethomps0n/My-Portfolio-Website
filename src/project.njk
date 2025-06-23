@@ -26,19 +26,19 @@ addjs: <script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/li
                 {% endif %}
             </div>
             <div id="info">
-                <h1 id="contentTitle">{{ i.title }}</h1>
                 <div id="specs">
-                    <div id="tags">
-                        {% set roles = i.role.split('/') %}
-                        <div class="roles">
-                            {% for r in roles %}
-                            <a class="role-tag" href="/explore/?roles={{ r | urlencode }}">{{ r }}</a>
-                            {% endfor %}
-                        </div>
-                        <span id="divider"> | </span>
-                        <a class="type-tag" href="/explore/?types={{ i.type | urlencode }}">{{ i.type }}</a>
-                    </div>
+                    <h1 id="contentTitle">{{ i.title }}</h1>
                     <small id="date">{{ i.date }}</small>
+                </div>
+                <div id="tags">
+                    {% set roles = i.role.split('/') %}
+                    <div class="roles">
+                        {% for r in roles %}
+                        <a class="role-tag" href="/explore/?roles={{ r | urlencode }}">{{ r }}</a>
+                        {% endfor %}
+                    </div>
+                    <span id="divider"> | </span>
+                    <a class="type-tag" href="/explore/?types={{ i.type | urlencode }}">{{ i.type }}</a>
                 </div>
         </section>
         <aside id="credits">

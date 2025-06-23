@@ -87,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h2 class="contentTitle">${data.title}</h2>
                 <h3 class="date">${data.date}</h3>
                 <h3 class="role">${data.role}</h3>
-                <a class="credits" href="#!">Credits</a>
             </div>
         `;
 

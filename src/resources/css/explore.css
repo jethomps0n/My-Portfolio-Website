@@ -10,8 +10,8 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin: 0 auto;
-    padding: 0 15px;
+    margin: 42px auto 0 auto;
+    padding: 0 28px;
     max-width: 1300px;
 }
 
@@ -92,7 +92,7 @@ button:disabled {
 #search-container {
     display: flex;
     align-items: center;
-    margin: 25px auto;
+    margin: 0 auto;
     width: 100%;
     max-width: 900px;
     padding: 8px;
@@ -133,6 +133,7 @@ button:disabled {
     display: flex;
     gap: 42px;
     width: 100%;
+    margin-top: 42px;
 }
 
 /* Filters */
