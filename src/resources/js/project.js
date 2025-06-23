@@ -3,34 +3,117 @@ import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.3.31/
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.3.31/pdf.worker.min.mjs';
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Breadcrumb setup
-  const bc = document.getElementById('breadcrumbs');
-  if (bc) {
-    const ref = document.referrer;
-    let label = 'Home';
-    let url = '/';
-    if (/\/explore/.test(ref)) { label = 'Explore'; url = '/explore'; }
-    else if (/\/blog/.test(ref)) { label = 'Blog'; url = '/blog'; }
-    else if (/\/about/.test(ref)) { label = 'About'; url = '/about'; }
-    else if (/\/contact/.test(ref)) { label = 'Contact'; url = '/contact'; }
-    bc.innerHTML = `<a href="${url}">Back to ${label}</a>`;
-  }
-
+  const viewer = document.getElementById('pdf-viewer');
+  if (!viewer) return;
   const canvas = document.getElementById('pdf-canvas');
-  if (!canvas) return;
-  const pdfUrl = canvas.dataset.pdf;
-  if (!pdfUrl) return;
-  const context = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d');
+  const url = viewer.dataset.pdf;
+  let pdfDoc = null;
+  let pageNum = 1;
+  let scale = 1;
 
-  pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
-    return pdf.getPage(1).then(page => {
-      const scale = 1;
+  const pageNumInput = document.getElementById('pdf-page-num');
+  const pageCountSpan = document.getElementById('pdf-page-count');
+  const prevBtn = document.getElementById('pdf-prev');
+  const nextBtn = document.getElementById('pdf-next');
+  const zoomInBtn = document.getElementById('pdf-zoom-in');
+  const zoomOutBtn = document.getElementById('pdf-zoom-out');
+  const zoomSelect = document.getElementById('pdf-zoom-select');
+  const downloadBtn = document.getElementById('pdf-download');
+  const printBtn = document.getElementById('pdf-print');
+  const sidebar = document.getElementById('pdf-sidebar');
+  const sidebarToggle = document.getElementById('pdf-sidebar-toggle');
+
+  function renderPage(num) {
+    pdfDoc.getPage(num).then(page => {
       const viewport = page.getViewport({ scale });
       canvas.width = viewport.width;
       canvas.height = viewport.height;
-      return page.render({ canvasContext: context, viewport }).promise;
+      const renderContext = { canvasContext: ctx, viewport };
+      page.render(renderContext);
+      pageNumInput.value = num;
+      pageCountSpan.textContent = pdfDoc.numPages;
     });
-  }).catch(err => {
-    console.error('Failed to load PDF:', err);
+  }
+
+  pdfjsLib.getDocument(url).promise.then(pdf => {
+    pdfDoc = pdf;
+    pageCountSpan.textContent = pdfDoc.numPages;
+    renderPage(pageNum);
+
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+      pdfDoc.getPage(i).then(p => {
+        const v = p.getViewport({ scale: 0.2 });
+        const c = document.createElement('canvas');
+        c.width = v.width;
+        c.height = v.height;
+        p.render({ canvasContext: c.getContext('2d'), viewport: v });
+        c.classList.add('pdf-thumb');
+        c.addEventListener('click', () => {
+          pageNum = i;
+          renderPage(pageNum);
+        });
+        sidebar.appendChild(c);
+      });
+    }
+  }).catch(err => console.error('Failed to load PDF:', err));
+
+  prevBtn.addEventListener('click', () => {
+    if (pageNum <= 1) return;
+    pageNum--;
+    renderPage(pageNum);
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (pageNum >= pdfDoc.numPages) return;
+    pageNum++;
+    renderPage(pageNum);
+  });
+
+  pageNumInput.addEventListener('change', () => {
+    const n = parseInt(pageNumInput.value, 10);
+    if (!isNaN(n) && n >= 1 && n <= pdfDoc.numPages) {
+      pageNum = n;
+      renderPage(pageNum);
+    } else {
+      pageNumInput.value = pageNum;
+    }
+  });
+
+  zoomInBtn.addEventListener('click', () => {
+    scale = Math.min(scale + 0.25, 3);
+    renderPage(pageNum);
+  });
+
+  zoomOutBtn.addEventListener('click', () => {
+    scale = Math.max(scale - 0.25, 0.5);
+    renderPage(pageNum);
+  });
+
+  zoomSelect.addEventListener('change', () => {
+    scale = parseFloat(zoomSelect.value);
+    renderPage(pageNum);
+  });
+
+  downloadBtn.addEventListener('click', () => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = '';
+    link.click();
+  });
+
+  printBtn.addEventListener('click', () => {
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = url;
+    document.body.appendChild(iframe);
+    iframe.onload = () => {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+    };
+  });
+
+  sidebarToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
   });
 });
