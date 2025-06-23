@@ -32,11 +32,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function calculateScale(base) {
     if (zoomMode === 'fit') {
-      return Math.min(
-        canvasContainer.clientWidth / base.width,
-        canvasContainer.clientHeight / base.height
-      );
+      // Scale so the page height fills the canvas container
+      return canvasContainer.clientHeight / base.height;
     } else if (zoomMode === 'width') {
+      // Scale so the page width fills the canvas container
       return canvasContainer.clientWidth / base.width;
     }
     return zoom;
@@ -44,17 +43,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderPages() {
     for (let i = 1; i <= pdfDoc.numPages; i++) {
+      let canvas = pagesContainer.querySelector(`canvas[data-page="${i}"]`);
+      if (!canvas) {
+        canvas = document.createElement('canvas');
+        canvas.dataset.page = i;
+        canvas.classList.add('pdf-page');
+        pagesContainer.appendChild(canvas);
+      }
       pdfDoc.getPage(i).then(page => {
         const base = page.getViewport({ scale: 1 });
         const scale = calculateScale(base);
         const viewport = page.getViewport({ scale });
-        let canvas = pagesContainer.querySelector(`canvas[data-page="${i}"]`);
-        if (!canvas) {
-          canvas = document.createElement('canvas');
-          canvas.dataset.page = i;
-          canvas.classList.add('pdf-page');
-          pagesContainer.appendChild(canvas);
-        }
         canvas.width = viewport.width;
         canvas.height = viewport.height;
         canvas.style.width = viewport.width + 'px';
@@ -62,24 +61,41 @@ document.addEventListener('DOMContentLoaded', () => {
         page.render({ canvasContext: canvas.getContext('2d'), viewport });
       });
     }
-    pageNumInput.value = pageNum;
     pageCountSpan.textContent = pdfDoc.numPages;
-    document.querySelectorAll('.pdf-thumb').forEach((t, idx) => {
-      t.classList.toggle('active', idx + 1 === pageNum);
-    });
+    scrollToPage(pageNum);
   }
 
   function scrollToPage(num) {
     const target = pagesContainer.querySelector(`canvas[data-page="${num}"]`);
     if (target) {
-      target.scrollIntoView({ behavior: 'smooth' });
+      canvasContainer.scrollTop = target.offsetTop;
     }
+    updatePageDisplay(num);
+  }
+
+  function updatePageDisplay(num) {
     pageNum = num;
     pageNumInput.value = num;
     document.querySelectorAll('.pdf-thumb').forEach((t, idx) => {
       t.classList.toggle('active', idx + 1 === num);
     });
   }
+
+  function updateCurrentPage() {
+    const pages = pagesContainer.querySelectorAll('.pdf-page');
+    let current = pageNum;
+    for (const p of pages) {
+      if (p.offsetTop + p.clientHeight / 2 > canvasContainer.scrollTop) {
+        current = parseInt(p.dataset.page, 10);
+        break;
+      }
+    }
+    if (current !== pageNum) {
+      updatePageDisplay(current);
+    }
+  }
+
+  canvasContainer.addEventListener('scroll', updateCurrentPage);
 
   pdfjsLib.getDocument(url).promise.then(pdf => {
     pdfDoc = pdf;
