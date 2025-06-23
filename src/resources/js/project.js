@@ -5,9 +5,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
 document.addEventListener('DOMContentLoaded', () => {
   const viewer = document.getElementById('pdf-viewer');
   if (!viewer) return;
-  const canvas = document.getElementById('pdf-canvas');
+  const pagesContainer = document.getElementById('pdf-pages');
   const canvasContainer = document.getElementById('pdf-canvas-container');
-  const ctx = canvas.getContext('2d');
   const url = viewer.dataset.pdf;
   let pdfDoc = null;
   let pageNum = 1;
@@ -31,38 +30,61 @@ document.addEventListener('DOMContentLoaded', () => {
   const frameParent = frame.parentElement;
   const frameNextSibling = frame.nextElementSibling;
 
-  function renderPage(num) {
-    pdfDoc.getPage(num).then(page => {
-      const base = page.getViewport({ scale: 1 });
-      let scale;
-      if (zoomMode === 'fit') {
-        scale = Math.min(
-          canvasContainer.clientWidth / base.width,
-          canvasContainer.clientHeight / base.height
-        );
-      } else if (zoomMode === 'width') {
-        scale = canvasContainer.clientWidth / base.width;
-      } else {
-        scale = zoom;
-      }
-      const viewport = page.getViewport({ scale });
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-      canvas.style.width = viewport.width + 'px';
-      canvas.style.height = viewport.height + 'px';
-      page.render({ canvasContext: ctx, viewport });
-      pageNumInput.value = num;
-      pageCountSpan.textContent = pdfDoc.numPages;
-      document.querySelectorAll('.pdf-thumb').forEach((t, idx) => {
-        t.classList.toggle('active', idx + 1 === num);
+  function calculateScale(base) {
+    if (zoomMode === 'fit') {
+      return Math.min(
+        canvasContainer.clientWidth / base.width,
+        canvasContainer.clientHeight / base.height
+      );
+    } else if (zoomMode === 'width') {
+      return canvasContainer.clientWidth / base.width;
+    }
+    return zoom;
+  }
+
+  function renderPages() {
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+      pdfDoc.getPage(i).then(page => {
+        const base = page.getViewport({ scale: 1 });
+        const scale = calculateScale(base);
+        const viewport = page.getViewport({ scale });
+        let canvas = pagesContainer.querySelector(`canvas[data-page="${i}"]`);
+        if (!canvas) {
+          canvas = document.createElement('canvas');
+          canvas.dataset.page = i;
+          canvas.classList.add('pdf-page');
+          pagesContainer.appendChild(canvas);
+        }
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        canvas.style.width = viewport.width + 'px';
+        canvas.style.height = viewport.height + 'px';
+        page.render({ canvasContext: canvas.getContext('2d'), viewport });
       });
+    }
+    pageNumInput.value = pageNum;
+    pageCountSpan.textContent = pdfDoc.numPages;
+    document.querySelectorAll('.pdf-thumb').forEach((t, idx) => {
+      t.classList.toggle('active', idx + 1 === pageNum);
+    });
+  }
+
+  function scrollToPage(num) {
+    const target = pagesContainer.querySelector(`canvas[data-page="${num}"]`);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+    pageNum = num;
+    pageNumInput.value = num;
+    document.querySelectorAll('.pdf-thumb').forEach((t, idx) => {
+      t.classList.toggle('active', idx + 1 === num);
     });
   }
 
   pdfjsLib.getDocument(url).promise.then(pdf => {
     pdfDoc = pdf;
     pageCountSpan.textContent = pdfDoc.numPages;
-    renderPage(pageNum);
+    renderPages();
 
     for (let i = 1; i <= pdfDoc.numPages; i++) {
       pdfDoc.getPage(i).then(p => {
@@ -75,8 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
         c.dataset.page = i;
         if (i === pageNum) c.classList.add('active');
         c.addEventListener('click', () => {
-          pageNum = i;
-          renderPage(pageNum);
+          scrollToPage(i);
         });
         sidebar.appendChild(c);
       });
@@ -85,21 +106,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   prevBtn.addEventListener('click', () => {
     if (pageNum <= 1) return;
-    pageNum--;
-    renderPage(pageNum);
+    scrollToPage(pageNum - 1);
   });
 
   nextBtn.addEventListener('click', () => {
     if (pageNum >= pdfDoc.numPages) return;
-    pageNum++;
-    renderPage(pageNum);
+    scrollToPage(pageNum + 1);
   });
 
   pageNumInput.addEventListener('change', () => {
     const n = parseInt(pageNumInput.value, 10);
     if (!isNaN(n) && n >= 1 && n <= pdfDoc.numPages) {
-      pageNum = n;
-      renderPage(pageNum);
+      scrollToPage(n);
     } else {
       pageNumInput.value = pageNum;
     }
@@ -112,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     zoom = Math.min(zoom + 0.25, 3);
     zoomSelect.value = zoom;
-    renderPage(pageNum);
+    renderPages();
   });
 
   zoomOutBtn.addEventListener('click', () => {
@@ -122,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     zoom = Math.max(zoom - 0.25, 0.5);
     zoomSelect.value = zoom;
-    renderPage(pageNum);
+    renderPages();
   });
 
   zoomSelect.addEventListener('change', () => {
@@ -133,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
       zoomMode = 'custom';
       zoom = parseFloat(val);
     }
-    renderPage(pageNum);
+    renderPages();
   });
 
   downloadBtn.addEventListener('click', async () => {
@@ -171,6 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   sidebarToggle.addEventListener('click', () => {
     sidebar.classList.toggle('open');
+    renderPages();
   });
 
   expandBtn.addEventListener('click', () => {
@@ -194,6 +213,8 @@ document.addEventListener('DOMContentLoaded', () => {
       expandBtn.textContent = '⤢';
       expandBtn.title = 'Expand';
     }
-    renderPage(pageNum);
+    renderPages();
   });
+
+  window.addEventListener('resize', renderPages);
 });
