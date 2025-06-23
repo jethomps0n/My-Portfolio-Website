@@ -231,7 +231,7 @@
     overflow: auto;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
 }
 
 #pdf-canvas {
@@ -273,8 +273,9 @@
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 10px;
-    padding: 10px 0;
+    gap: 6px;
+    padding: 6px 0;
+    background: hsla(228,48%,60%,0.15);
     order: -1;
 }
 
@@ -282,10 +283,10 @@
 #pdf-controls select,
 #pdf-controls input {
     font-size: 1rem;
-    background: hsla(228,48%,60%,0.1);
-    border: 1px solid hsla(248,9%,45%,0.5);
-    color: hsla(0,0%,80%,1);
-    padding: 4px 8px;
+    background: hsla(228,48%,70%,0.2);
+    border: 1px solid hsla(248,9%,45%,0.6);
+    color: hsla(0,0%,90%,1);
+    padding: 3px 6px;
     border-radius: 6px;
     cursor: pointer;
     margin: 0;
@@ -294,10 +295,6 @@
 #pdf-controls input {
     width: 50px;
     text-align: center;
-}
-
-#pdf-expand {
-    margin-right: auto;
 }
 
 #pdf-download {
