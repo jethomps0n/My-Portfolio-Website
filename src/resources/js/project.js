@@ -26,6 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const sidebarToggle = document.getElementById('pdf-sidebar-toggle');
   const expandBtn = document.getElementById('pdf-expand');
   const frame = document.getElementById('frame');
+  let modal = null;
+  const frameParent = frame.parentElement;
+  const frameNextSibling = frame.nextElementSibling;
 
   function renderPage(num) {
     pdfDoc.getPage(num).then(page => {
@@ -147,8 +150,22 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   expandBtn.addEventListener('click', () => {
-    const expanded = frame.classList.toggle('expanded');
-    document.body.classList.toggle('no-scroll', expanded);
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'pdf-modal';
+      modal.appendChild(frame);
+      document.body.appendChild(modal);
+      document.body.classList.add('no-scroll');
+    } else {
+      if (frameNextSibling) {
+        frameParent.insertBefore(frame, frameNextSibling);
+      } else {
+        frameParent.appendChild(frame);
+      }
+      modal.remove();
+      modal = null;
+      document.body.classList.remove('no-scroll');
+    }
     renderPage(pageNum);
   });
 });
