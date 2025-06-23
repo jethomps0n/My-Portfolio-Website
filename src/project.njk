@@ -20,16 +20,19 @@ addjs: <script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/li
         <section id="project">
             <div id="frame">
                 {% if i.Screenplay == "Sole" %}
-                <div id="pdf-viewer" data-pdf="{{ i.PDFSrc }}">
+                 <div id="pdf-viewer" data-pdf="{{ i.PDFSrc }}">
                     <div id="pdf-sidebar"></div>
-                    <canvas id="pdf-canvas"></canvas>
+                    <div id="pdf-canvas-container">
+                        <canvas id="pdf-canvas"></canvas>
+                    </div>
                     <div id="pdf-controls">
-                        <button id="pdf-sidebar-toggle" title="Toggle sidebar">☰</button>
-                        <button id="pdf-prev" title="Previous page">‹</button>
+                        <button id="pdf-expand" title="Expand">⤢</button>
+                        <button id="pdf-sidebar-toggle" title="Toggle sidebar">≡</button>
+                        <button id="pdf-prev" title="Previous page">◀</button>
                         <input id="pdf-page-num" value="1" min="1">
                         <span>/ <span id="pdf-page-count">1</span></span>
-                        <button id="pdf-next" title="Next page">›</button>
-                        <button id="pdf-zoom-out" title="Zoom out">-</button>
+                        <button id="pdf-next" title="Next page">▶</button>
+                        <button id="pdf-zoom-out" title="Zoom out">➖</button>
                         <select id="pdf-zoom-select">
                             <option value="0.5">50%</option>
                             <option value="0.75">75%</option>
@@ -37,8 +40,8 @@ addjs: <script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/li
                             <option value="1.25">125%</option>
                             <option value="1.5">150%</option>
                         </select>
-                        <button id="pdf-zoom-in" title="Zoom in">+</button>
-                        <button id="pdf-download" title="Download">⬇</button>
+                        <button id="pdf-zoom-in" title="Zoom in">➕</button>
+                        <button id="pdf-download" title="Download">⤓</button>
                         <button id="pdf-print" title="Print">🖨</button>
                     </div>
                 </div>
