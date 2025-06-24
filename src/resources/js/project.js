@@ -11,7 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
   let pdfDoc = null;
   let pageNum = 1;
   let zoom = 1;
+  let currentZoom = 1;
   let zoomMode = 'custom';
+  let oldZoom = zoom;
+  let oldScrollLeft = 0;
+  let oldScrollTop = 0;
+
 
   const pageNumInput = document.getElementById('pdf-page-num');
   const pageCountSpan = document.getElementById('pdf-page-count');
@@ -33,10 +38,18 @@ document.addEventListener('DOMContentLoaded', () => {
   function calculateScale(base) {
     if (zoomMode === 'fit') {
       // Scale so the page height fills the canvas container
-      return canvasContainer.clientHeight / base.height;
-    } else if (zoomMode === 'width') {
+      zoom = canvasContainer.clientHeight / base.height;
+      currentZoom = zoom;
+      return zoom;
+    } if (zoomMode === 'width') {
       // Scale so the page width fills the canvas container
-      return canvasContainer.clientWidth / base.width;
+      zoom = canvasContainer.clientWidth / base.width;
+      currentZoom = zoom;
+      return zoom;
+    } else if (zoomMode === 'auto') {
+      zoom = 1.1;
+      currentZoom = zoom;
+      return zoom;
     }
     return zoom;
   }
@@ -65,10 +78,20 @@ document.addEventListener('DOMContentLoaded', () => {
     scrollToPage(pageNum);
   }
 
+  function repositionScroll() {
+    requestAnimationFrame(() => {
+      const scaleRatio = zoom / oldZoom;
+
+      // Top left fixed point:
+      canvasContainer.scrollLeft = oldScrollLeft * scaleRatio;
+      canvasContainer.scrollTop = oldScrollTop * scaleRatio;
+    });
+  }
+
   function scrollToPage(num) {
     const target = pagesContainer.querySelector(`canvas[data-page="${num}"]`);
     if (target) {
-      canvasContainer.scrollTop = target.offsetTop;
+      canvasContainer.scrollTop = (target.height * (num - 1)) + (12 * (num - 1));
     }
     updatePageDisplay(num);
   }
@@ -140,34 +163,52 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   zoomInBtn.addEventListener('click', () => {
+    oldZoom = zoom;
+    oldScrollLeft = canvasContainer.scrollLeft;
+    oldScrollTop = canvasContainer.scrollTop;
+
     if (zoomMode !== 'custom') {
-      zoom = 1;
+      zoom = (Math.round(currentZoom * 4) / 4) - 0.25;
       zoomMode = 'custom';
     }
     zoom = Math.min(zoom + 0.25, 3);
     zoomSelect.value = zoom;
     renderPages();
+    repositionScroll();
   });
 
   zoomOutBtn.addEventListener('click', () => {
+    oldZoom = zoom;
+    oldScrollLeft = canvasContainer.scrollLeft;
+    oldScrollTop = canvasContainer.scrollTop;
+    
     if (zoomMode !== 'custom') {
-      zoom = 1;
+      // Change the zoom to the closest number divisible by
+      // 0.25 from the current zoom level
+      zoom = Math.round(currentZoom * 4) / 4;
       zoomMode = 'custom';
     }
-    zoom = Math.max(zoom - 0.25, 0.5);
+    zoom = Math.max(zoom - 0.25, 0.25);
     zoomSelect.value = zoom;
     renderPages();
+    repositionScroll();
   });
 
   zoomSelect.addEventListener('change', () => {
+    oldZoom = zoom;
+    oldScrollLeft = canvasContainer.scrollLeft;
+    oldScrollTop = canvasContainer.scrollTop;
+    
     const val = zoomSelect.value;
-    if (val === 'fit' || val === 'width') {
+    if (val === 'fit' || val === 'width' || val === 'auto') {
       zoomMode = val;
     } else {
       zoomMode = 'custom';
       zoom = parseFloat(val);
+      currentZoom = zoom;
     }
     renderPages();
+    repositionScroll();
   });
 
   downloadBtn.addEventListener('click', async () => {
@@ -204,8 +245,19 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   sidebarToggle.addEventListener('click', () => {
+    oldZoom = zoom;
+    oldScrollLeft = canvasContainer.scrollLeft;
+    oldScrollTop = canvasContainer.scrollTop;
+    
     sidebar.classList.toggle('open');
-    renderPages();
+    sidebar.addEventListener(
+      'transitionend',
+      () => {
+        renderPages();
+        repositionScroll();
+      },
+      { once: true }
+    );
   });
 
   expandBtn.addEventListener('click', () => {
