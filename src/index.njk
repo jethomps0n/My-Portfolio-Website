@@ -6,7 +6,13 @@ pagejs: <script src="/resources/js/index.js" defer></script>
 ---
 
 <div id="content">
-    {% set firstThree = data.slice(0, 3) %}
+    {% set firstThree = [] %}
+    {% for i in data %}
+        {% if i.Screenplay != "Sole" and firstThree.length < 3 %}
+            {% set firstThree = firstThree.concat([i]) %}
+        {% endif %}
+    {% endfor %}
+
     {% for i in firstThree %}
         <div class="contentContainer pop-in"> 
             <a class="frame" href="/explore/{{ i.slug }}">
@@ -17,8 +23,10 @@ pagejs: <script src="/resources/js/index.js" defer></script>
                 <a class="expand" href="/explore/{{ i.slug }}"></a>
                 <h2 class="contentTitle">{{ i.title }}</h2>
                 <h3 class="date">{{ i.date }}</h3>
-                <h3 class="role">{{ i.role }}</h3>
-                {# <a class="credits" href="#!">Credits</a> #}
+                {% set roles = i.role.split('/') %}
+                <div class="roles">
+                    {% for r in roles %}<a class="role-tag" href="/explore/?roles={{ r | urlencode }}">{{ r }}</a>{% endfor %}
+                </div>
             </div>
         </div>
     {% endfor %}

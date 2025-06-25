@@ -100,12 +100,35 @@
     font-weight: normal;
 }
 
-.info .role {
-    color: hsla(0, 0%, 80%, 1);
-    /* margin: 0 0 30px 0; */
+.roles {
     font-size: 0.45em;
-    font-style: italic;
-    font-weight: normal;
+    z-index: 10;
+}
+
+.role-tag {
+    display: inline-flex;
+    align-items: center;
+    background: hsla(228,48%,60%,0.25);
+    backdrop-filter: brightness(0.75) blur(10px);
+    border: 1px solid hsla(248,9%,45%,0.8);
+    padding: 2px 6px;
+    border-radius: 6.5px;
+    line-height: 1;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    color: hsla(0,0%,80%,1);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 100ms ease-out;
+}
+
+.role-tag:last-child {
+    margin-right: 0;
+}
+
+.role-tag:hover {
+    color: hsla(0,0%,100%,1);
+    border-color: hsla(0,100%,100%,1);
 }
 
 .info a {
