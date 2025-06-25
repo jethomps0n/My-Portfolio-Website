@@ -87,7 +87,7 @@ header {
     justify-content: center;
     align-items: center;
     text-align: center;
-    z-index: 10;
+    z-index: 500;
 }
 
 #navbar {
@@ -190,6 +190,8 @@ footer {
     padding: 0 8px 8px 8px;
     /* background-color: hsla(249, 65%, 45%, 0.1); */
     background: linear-gradient(transparent, 30%, hsla(249, 65%, 45%, 0.15) 80%);
+    position: relative;
+    z-index: 500;
 }
 
 footer a {

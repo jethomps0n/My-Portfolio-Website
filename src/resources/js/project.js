@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let oldScrollLeft = 0;
   let oldScrollTop = 0;
 
-
   const pageNumInput = document.getElementById('pdf-page-num');
   const pageCountSpan = document.getElementById('pdf-page-count');
   const prevBtn = document.getElementById('pdf-prev');
@@ -94,6 +93,40 @@ document.addEventListener('DOMContentLoaded', () => {
       canvasContainer.scrollTop = (target.height * (num - 1)) + (12 * (num - 1));
     }
     updatePageDisplay(num);
+    scrollSidebarThumbIntoView(num);
+  }
+
+  function isElementInView(container, element) {
+    const containerRect = container.getBoundingClientRect();
+    const elementRect = element.getBoundingClientRect();
+    return (
+      elementRect.top >= containerRect.top &&
+      elementRect.bottom <= containerRect.bottom
+    );
+  }
+
+  let sidebarScrollState = {
+    scrollTop: 0,
+    mode: 'restore' // 'restore' or 'focus'
+  };
+
+  function scrollSidebarThumbIntoView(pageNum) {
+    const thumb = sidebar.querySelector(`.pdf-thumb[data-page="${pageNum}"]`)?.parentElement;
+    if (!thumb) return;
+
+    // Get sidebar and thumbnail positions
+    const sidebarRect = sidebar.getBoundingClientRect();
+    const thumbRect = thumb.getBoundingClientRect();
+
+    // If the thumbnail is above the visible area
+    if (thumbRect.top < sidebarRect.top) {
+      sidebar.scrollTop += thumbRect.top - sidebarRect.top;
+    }
+    // If the thumbnail is below the visible area
+    else if (thumbRect.bottom > sidebarRect.bottom) {
+      sidebar.scrollTop += thumbRect.bottom - sidebarRect.bottom;
+    }
+    // If already in view, do nothing
   }
 
   function updatePageDisplay(num) {
@@ -128,17 +161,32 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 1; i <= pdfDoc.numPages; i++) {
       pdfDoc.getPage(i).then(p => {
         const v = p.getViewport({ scale: 0.2 });
+
+        // Create wrapper
+        const thumbWrapper = document.createElement('div');
+        thumbWrapper.classList.add('pdf-thumb-wrapper');
+
+        // Create thumbnail canvas
         const c = document.createElement('canvas');
         c.width = v.width;
         c.height = v.height;
-        p.render({ canvasContext: c.getContext('2d'), viewport: v });
         c.classList.add('pdf-thumb');
         c.dataset.page = i;
         if (i === pageNum) c.classList.add('active');
-        c.addEventListener('click', () => {
-          scrollToPage(i);
-        });
-        sidebar.appendChild(c);
+        c.addEventListener('click', () => scrollToPage(i));
+        thumbWrapper.appendChild(c);
+
+        // Add page number label
+        const label = document.createElement('span');
+        label.classList.add('pdf-thumb-label');
+        label.textContent = i;
+        thumbWrapper.appendChild(label);
+
+        // Append thumbWrapper to the sidebar
+        sidebar.appendChild(thumbWrapper);
+
+        // Render the thumbnail
+        p.render({ canvasContext: c.getContext('2d'), viewport: v });
       });
     }
   }).catch(err => console.error('Failed to load PDF:', err));
@@ -246,16 +294,51 @@ document.addEventListener('DOMContentLoaded', () => {
     oldZoom = zoom;
     oldScrollLeft = canvasContainer.scrollLeft;
     oldScrollTop = canvasContainer.scrollTop;
+
+    // If closing sidebar, store scroll state
+    if (sidebar.classList.contains('open')) {
+      // Get the currently selected thumbnail
+      const selectedThumb = sidebar.querySelector('.pdf-thumb.active')?.parentElement;
+      if (selectedThumb) {
+        // Check if selected thumbnail is visible in sidebar
+        if (isElementInView(sidebar, selectedThumb)) {
+          sidebarScrollState.scrollTop = sidebar.scrollTop;
+          sidebarScrollState.mode = 'restore';
+        } else {
+          sidebarScrollState.mode = 'focus';
+        }
+      }
+    }
     
     sidebar.classList.toggle('open');
-    sidebar.addEventListener(
-      'transitionend',
-      () => {
-        renderPages();
-        repositionScroll();
-      },
-      { once: true }
-    );
+    if (sidebar.classList.contains('open')) {
+      sidebar.addEventListener(
+        'transitionend',
+        () => {
+          // Get the currently selected thumbnail
+          const selectedThumb = sidebar.querySelector('.pdf-thumb.active')?.parentElement;
+          if (selectedThumb) {
+            if (sidebarScrollState.mode === 'restore') {
+              sidebar.scrollTop = sidebarScrollState.scrollTop;
+            } else if (sidebarScrollState.mode === 'focus') {
+              sidebar.scrollTop = selectedThumb.offsetTop - selectedThumb.offsetHeight / 2;
+            }
+          }
+          renderPages();
+          repositionScroll();
+        },
+        { once: true }
+      );
+    } else {
+      sidebar.addEventListener(
+        'transitionend',
+        () => {
+          renderPages();
+          repositionScroll();
+        },
+        { once: true }
+      );
+    }
   });
 
   expandBtn.addEventListener('click', () => {

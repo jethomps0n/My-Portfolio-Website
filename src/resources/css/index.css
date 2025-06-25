@@ -109,7 +109,7 @@
     display: inline-flex;
     align-items: center;
     background: hsla(228,48%,60%,0.25);
-    backdrop-filter: brightness(0.75) blur(10px);
+    backdrop-filter: brightness(0.5) blur(10px);
     border: 1px solid hsla(248,9%,45%,0.8);
     padding: 2px 6px;
     border-radius: 6.5px;
