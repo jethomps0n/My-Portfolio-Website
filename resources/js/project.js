@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
       zoom = canvasContainer.clientHeight / base.height;
       currentZoom = zoom;
       return zoom;
-    } if (zoomMode === 'width') {
+    } else if (zoomMode === 'width') {
       // Scale so the page width fills the canvas container
       zoom = canvasContainer.clientWidth / base.width;
       currentZoom = zoom;
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
     oldScrollTop = canvasContainer.scrollTop;
 
     if (zoomMode !== 'custom') {
-      zoom = (Math.round(currentZoom * 4) / 4) - 0.25;
+      zoom = Math.floor(currentZoom / 0.25) * 0.25; // Round down to the nearest 0.25
       zoomMode = 'custom';
     }
     zoom = Math.min(zoom + 0.25, 3);
@@ -183,9 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
     oldScrollTop = canvasContainer.scrollTop;
     
     if (zoomMode !== 'custom') {
-      // Change the zoom to the closest number divisible by
-      // 0.25 from the current zoom level
-      zoom = Math.round(currentZoom * 4) / 4;
+      zoom = Math.ceil(currentZoom / 0.25) * 0.25; // Round up to the nearest 0.25
       zoomMode = 'custom';
     }
     zoom = Math.max(zoom - 0.25, 0.25);

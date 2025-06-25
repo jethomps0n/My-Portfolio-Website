@@ -77,6 +77,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const newContentContainer = document.createElement('div');
         newContentContainer.classList.add('contentContainer', 'pop-in');
 
+        const rolesArray = data.role ? data.role.split('/') : [];
+        
+        const rolesHTML = rolesArray.map((r) =>
+            `<a class="role-tag" href="/explore/?roles=${encodeURIComponent(r)}">${r}</a>`).join('');
+
         newContentContainer.innerHTML = `
             <a class="frame" href="/explore/${data.slug}">
                 <img class="thumbnail active" src="${data.imgSrc}" alt="">
@@ -86,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <a class="expand" href="/explore/${data.slug}"></a>
                 <h2 class="contentTitle">${data.title}</h2>
                 <h3 class="date">${data.date}</h3>
-                <h3 class="role">${data.role}</h3>
+                <div class="roles">${rolesHTML}</div>
             </div>
         `;
 
