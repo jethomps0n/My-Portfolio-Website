@@ -6,25 +6,7 @@
     margin: 42px auto 0 auto;
     max-width: 1300px;
     position: relative;
-    /* padding: 0 15px; */
 }
-
-/* #breadcrumbs {
-    margin: 0 0 10px 20px;
-}
-
-#breadcrumbs a {
-    text-decoration: none;
-    color: hsla(0,0%,80%,1);
-    display: inline-flex;
-    align-items: center;
-}
-
-#breadcrumbs a::before {
-    content: "\2039";
-    color: white;
-    margin-right: 0.4em;
-} */
 
 #content-box {
     display: flex;
@@ -34,12 +16,8 @@
 #project {
     flex: 1;
     min-width: 0;
-    /* border: 2px solid hsla(248,9%,45%,0.5);
-    border-radius: 25px;
-    overflow: hidden; */
     display: flex;
     flex-direction: column;
-    /* box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35); */
 }
 
 #frame {
@@ -69,11 +47,10 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    /* margin-top: 20px; */
     padding: 20px;
-    /* background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35); */
     z-index: 5;
+    transition: all 300ms ease;
+    will-change: transform;
 }
 
 #specs {
@@ -90,6 +67,7 @@
     color: hsla(0,0%,100%,1);
     margin: 0 0 0 0;
     width: 80%;
+    transition: color 300ms ease;
 }
 
 #tags {
@@ -112,7 +90,9 @@
     color: hsla(0,0%,80%,1);
     text-decoration: none;
     cursor: pointer;
-    transition: all 100ms ease-out;
+    transition: all 200ms ease-out;
+    transform: translateY(0);
+    will-change: transform, color, border-color;
 }
 
 .role-tag:last-child {
@@ -141,6 +121,7 @@
     color: hsla(0,0%,80%,1);
     margin: 0;
     line-height: 1.9rem;
+    transition: color 300ms ease;
 }
 
 #credits {
@@ -160,6 +141,7 @@
     font-size: 1.2rem;
     color: hsla(0,0%,100%,1);
     margin: 0 0 10px 0;
+    transition: color 300ms ease;
 }
 
 #credits ul {
@@ -171,6 +153,13 @@
 #credits li {
     font-size: 0.75rem;
     color: hsla(0,0%,90%,1);
+    transition: color 300ms ease, transform 300ms ease;
+    padding: 2px 0;
+}
+
+#credits li:hover {
+    color: hsla(0,0%,100%,1);
+    transform: translateX(5px);
 }
 
 #more {
@@ -183,22 +172,38 @@
     width: 100%;
     background: rgba(255, 255, 255, 0.08);
     z-index: 5;
+    transition: background 300ms ease;
+}
+
+#more:hover {
+    background: rgba(255, 255, 255, 0.12);
 }
 
 #attachments {
   float: right;
-  width: 120px; /* 150px max = 100% */
-  font-size: 80%; /* Every 0.666667px of width for 1% */
+  width: 120px;
+  font-size: 80%;
   margin-left: 20px;
-  /* border: 2px solid white; */
   border-radius: 10px;
   overflow: hidden;
   text-decoration: none;
+  transition: all 300ms ease;
+  will-change: transform, box-shadow;
+}
+
+#attachments:hover {
+    transform: scale(1.05) translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
 #screenplay {
     width: 100%;
     display: block;
+    transition: all 300ms ease;
+}
+
+#attachments:hover #screenplay {
+    filter: brightness(1.1) contrast(1.1);
 }
 
 #view-container {
@@ -207,6 +212,11 @@
   color: #fff;
   font-weight: 700;
   width: 100%;
+  transition: all 300ms ease;
+}
+
+#attachments:hover #view-container {
+    background: hsla(214,100%,55%,1);
 }
 
 #description {
@@ -214,8 +224,67 @@
     color: hsla(0,0%,100%,1);
     margin: 0;
     line-height: 1.5;
+    transition: color 300ms ease;
 }
 
 #description p {
     margin: 0;
+    transition: all 300ms ease;
+}
+
+/* Using your exact explore page animations */
+@keyframes popIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Apply your exact animation pattern */
+#content-box.pop-in,
+#credits.pop-in,
+#more.pop-in {
+    animation: popIn 0.4s ease-out;
+    transform-origin: top center;
+}
+
+.role-tag.pop-in,
+.type-tag.pop-in {
+    animation: popIn 0.4s ease-out;
+    transform-origin: center center;
+}
+
+.fade-in {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+/* Smooth scrolling for anchor links */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Focus states for accessibility */
+.role-tag:focus,
+.type-tag:focus,
+#attachments:focus {
+    outline: 2px solid hsla(228,48%,60%,1);
+    outline-offset: 2px;
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .role-tag:hover,
+    .type-tag:hover,
+    #attachments:hover {
+        transform: none;
+    }
 }
