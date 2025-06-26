@@ -241,7 +241,7 @@
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    background-color: hsla(248, 9%, 45%, 0.85);
+    background-color: hsla(248, 9%, 45%, 0.65);
 }
 
 #pdf-pages {
@@ -322,6 +322,7 @@
 
 #pdf-modal {
     position: fixed;
+    pointer-events: auto;
     top: 5vh;
     left: 5vw;
     right: 5vw;
@@ -342,6 +343,7 @@
 
 body.no-scroll {
     overflow: hidden;
+    pointer-events: none;
 }
 
 .pdf-thumb-wrapper {
