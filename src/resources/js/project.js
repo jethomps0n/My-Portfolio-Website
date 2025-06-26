@@ -36,12 +36,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function calculateScale(base) {
     if (zoomMode === 'fit') {
-      // Scale so the page height fills the canvas container
       zoom = canvasContainer.clientHeight / base.height;
       currentZoom = zoom;
       return zoom;
     } else if (zoomMode === 'width') {
-      // Scale so the page width fills the canvas container
       zoom = canvasContainer.clientWidth / base.width;
       currentZoom = zoom;
       return zoom;
@@ -54,14 +52,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderPages() {
+    if (!pdfDoc) return;
+    
+    // Clear existing pages
+    pagesContainer.innerHTML = '';
+    
+    // Track rendering completion
+    let renderedPages = 0;
+    const totalPages = pdfDoc.numPages;
+    
     for (let i = 1; i <= pdfDoc.numPages; i++) {
-      let canvas = pagesContainer.querySelector(`canvas[data-page="${i}"]`);
-      if (!canvas) {
-        canvas = document.createElement('canvas');
-        canvas.dataset.page = i;
-        canvas.classList.add('pdf-page');
-        pagesContainer.appendChild(canvas);
-      }
+      const canvas = document.createElement('canvas');
+      canvas.dataset.page = i;
+      canvas.classList.add('pdf-page');
+      pagesContainer.appendChild(canvas);
+      
       pdfDoc.getPage(i).then(page => {
         const base = page.getViewport({ scale: 1 });
         const scale = calculateScale(base);
@@ -70,18 +75,29 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.height = viewport.height;
         canvas.style.width = viewport.width + 'px';
         canvas.style.height = viewport.height + 'px';
-        page.render({ canvasContext: canvas.getContext('2d'), viewport });
+        
+        // Render the page
+        const renderContext = {
+          canvasContext: canvas.getContext('2d'),
+          viewport: viewport
+        };
+        
+        page.render(renderContext).promise.then(() => {
+          renderedPages++;
+          if (renderedPages === totalPages) {
+            // All pages rendered
+            scrollToPage(pageNum);
+          }
+        });
       });
     }
+    
     pageCountSpan.textContent = pdfDoc.numPages;
-    scrollToPage(pageNum);
   }
 
   function repositionScroll() {
     requestAnimationFrame(() => {
       const scaleRatio = zoom / oldZoom;
-
-      // Top left fixed point:
       canvasContainer.scrollLeft = oldScrollLeft * scaleRatio;
       canvasContainer.scrollTop = oldScrollTop * scaleRatio;
     });
@@ -107,26 +123,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let sidebarScrollState = {
     scrollTop: 0,
-    mode: 'restore' // 'restore' or 'focus'
+    mode: 'restore'
   };
 
   function scrollSidebarThumbIntoView(pageNum) {
     const thumb = sidebar.querySelector(`.pdf-thumb[data-page="${pageNum}"]`)?.parentElement;
     if (!thumb) return;
-
-    // Get sidebar and thumbnail positions
     const sidebarRect = sidebar.getBoundingClientRect();
     const thumbRect = thumb.getBoundingClientRect();
-
-    // If the thumbnail is above the visible area
     if (thumbRect.top < sidebarRect.top) {
       sidebar.scrollTop += thumbRect.top - sidebarRect.top;
     }
-    // If the thumbnail is below the visible area
     else if (thumbRect.bottom > sidebarRect.bottom) {
       sidebar.scrollTop += thumbRect.bottom - sidebarRect.bottom;
     }
-    // If already in view, do nothing
   }
 
   function updatePageDisplay(num) {
@@ -148,7 +158,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (current !== pageNum) {
       updatePageDisplay(current);
+      scrollSidebarThumbIntoView(current);
     }
+  }
+
+  function renderSidebar() {
+    sidebar.innerHTML = ''; // Clear existing thumbnails
+    return Promise.all(
+      Array.from({length: pdfDoc.numPages}, (_, i) => i + 1).map(i => 
+        pdfDoc.getPage(i).then(p => {
+          const v = p.getViewport({ scale: 0.2 });
+          const thumbWrapper = document.createElement('div');
+          thumbWrapper.classList.add('pdf-thumb-wrapper');
+          const c = document.createElement('canvas');
+          c.width = v.width;
+          c.height = v.height;
+          c.classList.add('pdf-thumb');
+          c.dataset.page = i;
+          if (i === pageNum) c.classList.add('active');
+          c.addEventListener('click', () => scrollToPage(i));
+          thumbWrapper.appendChild(c);
+          const label = document.createElement('span');
+          label.classList.add('pdf-thumb-label');
+          label.textContent = i;
+          thumbWrapper.appendChild(label);
+          sidebar.appendChild(thumbWrapper);
+          return p.render({ canvasContext: c.getContext('2d'), viewport: v }).promise;
+        })
+      )
+    );
   }
 
   canvasContainer.addEventListener('scroll', updateCurrentPage);
@@ -157,38 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
     pdfDoc = pdf;
     pageCountSpan.textContent = pdfDoc.numPages;
     renderPages();
-
-    for (let i = 1; i <= pdfDoc.numPages; i++) {
-      pdfDoc.getPage(i).then(p => {
-        const v = p.getViewport({ scale: 0.2 });
-
-        // Create wrapper
-        const thumbWrapper = document.createElement('div');
-        thumbWrapper.classList.add('pdf-thumb-wrapper');
-
-        // Create thumbnail canvas
-        const c = document.createElement('canvas');
-        c.width = v.width;
-        c.height = v.height;
-        c.classList.add('pdf-thumb');
-        c.dataset.page = i;
-        if (i === pageNum) c.classList.add('active');
-        c.addEventListener('click', () => scrollToPage(i));
-        thumbWrapper.appendChild(c);
-
-        // Add page number label
-        const label = document.createElement('span');
-        label.classList.add('pdf-thumb-label');
-        label.textContent = i;
-        thumbWrapper.appendChild(label);
-
-        // Append thumbWrapper to the sidebar
-        sidebar.appendChild(thumbWrapper);
-
-        // Render the thumbnail
-        p.render({ canvasContext: c.getContext('2d'), viewport: v });
-      });
-    }
+    renderSidebar();
   }).catch(err => console.error('Failed to load PDF:', err));
 
   prevBtn.addEventListener('click', () => {
@@ -216,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
     oldScrollTop = canvasContainer.scrollTop;
 
     if (zoomMode !== 'custom') {
-      zoom = Math.floor(currentZoom / 0.25) * 0.25; // Round down to the nearest 0.25
+      zoom = Math.floor(currentZoom / 0.25) * 0.25;
       zoomMode = 'custom';
     }
     zoom = Math.min(zoom + 0.25, 3);
@@ -229,9 +236,8 @@ document.addEventListener('DOMContentLoaded', () => {
     oldZoom = zoom;
     oldScrollLeft = canvasContainer.scrollLeft;
     oldScrollTop = canvasContainer.scrollTop;
-    
     if (zoomMode !== 'custom') {
-      zoom = Math.ceil(currentZoom / 0.25) * 0.25; // Round up to the nearest 0.25
+      zoom = Math.ceil(currentZoom / 0.25) * 0.25;
       zoomMode = 'custom';
     }
     zoom = Math.max(zoom - 0.25, 0.25);
@@ -244,7 +250,6 @@ document.addEventListener('DOMContentLoaded', () => {
     oldZoom = zoom;
     oldScrollLeft = canvasContainer.scrollLeft;
     oldScrollTop = canvasContainer.scrollTop;
-    
     const val = zoomSelect.value;
     if (val === 'fit' || val === 'width' || val === 'auto') {
       zoomMode = val;
@@ -294,13 +299,9 @@ document.addEventListener('DOMContentLoaded', () => {
     oldZoom = zoom;
     oldScrollLeft = canvasContainer.scrollLeft;
     oldScrollTop = canvasContainer.scrollTop;
-
-    // If closing sidebar, store scroll state
     if (sidebar.classList.contains('open')) {
-      // Get the currently selected thumbnail
       const selectedThumb = sidebar.querySelector('.pdf-thumb.active')?.parentElement;
       if (selectedThumb) {
-        // Check if selected thumbnail is visible in sidebar
         if (isElementInView(sidebar, selectedThumb)) {
           sidebarScrollState.scrollTop = sidebar.scrollTop;
           sidebarScrollState.mode = 'restore';
@@ -309,13 +310,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     }
-    
     sidebar.classList.toggle('open');
     if (sidebar.classList.contains('open')) {
       sidebar.addEventListener(
         'transitionend',
         () => {
-          // Get the currently selected thumbnail
           const selectedThumb = sidebar.querySelector('.pdf-thumb.active')?.parentElement;
           if (selectedThumb) {
             if (sidebarScrollState.mode === 'restore') {
@@ -342,27 +341,444 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   expandBtn.addEventListener('click', () => {
-    if (!modal) {
-      modal = document.createElement('div');
-      modal.id = 'pdf-modal';
-      modal.appendChild(frame);
-      document.body.appendChild(modal);
-      document.body.classList.add('no-scroll');
-      expandBtn.textContent = '✕';
-      expandBtn.title = 'Close';
-    } else {
-      if (frameNextSibling) {
-        frameParent.insertBefore(frame, frameNextSibling);
+      if (!modal) {
+          // Store current frame state
+          const frameState = {
+              pageNum,
+              zoom,
+              zoomMode,
+              scrollLeft: canvasContainer.scrollLeft,
+              scrollTop: canvasContainer.scrollTop,
+              sidebarOpen: sidebar.classList.contains('open')
+          };
+
+          // Create modal
+          modal = document.createElement('div');
+          modal.id = 'pdf-modal';
+          
+          // Clone frame and its contents
+          const modalFrame = frame.cloneNode(true);
+          modal.appendChild(modalFrame);
+          document.body.appendChild(modal);
+          document.body.classList.add('no-scroll');
+          
+          // Update expand button
+          expandBtn.textContent = '✕';
+          expandBtn.title = 'Close';
+
+          // Get modal elements
+          const modalViewer = modalFrame.querySelector('#pdf-viewer');
+          const modalPagesContainer = modalFrame.querySelector('#pdf-pages');
+          const modalCanvasContainer = modalFrame.querySelector('#pdf-canvas-container');
+          const modalPageNumInput = modalFrame.querySelector('#pdf-page-num');
+          const modalPageCountSpan = modalFrame.querySelector('#pdf-page-count');
+          const modalPrevBtn = modalFrame.querySelector('#pdf-prev');
+          const modalNextBtn = modalFrame.querySelector('#pdf-next');
+          const modalZoomInBtn = modalFrame.querySelector('#pdf-zoom-in');
+          const modalZoomOutBtn = modalFrame.querySelector('#pdf-zoom-out');
+          const modalZoomSelect = modalFrame.querySelector('#pdf-zoom-select');
+          const modalDownloadBtn = modalFrame.querySelector('#pdf-download');
+          const modalPrintBtn = modalFrame.querySelector('#pdf-print');
+          const modalSidebar = modalFrame.querySelector('#pdf-sidebar');
+          const modalSidebarToggle = modalFrame.querySelector('#pdf-sidebar-toggle');
+
+          // Track modal state
+          let modalPageNum = frameState.pageNum;
+          let modalZoom = frameState.zoom;
+          let modalZoomMode = frameState.zoomMode;
+          let modalOldZoom = frameState.zoom;
+          let modalOldScrollLeft = frameState.scrollLeft;
+          let modalOldScrollTop = frameState.scrollTop;
+          let modalSidebarScrollState = null;
+
+          function calculateModalZoom(base) {
+            if (modalZoomMode === 'fit') {
+                modalZoom = modalCanvasContainer.clientHeight / base.height;
+                return modalZoom;
+            } else if (modalZoomMode === 'width') {
+                // Calculate available width accounting for sidebar
+                const availableWidth = modalCanvasContainer.clientWidth;
+                modalZoom = availableWidth / base.width;
+                return modalZoom;
+            } else if (modalZoomMode === 'auto') {
+                modalZoom = 1.1;
+                return modalZoom;
+            }
+            return modalZoom;
+          }
+
+          function renderModalPages() {
+            if (!pdfDoc) return;
+            const currentPage = modalPageNum; // Store current page
+            modalPagesContainer.innerHTML = '';
+            
+            const renderPromises = [];
+            for (let i = 1; i <= pdfDoc.numPages; i++) {
+                const canvas = document.createElement('canvas');
+                canvas.dataset.page = i;
+                canvas.classList.add('pdf-page');
+                modalPagesContainer.appendChild(canvas);
+                
+                const renderPromise = pdfDoc.getPage(i).then(page => {
+                    const base = page.getViewport({ scale: 1 });
+                    const scale = calculateModalZoom(base);
+                    const viewport = page.getViewport({ scale });
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    canvas.style.width = viewport.width + 'px';
+                    canvas.style.height = viewport.height + 'px';
+                    return page.render({
+                        canvasContext: canvas.getContext('2d'),
+                        viewport
+                    }).promise;
+                });
+                renderPromises.push(renderPromise);
+            }
+
+            Promise.all(renderPromises).then(() => {
+                // Restore scroll position for current page
+                const target = modalPagesContainer.querySelector(`canvas[data-page="${currentPage}"]`);
+                if (target) {
+                    modalCanvasContainer.scrollTop = (target.height * (currentPage - 1)) + (12 * (currentPage - 1));
+                }
+                updateModalPageDisplay(currentPage);
+            });
+          }
+
+          function updateModalPageDisplay(num) {
+              modalPageNum = num;
+              modalPageNumInput.value = num;
+              modalSidebar.querySelectorAll('.pdf-thumb').forEach((t, idx) => {
+                  t.classList.toggle('active', idx + 1 === num);
+              });
+              scrollModalSidebarThumbIntoView(num);
+          }
+
+          function scrollModalSidebarThumbIntoView(pageNum) {
+              const thumb = modalSidebar.querySelector(`.pdf-thumb[data-page="${pageNum}"]`)?.parentElement;
+              if (!thumb) return;
+              
+              // Center the thumbnail in the sidebar
+              modalSidebar.scrollTop = thumb.offsetTop - 
+                  (modalSidebar.clientHeight / 2) + (thumb.clientHeight / 2);
+          }
+
+          function scrollModalToPage(num) {
+              const target = modalPagesContainer.querySelector(`canvas[data-page="${num}"]`);
+              if (target) {
+                  modalCanvasContainer.scrollTop = (target.height * (num - 1)) + (12 * (num - 1));
+              }
+              updateModalPageDisplay(num);
+          }
+
+          function updateModalCurrentPage() {
+              const pages = modalPagesContainer.querySelectorAll('.pdf-page');
+              let current = modalPageNum;
+              for (const p of pages) {
+                  if (p.offsetTop + p.clientHeight / 2 > modalCanvasContainer.scrollTop) {
+                      current = parseInt(p.dataset.page, 10);
+                      break;
+                  }
+              }
+              if (current !== modalPageNum) {
+                  updateModalPageDisplay(current);
+              }
+          }
+
+          // Add scroll listener to modal
+          modalCanvasContainer.addEventListener('scroll', () => {
+              const pages = modalPagesContainer.querySelectorAll('.pdf-page');
+              let currentVisible = modalPageNum;
+              
+              for (const page of pages) {
+                  const pageNum = parseInt(page.dataset.page, 10);
+                  const rect = page.getBoundingClientRect();
+                  const containerRect = modalCanvasContainer.getBoundingClientRect();
+                  
+                  // Calculate how much of the page is visible
+                  const visibleHeight = Math.min(rect.bottom, containerRect.bottom) - 
+                                      Math.max(rect.top, containerRect.top);
+                  const pageVisiblePercent = visibleHeight / rect.height;
+                  
+                  // If more than 50% of the page is visible, consider it the current page
+                  if (pageVisiblePercent > 0.5) {
+                      currentVisible = pageNum;
+                      break;
+                  }
+              }
+              
+              if (currentVisible !== modalPageNum) {
+                  updateModalPageDisplay(currentVisible);
+              }
+          });
+
+          // Re-render PDF in modal
+          if (pdfDoc) {
+              modalPageCountSpan.textContent = pdfDoc.numPages;
+              modalPageNumInput.value = modalPageNum;
+              modalZoomSelect.value = modalZoom;
+              
+              // Set initial sidebar state
+              if (frameState.sidebarOpen) {
+                  modalSidebar.classList.add('open');
+              }
+              
+              // Render pages
+              renderModalPages();
+              
+              // Re-render sidebar thumbnails
+              modalSidebar.innerHTML = '';
+              for (let i = 1; i <= pdfDoc.numPages; i++) {
+                  pdfDoc.getPage(i).then(p => {
+                      const v = p.getViewport({ scale: 0.2 });
+                      const thumbWrapper = document.createElement('div');
+                      thumbWrapper.classList.add('pdf-thumb-wrapper');
+                      const c = document.createElement('canvas');
+                      c.width = v.width;
+                      c.height = v.height;
+                      c.classList.add('pdf-thumb');
+                      c.dataset.page = i;
+                      if (i === modalPageNum) c.classList.add('active');
+                      c.addEventListener('click', () => {
+                          scrollModalToPage(i);
+                      });
+                      thumbWrapper.appendChild(c);
+                      const label = document.createElement('span');
+                      label.classList.add('pdf-thumb-label');
+                      label.textContent = i;
+                      thumbWrapper.appendChild(label);
+                      modalSidebar.appendChild(thumbWrapper);
+                      p.render({ canvasContext: c.getContext('2d'), viewport: v });
+                  });
+              }
+
+              // Attach event listeners to modal controls
+              modalPrevBtn.addEventListener('click', () => {
+                  if (modalPageNum > 1) {
+                      scrollModalToPage(modalPageNum - 1);
+                  }
+              });
+
+              modalNextBtn.addEventListener('click', () => {
+                  if (modalPageNum < pdfDoc.numPages) {
+                      scrollModalToPage(modalPageNum + 1);
+                  }
+              });
+
+              modalPageNumInput.addEventListener('change', () => {
+                  const n = parseInt(modalPageNumInput.value);
+                  if (!isNaN(n) && n >= 1 && n <= pdfDoc.numPages) {
+                      scrollModalToPage(n);
+                  } else {
+                      modalPageNumInput.value = modalPageNum;
+                  }
+              });
+
+              modalZoomInBtn.addEventListener('click', () => {
+                  modalOldZoom = modalZoom;
+                  modalOldScrollLeft = modalCanvasContainer.scrollLeft;
+                  modalOldScrollTop = modalCanvasContainer.scrollTop;
+
+                  if (modalZoomMode !== 'custom') {
+                      modalZoom = Math.floor(modalZoom / 0.25) * 0.25;
+                      modalZoomMode = 'custom';
+                  }
+                  modalZoom = Math.min(modalZoom + 0.25, 3);
+                  modalZoomSelect.value = modalZoom;
+                  renderModalPages();
+              });
+
+              modalZoomOutBtn.addEventListener('click', () => {
+                  modalOldZoom = modalZoom;
+                  modalOldScrollLeft = modalCanvasContainer.scrollLeft;
+                  modalOldScrollTop = modalCanvasContainer.scrollTop;
+
+                  if (modalZoomMode !== 'custom') {
+                      modalZoom = Math.ceil(modalZoom / 0.25) * 0.25;
+                      modalZoomMode = 'custom';
+                  }
+                  modalZoom = Math.max(modalZoom - 0.25, 0.25);
+                  modalZoomSelect.value = modalZoom;
+                  renderModalPages();
+              });
+
+              modalZoomSelect.addEventListener('change', () => {
+                  modalOldZoom = modalZoom;
+                  modalOldScrollLeft = modalCanvasContainer.scrollLeft;
+                  modalOldScrollTop = modalCanvasContainer.scrollTop;
+                  
+                  const val = modalZoomSelect.value;
+                  modalZoomMode = (val === 'fit' || val === 'width' || val === 'auto') ? val : 'custom';
+                  
+                  pdfDoc.getPage(1).then(page => {
+                      const base = page.getViewport({ scale: 1 });
+                      if (val === 'fit' || val === 'width' || val === 'auto') {
+                          modalZoom = calculateModalZoom(base);
+                      } else {
+                          modalZoom = parseFloat(val);
+                      }
+                      renderModalPages();
+                  });
+              });
+
+              modalDownloadBtn.addEventListener('click', async () => {
+                  try {
+                      const res = await fetch(url);
+                      const blob = await res.blob();
+                      const link = document.createElement('a');
+                      link.href = URL.createObjectURL(blob);
+                      link.download = url.split('/').pop();
+                      link.click();
+                      URL.revokeObjectURL(link.href);
+                  } catch (e) {
+                      console.error('Download failed', e);
+                  }
+              });
+
+              modalPrintBtn.addEventListener('click', async () => {
+                  const iframe = document.createElement('iframe');
+                  iframe.style.display = 'none';
+                  document.body.appendChild(iframe);
+                  try {
+                      const res = await fetch(url);
+                      const blob = await res.blob();
+                      iframe.src = URL.createObjectURL(blob);
+                      iframe.onload = () => {
+                          iframe.contentWindow.focus();
+                          iframe.contentWindow.print();
+                          URL.revokeObjectURL(iframe.src);
+                          document.body.removeChild(iframe);
+                      };
+                  } catch (e) {
+                      console.error('Print failed', e);
+                  }
+              });
+
+              modalSidebarToggle.addEventListener('click', () => {
+                  const currentPage = modalPageNum;
+                  
+                  // Store scroll state before toggle
+                  if (modalSidebar.classList.contains('open')) {
+                      const selectedThumb = modalSidebar.querySelector('.pdf-thumb.active')?.parentElement;
+                      if (selectedThumb) {
+                          if (isElementInView(modalSidebar, selectedThumb)) {
+                              modalSidebarScrollState = {
+                                  scrollTop: modalSidebar.scrollTop,
+                                  mode: 'restore'
+                              };
+                          } else {
+                              modalSidebarScrollState = {
+                                  mode: 'focus'
+                              };
+                          }
+                      }
+                  }
+                  
+                  modalSidebar.classList.toggle('open');
+                  
+                  modalSidebar.addEventListener('transitionend', () => {
+                      if (modalSidebar.classList.contains('open')) {
+                          const selectedThumb = modalSidebar.querySelector('.pdf-thumb.active')?.parentElement;
+                          if (selectedThumb) {
+                              if (modalSidebarScrollState?.mode === 'restore') {
+                                  modalSidebar.scrollTop = modalSidebarScrollState.scrollTop;
+                              } else {
+                                  modalSidebar.scrollTop = selectedThumb.offsetTop - 
+                                      (modalSidebar.clientHeight / 2) + (selectedThumb.clientHeight / 2);
+                              }
+                          }
+                      }
+                      
+                      if (modalZoomMode === 'width') {
+                          pdfDoc.getPage(1).then(page => {
+                              const base = page.getViewport({ scale: 1 });
+                              modalZoom = calculateModalZoom(base);
+                              renderModalPages();
+                              scrollModalToPage(currentPage);
+                          });
+                      }
+                  }, { once: true });
+              });
+
+              // Add resize handler for zoom modes
+              window.addEventListener('resize', () => {
+                  if (modal && modalZoomMode !== 'custom') {
+                      const currentPage = modalPageNum; // Store current page
+                      pdfDoc.getPage(1).then(page => {
+                          const base = page.getViewport({ scale: 1 });
+                          modalZoom = calculateModalZoom(base);
+                          renderModalPages();
+                          // Restore the current page after re-render
+                          scrollModalToPage(currentPage);
+                      });
+                  }
+              });
+          }
+
+          // Hook up modal's expand button
+          const modalExpandBtn = modalFrame.querySelector('#pdf-expand');
+          modalExpandBtn.textContent = '✕';
+          modalExpandBtn.title = 'Close';
+          modalExpandBtn.addEventListener('click', () => {
+              // Store modal's final state
+              const finalState = {
+                  pageNum: modalPageNum,
+                  zoom: modalZoom,
+                  zoomMode: modalZoomMode,
+                  sidebarOpen: modalSidebar.classList.contains('open'),
+                  scrollLeft: modalCanvasContainer.scrollLeft,
+                  scrollTop: modalCanvasContainer.scrollTop
+              };
+
+              // Close modal first
+              modal.remove();
+              modal = null;
+              document.body.classList.remove('no-scroll');
+              expandBtn.textContent = '⤢';
+              expandBtn.title = 'Expand';
+
+              // Update frame state
+              pageNum = finalState.pageNum;
+              zoom = finalState.zoom;
+              zoomMode = finalState.zoomMode;
+              
+              // Update UI elements
+              zoomSelect.value = modalZoomSelect.value;
+              pageNumInput.value = finalState.pageNum;
+              
+              // Sync sidebar state
+              if (finalState.sidebarOpen !== sidebar.classList.contains('open')) {
+                  sidebar.classList.toggle('open');
+              }
+
+              // Re-render frame with new state
+              pdfDoc.getPage(1).then(page => {
+                  const base = page.getViewport({ scale: 1 });
+                  if (zoomMode !== 'custom') {
+                      zoom = calculateScale(base);
+                  }
+                  
+                  // Complete re-render
+                  renderPages();
+                  
+                  // After render, set correct page and scroll
+                  Promise.resolve().then(() => {
+                      scrollToPage(finalState.pageNum);
+                      canvasContainer.scrollLeft = finalState.scrollLeft;
+                      canvasContainer.scrollTop = finalState.scrollTop;
+                      updatePageDisplay(finalState.pageNum);
+                      scrollSidebarThumbIntoView(finalState.pageNum);
+                  });
+              });
+          });
+          
       } else {
-        frameParent.appendChild(frame);
+          modal.remove();
+          modal = null;
+          document.body.classList.remove('no-scroll');
+          expandBtn.textContent = '⤢';
+          expandBtn.title = 'Expand';
       }
-      modal.remove();
-      modal = null;
-      document.body.classList.remove('no-scroll');
-      expandBtn.textContent = '⤢';
-      expandBtn.title = 'Expand';
-    }
-    renderPages();
   });
 
   window.addEventListener('resize', renderPages);
