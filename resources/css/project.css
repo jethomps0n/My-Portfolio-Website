@@ -284,41 +284,76 @@
     border-color: hsla(228,48%,60%,1);
 }
 
+/* ========== PDF Toolbar ========== */
 #pdf-controls {
-    z-index: 10;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 0;
-    font-size: 0.65rem;
-    background: hsla(201, 100%, 10%, 1);
-    box-shadow: 0 3px 4px rgba(0,0,0,0.3);
-    order: -1;
+  font-size: 0.65rem;
+  order: -1;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: hsla(201, 100%, 10%, 0.85);
+  border-bottom: 1px solid hsla(0,0%,100%,0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* Base style for all toolbar elements */
 #pdf-controls button,
 #pdf-controls select,
 #pdf-controls input {
-    font-size: 0.65rem;
-    background: hsla(228,48%,70%,0.2);
-    border: 1px solid hsla(248,9%,45%,0.6);
-    color: hsla(0,0%,90%,1);
-    padding: 3px 6px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin: 0;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 0.65rem;
+  padding: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  border-radius: 8px;
+}
+
+/* Hover and active effects for buttons */
+#pdf-controls button:hover {
+  background: hsla(0,0%,100%,0.1);
+}
+#pdf-controls button:active {
+  transform: scale(0.95);
+}
+
+/* Input and select spacing */
+#pdf-controls select,
+#pdf-controls input {
+  background: hsla(0,0%,100%,0.08);
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 0.65rem;
 }
 
 #pdf-controls input {
-    width: 50px;
+    width: 25px; /* Fixed width for input */
     text-align: center;
 }
 
-#pdf-download {
-    margin-left: auto;
+#pdf-controls select:hover,
+#pdf-controls input:hover {
+  background: hsla(0,0%,100%,0.12);
 }
+
+/* Download btn pushed to right side */
+#pdf-download {
+  margin-left: auto;
+}
+
+/* Optional icon size tweaks if you use inline SVGs */
+#pdf-controls button svg {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  fill: white;
+}
+
 
 #pdf-modal {
     position: fixed;
