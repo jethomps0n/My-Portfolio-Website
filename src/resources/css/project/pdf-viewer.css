@@ -1,0 +1,233 @@
+/* PDF viewer styles */
+#pdf-viewer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#pdf-container {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+#pdf-canvas-container {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background-color: hsla(248, 9%, 45%, 0.65);
+}
+
+#pdf-pages {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.pdf-page {
+    margin-bottom: 12px;
+    display: block;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+#pdf-sidebar {
+    width: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-y: auto;
+    background: hsla(201, 100%, 10%, 1);
+    transition: width 0.3s ease-out, padding 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#pdf-sidebar.open {
+    width: 225px;
+    padding: 10px 5px;
+}
+
+.pdf-thumb {
+    width: 60%;
+    border: 8px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.pdf-thumb.active {
+    border-color: hsla(228,48%,60%,1);
+}
+
+#pdf-controls {
+  font-size: 0.65rem;
+  order: -1;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: hsla(201, 100%, 10%, 0.85);
+  border-bottom: 1px solid hsla(0,0%,100%,0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* Left section - Sidebar toggle */
+.pdf-controls-left {
+  display: flex;
+  align-items: center;
+}
+
+/* Center section - Navigation and zoom controls */
+.pdf-controls-center {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Space between navigation and zoom groups */
+position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  justify-content: center;
+}
+
+.pdf-nav-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pdf-zoom-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Right section - Download, print, expand/close */
+.pdf-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Base style for all toolbar elements */
+#pdf-controls button,
+#pdf-controls select,
+#pdf-controls input {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 0.75rem; /* Slightly larger than before */
+  padding: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  border-radius: 6px; /* More square-like */
+  height: 32px;
+  min-width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* Special styling for numbered text elements */
+#pdf-controls input,
+#pdf-page-num {
+  font-size: 0.65rem; /* Keep original size for numbers */
+  background: hsla(0,0%,100%,0.08);
+  width: 40px;
+  text-align: center;
+  padding: 6px 4px;
+}
+
+/* Page count text */
+.pdf-page-info {
+  font-size: 0.65rem; /* Keep original size for numbers */
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+}
+
+#pdf-page-count {
+  margin-left: 6px;
+}
+
+/* Select dropdown styling */
+#pdf-controls select {
+  background: hsla(0,0%,100%,0.08);
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 0.65rem; /* Keep smaller for dropdown */
+  height: 32px;
+  min-width: 120px;
+}
+
+/* Hover and active effects for buttons */
+#pdf-controls button:hover {
+  background: hsla(0,0%,100%,0.1);
+}
+
+#pdf-controls button:active {
+  transform: scale(0.95);
+}
+
+#pdf-controls select:hover,
+#pdf-controls input:hover {
+  background: hsla(0,0%,100%,0.12);
+}
+
+/* Icon styling */
+#pdf-controls button svg {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+  fill: white;
+}
+
+/* Sidebar toggle button - slightly larger for better visibility */
+#pdf-sidebar-toggle {
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+#pdf-modal {
+    position: fixed;
+    pointer-events: auto;
+    top: 5vh;
+    left: 5vw;
+    right: 5vw;
+    bottom: 5vh;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.9);
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    border-radius: 25px;
+}
+
+#pdf-modal #frame {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+}
+
+body.no-scroll {
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.pdf-thumb-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.pdf-thumb-label {
+  font-size: 0.65rem;
+  color: hsla(0,0%,80%,1);
+  margin-top: 2px;
+  text-align: center;
+}

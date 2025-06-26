@@ -717,7 +717,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           // Hook up modal's expand button
           const modalExpandBtn = modalFrame.querySelector('#pdf-expand');
-          modalExpandBtn.textContent = '✕';
+          modalExpandBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M6.225 4.811a1 1 0 0 0-1.414 1.414L10.586 12L4.81 17.775a1 1 0 1 0 1.414 1.414L12 13.414l5.775 5.775a1 1 0 0 0 1.414-1.414L13.414 12l5.775-5.775a1 1 0 0 0-1.414-1.414L12 10.586z" stroke-width="1.5" stroke="#fff"/></svg>';
           modalExpandBtn.title = 'Close';
           modalExpandBtn.addEventListener('click', () => {
               // Store modal's final state
@@ -734,7 +734,7 @@ document.addEventListener('DOMContentLoaded', () => {
               modal.remove();
               modal = null;
               document.body.classList.remove('no-scroll');
-              expandBtn.textContent = '⤢';
+              expandBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M9.79 12.79L4 18.59V17a1 1 0 0 0-2 0v4a1 1 0 0 0 .08.38a1 1 0 0 0 .54.54A1 1 0 0 0 3 22h4a1 1 0 0 0 0-2H5.41l5.8-5.79a1 1 0 0 0-1.42-1.42M21.92 2.62a1 1 0 0 0-.54-.54A1 1 0 0 0 21 2h-4a1 1 0 0 0 0 2h1.59l-5.8 5.79a1 1 0 0 0 0 1.42a1 1 0 0 0 1.42 0L20 5.41V7a1 1 0 0 0 2 0V3a1 1 0 0 0-.08-.38"/></svg>';
               expandBtn.title = 'Expand';
 
               // Update frame state
