@@ -511,6 +511,7 @@ button.show-more:hover {
     padding: 2px 6px;
     border-radius: 6.5px;
     margin-right: 4px;
+    margin-bottom: 4px;
     line-height: 1;
     cursor: pointer;
     transition: all 100ms ease-out;
@@ -528,7 +529,7 @@ button.show-more:hover {
 }
 
 .result-info p {
-    margin-top: 20px;
+    margin-top: 16px;
     font-size: 0.65rem;
     color: hsla(0, 0%, 80%, 1);
     overflow: hidden;
