@@ -30,12 +30,10 @@ html {
     font-family: "Reddit Sans", Tahoma, Verdana, Geneva, Tahoma, sans-serif;
     font-weight: normal;
     font-style: normal;
-    /* background: #15264A; */
     background: radial-gradient(circle 1090px at center, hsla(221, 56%, 19%, 1), hsla(358, 76%, 7%, 1));
     background-size: cover;
     font-size: 24px;
     color: hsla(0, 0%, 100%, 1);
-    /* Pin this to bottom */
     background-attachment: fixed;
 }
 
@@ -49,37 +47,28 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    
     width: 100%;
     height: 100%;
-    
     pointer-events: none;
     opacity: 0.3;
     z-index: 1;
-    /* filter: brightness(100); */
 }
 
 #softnoise {
     position: fixed;
     top: 0;
     left: 0;
-    
     width: 100%;
     height: 100%;
-    
     pointer-events: none;
     opacity: 0.07;
-
     z-index: 100;
-    /* filter: brightness(100); */
 }
 
 /* ----Header Section (Navbar & Website Title)---- */
 header {
-    /* REMEMBER: There is an 8 pixel margin around the body */
     height: auto;
     margin: 0 0 25px 0;
-    /* position: static; */
     position: sticky;
     top: 25px;
     display: flex;
@@ -90,6 +79,12 @@ header {
     z-index: 500;
 }
 
+/* Initial hidden state for navbar when animating */
+header.navbar-animate {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
 #navbar {
     padding: 16px;
     display: flex;
@@ -98,7 +93,7 @@ header {
     align-items: center;
     text-align: center;
     gap: 37px;
-    height: 1.51666667rem; /* .nav font-size + vertical padding + vertical border */
+    height: 1.51666667rem;
     background-color: hsla(201, 100%, 8%, 0.45);
     border: 2px solid hsla(248, 9%, 45%, 0.2);
     border-radius: 40px;
@@ -106,6 +101,7 @@ header {
     backdrop-filter: blur(15px) brightness(0.7);
     z-index: inherit;
     contain: layout paint style;
+    transition: all 300ms ease;
 }
 
 #navbar a {
@@ -119,22 +115,24 @@ header {
     align-items: center;
     text-align: center;
     margin: 0;
-    transition: all 130ms ease-out 5ms;
+    transition: all 200ms ease-out;
     height: 44px;
     width: auto;
     position: relative;
     top: 3px;
+    will-change: transform;
 }
 
 #webTitle svg:hover {
     scale: 1.10;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 
 nav {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 0.75rem; /* 18px */
+    font-size: 0.75rem;
     gap: 16px;
 }
 
@@ -143,15 +141,23 @@ nav {
     color: hsla(0, 0%, 80%, 1);
     justify-content: center;
     align-items: center;
-    padding: 0.3rem 0.95rem; /* 7.2px */
-    transition: all 100ms ease-out 5ms;
+    padding: 0.3rem 0.95rem;
+    transition: all 200ms ease-out;
     border-radius: 25px;
     transform: translateZ(0);
+    will-change: transform, background-color, color;
+}
+
+/* Initial hidden state for nav links when animating */
+header.navbar-animate .nav {
+    opacity: 0;
+    transform: translateY(-10px);
 }
 
 #navbar .nav:hover {
     background-color: hsla(228, 48%, 60%, 1);
     color: hsla(0, 0%, 100%, 1);
+    transform: translateY(-2px);
 }
 
 #navbar .nav:active {
@@ -167,11 +173,6 @@ nav {
 }
 
 .separator {
-    /* position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0 auto; */
     height: 1px;
     width: 100%;
     background-color: hsla(248, 9%, 45%, 1);
@@ -184,11 +185,64 @@ nav {
   z-index: 5;
 }
 
+/* Global animations */
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes navSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Header animations - only for initial page load */
+header.animate-slide-down {
+    animation: slideInDown 0.6s ease-out;
+}
+
+/* Nav link animations with stagger */
+header.animate-slide-down .nav:nth-child(1) {
+    animation: navSlideIn 0.3s ease-out 0.3s both;
+}
+
+header.animate-slide-down .nav:nth-child(2) {
+    animation: navSlideIn 0.3s ease-out 0.4s both;
+}
+
+header.animate-slide-down .nav:nth-child(3) {
+    animation: navSlideIn 0.3s ease-out 0.5s both;
+}
+
+header.animate-slide-down .nav:nth-child(4) {
+    animation: navSlideIn 0.3s ease-out 0.6s both;
+}
+
 /* Footer Section */
 footer {
     margin: 42px -8px -8px -8px;
     padding: 0 8px 8px 8px;
-    /* background-color: hsla(249, 65%, 45%, 0.1); */
     background: linear-gradient(transparent, 30%, hsla(249, 65%, 45%, 0.15) 80%);
     position: relative;
     z-index: 500;
@@ -234,7 +288,8 @@ footer a {
   padding: 30px;
   width: 100%;
   height: 30px;
-  transition: all 300ms ease 5ms;
+  transition: all 300ms ease;
+  will-change: transform, box-shadow;
 }
 
 #footer-top a:hover {
@@ -242,6 +297,7 @@ footer a {
   color: hsla(0, 0%, 100%, 1);
   backdrop-filter: blur(0.50px) brightness(1.5);
   box-shadow: 0px 60px 100px 5px hsla(0, 0%, 0%, 0.25);
+  transform: translateY(-3px);
 }
 
 #footer-top a:active {
@@ -265,10 +321,18 @@ footer a {
     box-shadow: 0px 40px 100px 5px hsla(0, 0%, 0%, 0.25);
     margin: 0px 30px 15px 30px;
     padding: 40px;
+    transition: all 300ms ease;
+}
+
+#footer-middle:hover {
+    transform: translateY(-3px);
+    box-shadow: 0px 50px 120px 8px hsla(0, 0%, 0%, 0.35);
 }
 
 #explore-header {
   text-decoration: underline;
+  transition: all 200ms ease;
+  cursor: pointer;
 }
 
 #explore-list {
@@ -285,6 +349,7 @@ footer a {
 
 #explore-list li {
   margin-bottom: 10px;
+  transition: all 200ms ease;
 }
 
 #explore-list li::before {
@@ -296,6 +361,24 @@ footer a {
 #explore-list li a {
   text-decoration: none;
   color: hsla(0, 0%, 80%, 1);
+  transition: color 200ms ease;
+}
+
+#explore-header:hover {
+    color: hsla(242, 61%, 80%, 1);
+    transform: translateX(5px);
+}
+
+#explore-list li:hover {
+    transform: translateX(5px);
+}
+
+#explore-list li:hover a {
+    color: hsla(242, 61%, 80%, 1);
+}
+
+#explore-list li:hover::before {
+    color: hsla(242, 61%, 80%, 1);
 }
 
 #explorer-elts {
@@ -315,7 +398,13 @@ footer a {
   padding: 30px 50px;
   border-radius: 45px;
   box-shadow: 0px 40px 100px 5px hsla(0, 0%, 0%, 0.25);
-  transition: all 300ms ease 5ms;
+  transition: all 300ms ease;
+  will-change: transform, box-shadow;
+}
+
+#explore-tcr:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0px 50px 120px 8px hsla(0, 0%, 0%, 0.35);
 }
 
 #footer-bottom {
@@ -351,7 +440,7 @@ footer a {
   align-items: center;
   justify-content: center;
   text-align: center;
-  font-size: 0.65rem; /* 18px */
+  font-size: 0.65rem;
   color: hsla(0, 0%, 80%, 1);
 }
 
@@ -372,4 +461,54 @@ footer a {
 
 #socials img {
   width: 20px;
+  transition: all 200ms ease;
+}
+
+#socials a:hover img {
+    transform: scale(1.1) translateY(-2px);
+    filter: brightness(1.2);
+}
+
+/* Footer animations - only for first view */
+#footer.footer-first-view {
+    animation: fadeIn 0.6s ease-out;
+}
+
+#footer-top.footer-first-view a {
+    animation: slideInUp 0.4s ease-out both;
+}
+
+#footer-top.footer-first-view a:nth-child(1) { animation-delay: 0.1s; }
+#footer-top.footer-first-view a:nth-child(2) { animation-delay: 0.2s; }
+#footer-top.footer-first-view a:nth-child(3) { animation-delay: 0.3s; }
+
+#footer-middle.footer-first-view {
+    animation: slideInUp 0.4s ease-out 0.4s both;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    #navbar .nav:hover,
+    #footer-top a:hover,
+    #footer-middle:hover,
+    #explore-tcr:hover {
+        transform: none;
+    }
 }

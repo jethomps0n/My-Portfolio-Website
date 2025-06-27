@@ -80,48 +80,6 @@ function setupHoverEffects() {
     });
 }
 
-function createRipple(element) {
-    const ripple = document.createElement('span');
-    const rect = element.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height);
-    
-    ripple.style.width = ripple.style.height = size + 'px';
-    ripple.style.left = '50%';
-    ripple.style.top = '50%';
-    ripple.style.transform = 'translate(-50%, -50%) scale(0)';
-    ripple.style.position = 'absolute';
-    ripple.style.borderRadius = '50%';
-    ripple.style.background = 'rgba(255, 255, 255, 0.3)';
-    ripple.style.pointerEvents = 'none';
-    ripple.style.animation = 'ripple 0.6s ease-out';
-    
-    // Add ripple animation if not already present
-    if (!document.querySelector('[data-ripple-style]')) {
-        const style = document.createElement('style');
-        style.setAttribute('data-ripple-style', 'true');
-        style.textContent = `
-            @keyframes ripple {
-                to {
-                    transform: translate(-50%, -50%) scale(1);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-    
-    element.style.position = 'relative';
-    element.style.overflow = 'hidden';
-    element.appendChild(ripple);
-    
-    // Remove ripple after animation
-    setTimeout(() => {
-        if (ripple.parentNode) {
-            ripple.parentNode.removeChild(ripple);
-        }
-    }, 600);
-}
-
 function setupSmoothScroll() {
     // Smooth scroll for any anchor links within the page
     const anchorLinks = document.querySelectorAll('a[href^="#"]');
