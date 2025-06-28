@@ -512,3 +512,131 @@ footer a {
         transform: none;
     }
 }
+
+/* ----Custom Cursor Styles---- */
+/* Refined elastic cursor */
+.refined-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 12px;
+    height: 12px;
+    background: hsla(242, 61%, 80%, 0.7);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999999;
+    transform-origin: center center;
+    transition: width 0.2s cubic-bezier(0.23, 1, 0.320, 1),
+                height 0.2s cubic-bezier(0.23, 1, 0.320, 1),
+                background 0.15s ease,
+                opacity 0.3s ease-out,
+                transform 0.3s ease-out;
+    mix-blend-mode: difference;
+    will-change: transform;
+}
+
+/* Prevent blend mode from affecting navbar area */
+header {
+    isolation: isolate;
+}
+
+/* Small interactive element hover */
+.refined-cursor.hover-small {
+    width: 20px;
+    height: 20px;
+    background: hsla(242, 61%, 80%, 0.5);
+}
+
+/* Medium interactive element hover */
+.refined-cursor.hover-medium {
+    width: 28px;
+    height: 28px;
+    background: hsla(242, 61%, 80%, 0.4);
+}
+
+/* Large interactive element hover */
+.refined-cursor.hover-large {
+    width: 36px;
+    height: 36px;
+    background: hsla(242, 61%, 80%, 0.3);
+}
+
+/* Click state */
+.refined-cursor.active {
+    width: 8px;
+    height: 8px;
+    background: hsla(198, 100%, 48%, 0.9);
+}
+
+/* Text selection state */
+.refined-cursor.text {
+    width: 2px;
+    height: 18px;
+    border-radius: 1px;
+    background: hsla(242, 61%, 80%, 0.8);
+}
+
+/* Media hover - slightly larger but not overwhelming */
+.refined-cursor.media {
+    width: 40px;
+    height: 40px;
+    background: hsla(214, 100%, 45%, 0.3);
+}
+
+/* Hidden state */
+.refined-cursor.hidden {
+    opacity: 0;
+    transform: scale(0.3);
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+/* Special role tag state */
+.refined-cursor.role-hover {
+    background: hsla(228, 48%, 60%, 0.6);
+}
+
+/* Transparent cursor for better text legibility */
+.refined-cursor.transparent {
+    width: 24px;
+    height: 24px;
+    background: hsla(242, 61%, 80%, 0.15);
+}
+
+/* Global animation styles */
+.fade-in {
+    animation: globalFadeIn 0.4s ease-out;
+}
+
+@keyframes globalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes globalRipple {
+    from {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0.6;
+    }
+    to {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
+}
+
+.ripple-container {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Reduced motion overrides for cursor */
+@media (prefers-reduced-motion: reduce) {
+    .refined-cursor {
+        transition: none !important;
+    }
+}

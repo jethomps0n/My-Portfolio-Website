@@ -1,10 +1,5 @@
 /* Explore Page Styles - inspired by global and index */
 
-* {
-    z-index: 5;
-}
-
-/* Generic */
 #explore-page {
     display: flex;
     flex-direction: column;
@@ -13,6 +8,15 @@
     margin: 42px auto 0 auto;
     padding: 0 28px;
     max-width: 1300px;
+}
+
+#explore-page * {
+    z-index: 5;
+}
+
+/* Ensure header/navbar maintains proper stacking */
+body > header {
+    z-index: 500 !important;
 }
 
 button {
