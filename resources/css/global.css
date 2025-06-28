@@ -530,7 +530,7 @@ footer a {
                 height 0.2s cubic-bezier(0.23, 1, 0.320, 1),
                 background 0.15s ease,
                 opacity 0.3s ease-out,
-                transform 0.3s ease-out;
+                transform 0.065s ease-out;
     mix-blend-mode: difference;
     will-change: transform;
 }
