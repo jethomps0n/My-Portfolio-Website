@@ -101,6 +101,10 @@ document.addEventListener('DOMContentLoaded', () => {
     createRefinedCursor();
 });
 
+// Global mouse position tracking
+let globalMouseX = 0;
+let globalMouseY = 0;
+
 function createRefinedCursor() {
     // Don't create cursor on mobile devices
     if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
@@ -113,8 +117,6 @@ function createRefinedCursor() {
     document.body.appendChild(cursorEl);
 
     // Cursor position tracking
-    let mouseX = 0;
-    let mouseY = 0;
     let cursorX = 0;
     let cursorY = 0;
 
@@ -127,8 +129,8 @@ function createRefinedCursor() {
     // Smooth cursor movement with elastic effect
     function animateCursor() {
         const ease = 0.12;
-        cursorX += (mouseX - cursorX) * ease;
-        cursorY += (mouseY - cursorY) * ease;
+        cursorX += (globalMouseX - cursorX) * ease;
+        cursorY += (globalMouseY - cursorY) * ease;
 
         // Get current size and center the cursor on the cursor tip
         const size = getCurrentCursorSize();
@@ -143,8 +145,8 @@ function createRefinedCursor() {
 
     // Mouse move handler with youtube-lite detection
     document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
+        globalMouseX = e.clientX;
+        globalMouseY = e.clientY;
 
         // Check if we're hovering over a lite-youtube element
         const elementUnderCursor = document.elementFromPoint(e.clientX, e.clientY);
@@ -332,7 +334,7 @@ function setupRefinedInteractions(cursorEl) {
         if (target.matches('lite-youtube') || target.closest('lite-youtube')) {
             // Check if we're still over a lite-youtube element
             setTimeout(() => {
-                const elementUnderCursor = document.elementFromPoint(mouseX, mouseY);
+                const elementUnderCursor = document.elementFromPoint(globalMouseX, globalMouseY);
                 if (!elementUnderCursor || 
                     (!elementUnderCursor.closest('lite-youtube') && elementUnderCursor.tagName !== 'LITE-YOUTUBE')) {
                     cursorEl.classList.remove('hidden');

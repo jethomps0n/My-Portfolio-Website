@@ -1,4 +1,10 @@
 /* PDF viewer styles */
+#frame canvas {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 #pdf-viewer {
     position: relative;
     width: 100%;

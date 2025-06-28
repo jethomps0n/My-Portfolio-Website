@@ -11,9 +11,11 @@ eleventyComputed:
     pagecss: >
         <link rel="stylesheet" href="/resources/css/project/main.css">
         {% if i.Screenplay == "Sole" %}<link rel="stylesheet" href="/resources/css/project/pdf-viewer.css">{% endif %}
+        {% if i.Screenplay != "Sole" %}<link rel="stylesheet" href="/resources/css/project/video-viewer.css">{% endif %}
     pagejs: >
         <script src="/resources/js/project/main.js" defer></script>
         {% if i.Screenplay == "Sole" %}<script type="module" src="/resources/js/project/pdf-viewer.js" defer></script>{% endif %}
+        {% if i.Screenplay != "Sole" %}<script type="module" src="/resources/js/project/video-viewer.js" defer></script>{% endif %}
     addjs: >
         {% if i.Screenplay != "Sole" %}<script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"></script>{% endif %}
 ---
@@ -87,7 +89,7 @@ eleventyComputed:
                     </div>
                 </div>
                 {% else %}
-                <lite-youtube videoid="{{ i.YTSrc }}"></lite-youtube>
+                <lite-youtube videoid="{{ i.YTSrc }}" autopause></lite-youtube>
                 {% endif %}
             </div>
             <div id="info">
