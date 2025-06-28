@@ -126,7 +126,6 @@ function createRefinedCursor() {
 
     // Smooth cursor movement with elastic effect
     function animateCursor() {
-        // Smooth elastic easing - less aggressive
         const ease = 0.12;
         cursorX += (mouseX - cursorX) * ease;
         cursorY += (mouseY - cursorY) * ease;
