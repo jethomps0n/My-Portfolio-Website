@@ -81,48 +81,318 @@ const noise = id => {
 noise('noise');
 noise('softnoise');
 
-//-------CURSOR-------------//
-const cursor = new MouseFollower({
-    el: null,
-    container: document.body,
-    className: 'mf-cursor',
-    innerClassName: 'mf-cursor-inner',
-    textClassName: 'mf-cursor-text',
-    mediaClassName: 'mf-cursor-media',
-    mediaBoxClassName: 'mf-cursor-media-box',
-    iconSvgClassName: 'mf-svgsprite',
-    iconSvgNamePrefix: '-',
-    iconSvgSrc: '',
-    dataAttr: 'cursor',
-    hiddenState: '-hidden',
-    textState: '-text',
-    iconState: '-icon',
-    activeState: '-active',
-    mediaState: '-media',
-    stateDetection: {
-        '-pointer': 'a,button',
-        '-hidden': 'iframe'
-    },
-    visible: true,
-    visibleOnState: false,
-    speed: 0.55,
-    ease: 'expo.out',
-    overwrite: true,
-    skewing: 0,
-    skewingText: 2,
-    skewingIcon: 2,
-    skewingMedia: 2,
-    skewingDelta: 0.001,
-    skewingDeltaMax: 0.15,
-    stickDelta: 0.15,
-    showTimeout: 20,
-    hideOnLeave: true,
-    hideTimeout: 300,
-    hideMediaTimeout: 300
+//-------REFINED ELASTIC CURSOR-------------//
+let cursor = null;
+
+// Ensure scroll to top happens as early as possible
+if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+}
+
+// Early scroll to top - happens before DOM is ready
+window.addEventListener('beforeunload', () => {
+    window.scrollTo(0, 0);
 });
+
+// Immediate scroll reset
+window.scrollTo(0, 0);
+
+document.addEventListener('DOMContentLoaded', () => {
+    createRefinedCursor();
+});
+
+function createRefinedCursor() {
+    // Don't create cursor on mobile devices
+    if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+        return;
+    }
+
+    // Create cursor element
+    const cursorEl = document.createElement('div');
+    cursorEl.className = 'refined-cursor';
+    document.body.appendChild(cursorEl);
+
+    // Cursor position tracking
+    let mouseX = 0;
+    let mouseY = 0;
+    let cursorX = 0;
+    let cursorY = 0;
+
+    // Get current cursor size for proper centering
+    function getCurrentCursorSize() {
+        const rect = cursorEl.getBoundingClientRect();
+        return { width: rect.width, height: rect.height };
+    }
+
+    // Smooth cursor movement with elastic effect
+    function animateCursor() {
+        // Smooth elastic easing - less aggressive
+        const ease = 0.12;
+        cursorX += (mouseX - cursorX) * ease;
+        cursorY += (mouseY - cursorY) * ease;
+
+        // Get current size and center the cursor on the cursor tip
+        const size = getCurrentCursorSize();
+        const offsetX = size.width / 2;
+        const offsetY = size.height / 2;
+
+        // Center the custom cursor on the real cursor tip
+        cursorEl.style.transform = `translate(${cursorX - offsetX}px, ${cursorY - offsetY}px)`;
+
+        requestAnimationFrame(animateCursor);
+    }
+
+    // Mouse move handler with youtube-lite detection
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        // Check if we're hovering over a lite-youtube element
+        const elementUnderCursor = document.elementFromPoint(e.clientX, e.clientY);
+        const isOverYoutubeLite = elementUnderCursor && (
+            elementUnderCursor.tagName === 'LITE-YOUTUBE' ||
+            elementUnderCursor.closest('lite-youtube')
+        );
+
+        if (isOverYoutubeLite) {
+            cursorEl.classList.add('hidden');
+        } else {
+            // Show cursor if hidden and not over youtube-lite
+            if (cursorEl.classList.contains('hidden')) {
+                cursorEl.classList.remove('hidden');
+            }
+        }
+    });
+
+    // Mouse leave/enter handlers
+    document.addEventListener('mouseleave', () => {
+        cursorEl.classList.add('hidden');
+    });
+
+    document.addEventListener('mouseenter', () => {
+        cursorEl.classList.remove('hidden');
+    });
+
+    // Enhanced but simplified interaction handlers
+    setupRefinedInteractions(cursorEl);
+
+    // Start animation loop
+    animateCursor();
+}
+
+function setupRefinedInteractions(cursorEl) {
+    let currentHoverTarget = null;
+
+    // Helper function to determine appropriate hover size based on element
+    function getHoverClass(element) {
+        const rect = element.getBoundingClientRect();
+        const area = rect.width * rect.height;
+        
+        // Special cases for specific elements
+        if (element.matches('.role-tag, .type-tag')) {
+            return 'hover-small role-hover';
+        }
+        
+        // Transparent cursor for better text legibility on these elements
+        if (element.matches(`
+            .filter-group .toggle,
+            #clear-filters,
+            #pagination button,
+            .show-more,
+            .sort-wrapper,
+            #sort-select,
+            #clear-search,
+            .active-filter button,
+            #set-custom
+        `)) {
+            return 'transparent';
+        }
+        
+        // Small clickable elements (buttons, small links, nav items)
+        if (element.matches('button, .nav, input[type="submit"], input[type="button"]') ||
+            (element.tagName === 'A' && area < 5000)) {
+            return 'hover-small';
+        }
+        
+        // Medium elements (larger links, medium containers)
+        if ((element.tagName === 'A' && area < 15000) ||
+            element.matches('.button, [data-cursor="pointer"]')) {
+            return 'hover-medium';
+        }
+        
+        // Large clickable areas
+        if (area >= 15000) {
+            return 'hover-large';
+        }
+        
+        // Default medium size
+        return 'hover-medium';
+    }
+
+    // Helper function to find the closest interactive element
+    function findInteractiveElement(element) {
+        let current = element;
+        while (current && current !== document.body) {
+            if (current.matches('a, button, .nav, .button, [data-cursor="pointer"], .role-tag, .type-tag, .filter-group .toggle')) {
+                return current;
+            }
+            current = current.parentElement;
+        }
+        return null;
+    }
+
+    // Global mouseover handler with simplified logic
+    document.addEventListener('mouseover', (e) => {
+        const target = e.target;
+        
+        // Check for lite-youtube first - always hide cursor
+        if (target.matches('lite-youtube') || target.closest('lite-youtube')) {
+            cursorEl.className = 'refined-cursor hidden';
+            cursorEl.style.background = '';
+            currentHoverTarget = null;
+            return;
+        }
+        
+        // Text inputs get text cursor
+        if (target.matches('input[type="text"], input[type="search"], textarea, [contenteditable]')) {
+            cursorEl.className = 'refined-cursor text';
+            cursorEl.style.background = '';
+            currentHoverTarget = target;
+            return;
+        }
+        
+        // Hide on non-text form inputs
+        if (target.matches('input:not([type="text"]):not([type="search"]), select')) {
+            cursorEl.className = 'refined-cursor hidden';
+            cursorEl.style.background = '';
+            currentHoverTarget = target;
+            return;
+        }
+        
+        // Media elements
+        if (target.matches('video, img, .thumbnail, .frame, canvas')) {
+            cursorEl.className = 'refined-cursor media';
+            cursorEl.style.background = '';
+            currentHoverTarget = target;
+            return;
+        }
+        
+        // Find interactive element (either target or parent)
+        const interactiveElement = findInteractiveElement(target);
+        
+        if (interactiveElement) {
+            // Only change state if we're hovering a different element
+            if (currentHoverTarget !== interactiveElement) {
+                const hoverClass = getHoverClass(interactiveElement);
+                cursorEl.className = `refined-cursor ${hoverClass}`;
+                cursorEl.style.background = '';
+                currentHoverTarget = interactiveElement;
+            }
+            return;
+        }
+        
+        // Special case for content containers - only change color, not size
+        if (target.matches('.contentContainer')) {
+            // Only apply if not already applied
+            if (currentHoverTarget !== target) {
+                cursorEl.className = 'refined-cursor';
+                cursorEl.style.background = 'hsla(214, 100%, 45%, 0.5)';
+                currentHoverTarget = target;
+            }
+            return;
+        }
+        
+        // Reset to default state for non-interactive elements
+        if (currentHoverTarget !== null) {
+            cursorEl.className = 'refined-cursor';
+            cursorEl.style.background = '';
+            currentHoverTarget = null;
+        }
+    });
+
+    // Global mouseout handler
+    document.addEventListener('mouseout', (e) => {
+        const target = e.target;
+        const relatedTarget = e.relatedTarget;
+        
+        // Don't reset if moving to a child element
+        if (relatedTarget && target.contains(relatedTarget)) {
+            return;
+        }
+        
+        // Don't reset if moving within the same interactive element
+        if (currentHoverTarget && relatedTarget) {
+            const currentInteractive = findInteractiveElement(currentHoverTarget);
+            const relatedInteractive = findInteractiveElement(relatedTarget);
+            if (currentInteractive && currentInteractive === relatedInteractive) {
+                return;
+            }
+        }
+        
+        // Special handling for lite-youtube
+        if (target.matches('lite-youtube') || target.closest('lite-youtube')) {
+            // Check if we're still over a lite-youtube element
+            setTimeout(() => {
+                const elementUnderCursor = document.elementFromPoint(mouseX, mouseY);
+                if (!elementUnderCursor || 
+                    (!elementUnderCursor.closest('lite-youtube') && elementUnderCursor.tagName !== 'LITE-YOUTUBE')) {
+                    cursorEl.classList.remove('hidden');
+                    currentHoverTarget = null;
+                }
+            }, 10);
+            return;
+        }
+        
+        // Reset cursor when leaving interactive elements
+        if (target === currentHoverTarget || 
+            (currentHoverTarget && target.contains(currentHoverTarget))) {
+            cursorEl.className = 'refined-cursor';
+            cursorEl.style.background = '';
+            currentHoverTarget = null;
+        }
+    });
+
+    // Mouse down/up for active state
+    document.addEventListener('mousedown', (e) => {
+        const target = e.target;
+        if (!target.closest('lite-youtube') && target.tagName !== 'LITE-YOUTUBE') {
+            cursorEl.classList.add('active');
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        cursorEl.classList.remove('active');
+    });
+
+    // Special navbar logo interaction
+    const webTitle = document.getElementById('webTitle');
+    if (webTitle) {
+        webTitle.addEventListener('mouseenter', () => {
+            if (currentHoverTarget === webTitle) {
+                cursorEl.style.background = 'hsla(242, 61%, 80%, 0.9)';
+            }
+        });
+        
+        webTitle.addEventListener('mouseleave', () => {
+            if (currentHoverTarget === webTitle) {
+                cursorEl.style.background = '';
+            }
+        });
+    }
+}
 
 //-------GLOBAL ANIMATIONS-------------//
 document.addEventListener('DOMContentLoaded', () => {
+    // Always scroll to top on page load/refresh - ensure this happens immediately
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+    
+    // Force scroll to top immediately and reliably
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    window.scrollTo(0, 0);
+    
     // Check if this is a fresh page load (not navigation)
     const isPageReload = performance.getEntriesByType('navigation')[0].type === 'reload' || 
                         !document.referrer || 
@@ -240,29 +510,6 @@ function createGlobalRipple(element, event) {
         z-index: 1;
     `;
     
-    // Add ripple animation style if not already present
-    if (!document.querySelector('[data-global-ripple-style]')) {
-        const style = document.createElement('style');
-        style.setAttribute('data-global-ripple-style', 'true');
-        style.textContent = `
-            @keyframes globalRipple {
-                from {
-                    transform: translate(-50%, -50%) scale(0);
-                    opacity: 0.6;
-                }
-                to {
-                    transform: translate(-50%, -50%) scale(2);
-                    opacity: 0;
-                }
-            }
-            .ripple-container {
-                position: relative;
-                overflow: hidden;
-            }
-        `;
-        document.head.appendChild(style);
-    }
-    
     element.classList.add('ripple-container');
     element.appendChild(ripple);
     
@@ -320,26 +567,3 @@ const createScrollObserver = () => {
 
 // Export for use in other scripts
 window.globalScrollObserver = createScrollObserver();
-
-// Add global fade-in animation
-if (!document.querySelector('[data-global-fade-style]')) {
-    const style = document.createElement('style');
-    style.setAttribute('data-global-fade-style', 'true');
-    style.textContent = `
-        .fade-in {
-            animation: globalFadeIn 0.4s ease-out;
-        }
-        
-        @keyframes globalFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    `;
-    document.head.appendChild(style);
-}
