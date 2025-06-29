@@ -79,7 +79,7 @@ const noise = id => {
 };
 
 noise('noise');
-noise('softnoise');
+// noise('softnoise');
 
 //-------REFINED ELASTIC CURSOR-------------//
 let cursor = null;

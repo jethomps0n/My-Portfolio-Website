@@ -1,0 +1,364 @@
+/* About Page - Professional Portfolio Layout */
+
+#about-page {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 40px;
+    margin: 42px auto 0 auto;
+    padding: 0 28px;
+    max-width: 1200px;
+    min-height: 70vh;
+}
+
+#about-page * {
+    z-index: 5;
+}
+
+/* Sidebar - Clean Professional Card */
+.about-sidebar {
+    background: linear-gradient(135deg, 
+        hsla(0, 0%, 100%, 0.1) 0%, 
+        hsla(0, 0%, 100%, 0.05) 100%);
+    border: 1px solid hsla(0, 0%, 100%, 0.1);
+    border-radius: 20px;
+    padding: 30px;
+    height: fit-content;
+    position: sticky;
+    top: 120px;
+    backdrop-filter: blur(20px);
+    box-shadow: 
+        inset 0 1px 0 hsla(255, 255%, 255%, 0.1),
+        0 20px 60px hsla(0, 0%, 0%, 0.3);
+}
+
+.profile-image {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, 
+        hsla(242, 61%, 80%, 1) 0%, 
+        hsla(242, 61%, 60%, 1) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 auto 20px auto;
+    box-shadow: 0 8px 25px hsla(242, 61%, 80%, 0.3);
+}
+
+.profile-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: hsla(0, 0%, 100%, 1);
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.profile-title {
+    font-size: 0.9rem;
+    color: hsla(242, 61%, 80%, 1);
+    text-align: center;
+    margin-bottom: 25px;
+    font-weight: 400;
+}
+
+.quick-stats {
+    border-top: 1px solid hsla(0, 0%, 100%, 0.1);
+    padding-top: 20px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid hsla(0, 0%, 100%, 0.05);
+}
+
+.stat-item:last-child {
+    border-bottom: none;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: hsla(0, 0%, 80%, 1);
+    font-weight: 400;
+}
+
+.stat-value {
+    font-size: 0.8rem;
+    color: hsla(0, 0%, 100%, 1);
+    font-weight: 600;
+}
+
+/* Main Content - Card-based Professional Layout */
+.about-main {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.about-section {
+    position: relative;
+}
+
+.intro {
+    margin-bottom: 20px;
+}
+
+.intro-card {
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.intro-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: hsla(0, 0%, 100%, 1);
+    margin: 0 0 10px 0;
+    line-height: 1.2;
+}
+
+.intro-subtitle {
+    font-size: 1.2rem;
+    color: hsla(242, 61%, 80%, 1);
+    margin: 0 0 20px 0;
+    font-weight: 400;
+}
+
+.intro-description {
+    font-size: 1.1rem;
+    color: hsla(0, 0%, 85%, 1);
+    line-height: 1.6;
+    margin: 0;
+    max-width: 600px;
+}
+
+.section-header {
+    margin-bottom: 25px;
+    border-left: 4px solid hsla(242, 61%, 80%, 1);
+    padding-left: 20px;
+}
+
+.section-header h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: hsla(0, 0%, 100%, 1);
+    margin: 0;
+}
+
+.content-card {
+    background: hsla(0, 0%, 100%, 0.03);
+    border: 1px solid hsla(0, 0%, 100%, 0.08);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+    transition: all 300ms ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.content-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, 
+        hsla(242, 61%, 80%, 1) 0%, 
+        hsla(242, 61%, 60%, 1) 100%);
+    opacity: 0;
+    transition: opacity 300ms ease;
+}
+
+.content-card:hover {
+    background: hsla(0, 0%, 100%, 0.05);
+    border-color: hsla(0, 0%, 100%, 0.15);
+    transform: translateY(-2px);
+}
+
+.content-card:hover::before {
+    opacity: 1;
+}
+
+.content-card h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: hsla(0, 0%, 100%, 1);
+    margin: 0 0 8px 0;
+}
+
+.content-card .meta {
+    font-size: 0.85rem;
+    color: hsla(242, 61%, 80%, 1);
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.content-card p {
+    font-size: 1rem;
+    color: hsla(0, 0%, 85%, 1);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Skills Grid */
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+}
+
+.skill-tag {
+    background: linear-gradient(135deg, 
+        hsla(242, 61%, 80%, 0.15) 0%, 
+        hsla(242, 61%, 60%, 0.15) 100%);
+    border: 1px solid hsla(242, 61%, 80%, 0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    text-align: center;
+    color: hsla(0, 0%, 100%, 1);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 300ms ease;
+    cursor: default;
+}
+
+.skill-tag:hover {
+    background: linear-gradient(135deg, 
+        hsla(242, 61%, 80%, 0.25) 0%, 
+        hsla(242, 61%, 60%, 0.25) 100%);
+    border-color: hsla(242, 61%, 80%, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px hsla(242, 61%, 80%, 0.2);
+}
+
+/* Animation classes */
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.pop-in {
+    animation: popIn 0.4s ease-out;
+    transform-origin: center center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #about-page {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        padding: 0 20px;
+        margin-top: 30px;
+    }
+    
+    .about-sidebar {
+        position: static;
+        padding: 25px;
+    }
+    
+    .intro-title {
+        font-size: 2rem;
+    }
+    
+    .intro-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .intro-description {
+        font-size: 1rem;
+    }
+    
+    .content-card {
+        padding: 20px;
+    }
+    
+    .skills-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
+    }
+    
+    .about-main {
+        gap: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    #about-page {
+        padding: 0 15px;
+        margin-top: 25px;
+    }
+    
+    .about-sidebar {
+        padding: 20px;
+    }
+    
+    .intro-title {
+        font-size: 1.8rem;
+    }
+    
+    .section-header {
+        padding-left: 15px;
+    }
+    
+    .content-card {
+        padding: 18px;
+    }
+    
+    .skills-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Ensure proper stacking context */
+#about-page {
+    position: relative;
+    z-index: 5;
+}
+
+/* Focus states for accessibility */
+.skill-tag:focus {
+    outline: 2px solid hsla(242, 61%, 80%, 0.8);
+    outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+    #about-page {
+        grid-template-columns: 250px 1fr;
+        margin: 0;
+        padding: 20px;
+        max-width: none;
+    }
+    
+    .about-sidebar,
+    .content-card {
+        background: none;
+        border: 1px solid #ccc;
+        box-shadow: none;
+        backdrop-filter: none;
+    }
+    
+    .intro-title,
+    .section-header h2,
+    .content-card h3 {
+        color: #000;
+    }
+    
+    .intro-subtitle,
+    .intro-description,
+    .content-card p {
+        color: #333;
+    }
+}
