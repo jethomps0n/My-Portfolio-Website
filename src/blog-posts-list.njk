@@ -1,0 +1,61 @@
+---
+layout: base.njk
+title: All Blog Posts | Jonathan Thompson
+pagecss: <link rel="stylesheet" href="/resources/css/blog.css">
+pagejs: <script src="/resources/js/blog.js" defer></script>
+pagination:
+  data: collections.blogPosts
+  size: 8
+  alias: posts
+permalink: "/blog/posts/{% if pagination.pageNumber > 0 %}page-{{ pagination.pageNumber + 1 }}/{% endif %}"
+---
+
+<div id="blog-page">
+    <header class="blog-header pop-in">
+        <h1 class="blog-title">All Posts</h1>
+        <p class="blog-subtitle">{{ collections.blogPosts.length }} post{% if collections.blogPosts.length != 1 %}s{% endif %} • Page {{ pagination.pageNumber + 1 }} of {{ pagination.pages.length }}</p>
+    </header>
+
+    <div class="categories-strip pop-in">
+        <a href="/blog/" class="category-tag">← Back to Blog</a>
+        <a href="/blog/tags/" class="category-tag">Browse by Tag</a>
+    </div>
+
+    <div class="blog-grid">
+        {% for post in posts %}
+        <article class="blog-post {% if loop.index0 == 0 and pagination.pageNumber == 0 %}featured{% endif %} pop-in">
+            <div class="post-meta">
+                {% for tag in post.data.tags %}
+                <span class="post-category {{ tag | slugify }}">{{ tag }}</span>
+                {% endfor %}
+                <span class="post-date">{{ post.data.date | dateFormat }}</span>
+            </div>
+            <h2><a href="{{ post.url }}">{{ post.data.title }}</a></h2>
+            <p class="post-excerpt">{{ post.data.excerpt }}</p>
+            <a href="{{ post.url }}" class="read-more">Read More →</a>
+        </article>
+        {% endfor %}
+    </div>
+
+    {% if pagination.pages.length > 1 %}
+    <nav class="pagination pop-in">
+        <div class="pagination-links">
+            {% if pagination.previousPageLink %}
+            <a href="{{ pagination.previousPageLink }}" class="pagination-link prev">← Previous</a>
+            {% endif %}
+
+            {% for page in pagination.pages %}
+            {% if page == pagination.pageNumber %}
+            <span class="pagination-link current">{{ page + 1 }}</span>
+            {% else %}
+            <a href="{{ pagination.hrefs[loop.index0] }}" class="pagination-link">{{ page + 1 }}</a>
+            {% endif %}
+            {% endfor %}
+
+            {% if pagination.nextPageLink %}
+            <a href="{{ pagination.nextPageLink }}" class="pagination-link next">Next →</a>
+            {% endif %}
+        </div>
+    </nav>
+    {% endif %}
+</div>

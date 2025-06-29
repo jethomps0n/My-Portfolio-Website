@@ -12,56 +12,54 @@ pagejs: <script src="/resources/js/blog.js" defer></script>
     </header>
 
     <div class="categories-strip pop-in">
-        <a href="#all" class="category-tag active">All</a>
-        <a href="#editorial" class="category-tag">Editorial</a>
-        <a href="#production" class="category-tag">Production</a>
-        <a href="#writing" class="category-tag">Writing</a>
-        <a href="#cinematography" class="category-tag">Cinematography</a>
-        <a href="#sound-design" class="category-tag">Sound Design</a>
-        <a href="#industry-insights" class="category-tag">Industry</a>
-        <a href="#collaboration" class="category-tag">Collaboration</a>
+        <a href="/blog/" class="category-tag active">All</a>
+        <a href="/blog/tags/editorial/" class="category-tag">Editorial</a>
+        <a href="/blog/tags/production/" class="category-tag">Production</a>
+        <a href="/blog/tags/writing/" class="category-tag">Writing</a>
+        <a href="/blog/tags/cinematography/" class="category-tag">Cinematography</a>
+        <a href="/blog/tags/sound-design/" class="category-tag">Sound Design</a>
+        <a href="/blog/tags/post-production/" class="category-tag">Post-Production</a>
+        <a href="/blog/tags/collaboration/" class="category-tag">Collaboration</a>
     </div>
 
     <div class="blog-grid">
-        <article class="blog-post featured pop-in">
+        {% set latestPosts = collections.blogPosts | reverse | slice(0, 4) %}
+        {% for post in latestPosts %}
+        <article class="blog-post {% if loop.index0 == 0 %}featured{% endif %} pop-in">
             <div class="post-meta">
-                <span class="post-category editorial">Editorial</span>
-                <span class="post-date">December 15, 2024</span>
+                {% for tag in post.data.tags %}
+                <span class="post-category {{ tag | slugify }}">{{ tag }}</span>
+                {% endfor %}
+                <span class="post-date">{{ post.data.date | dateFormat }}</span>
             </div>
-            <h2><a href="#post-1">The Art of the Edit: Finding Rhythm in Chaos</a></h2>
-            <p class="post-excerpt">Editing is where the magic truly happens in filmmaking. It's the invisible art that guides emotion, pacing, and narrative flow. Here's how I approach finding the perfect rhythm in seemingly chaotic footage.</p>
-            <a href="#post-1" class="read-more">Read More →</a>
+            {% if loop.index0 == 0 %}
+            <h2><a href="{{ post.url }}">{{ post.data.title }}</a></h2>
+            {% else %}
+            <h3><a href="{{ post.url }}">{{ post.data.title }}</a></h3>
+            {% endif %}
+            <p class="post-excerpt">{{ post.data.excerpt }}</p>
+            <a href="{{ post.url }}" class="read-more">Read More →</a>
         </article>
+        {% endfor %}
+    </div>
 
-        <article class="blog-post pop-in">
-            <div class="post-meta">
-                <span class="post-category writing">Writing</span>
-                <span class="post-date">November 28, 2024</span>
-            </div>
-            <h3><a href="#post-2">The Power of Subtext in Visual Storytelling</a></h3>
-            <p class="post-excerpt">What isn't said is often more powerful than what is. Exploring how visual cues, timing, and space between moments can convey deeper meaning.</p>
-            <a href="#post-2" class="read-more">Read More →</a>
-        </article>
-
-        <article class="blog-post pop-in">
-            <div class="post-meta">
-                <span class="post-category production">Production</span>
-                <span class="post-date">November 10, 2024</span>
-            </div>
-            <h3><a href="#post-3">Collaborative Filmmaking: When Vision Meets Execution</a></h3>
-            <p class="post-excerpt">The best films emerge from collaborative creativity. Lessons learned from working across different roles.</p>
-            <a href="#post-3" class="read-more">Read More →</a>
-        </article>
-
-        <article class="blog-post pop-in">
-            <div class="post-meta">
-                <span class="post-category cinematography">Cinematography</span>
-                <span class="post-date">October 22, 2024</span>
-            </div>
-            <h3><a href="#post-4">Color as Character: Emotional Palettes in Post</a></h3>
-            <p class="post-excerpt">Color grading isn't just about making things look pretty—it's about reinforcing story and character through color choices.</p>
-            <a href="#post-4" class="read-more">Read More →</a>
-        </article>
+    <div class="blog-navigation pop-in">
+        <div class="nav-buttons">
+            <a href="/blog/posts/" class="nav-button primary">
+                <span class="nav-icon">📚</span>
+                <span class="nav-text">
+                    <strong>View All Posts</strong>
+                    <small>Browse {{ collections.blogPosts.length }} articles</small>
+                </span>
+            </a>
+            <a href="/blog/tags/" class="nav-button secondary">
+                <span class="nav-icon">🏷️</span>
+                <span class="nav-text">
+                    <strong>Browse by Tags</strong>
+                    <small>Explore {{ collections.blogTags.length }} categories</small>
+                </span>
+            </a>
+        </div>
     </div>
 
     <section class="blog-intro pop-in">

@@ -1,0 +1,50 @@
+---
+layout: base.njk
+pagecss: <link rel="stylesheet" href="/resources/css/blog.css">
+pagejs: <script src="/resources/js/blog.js" defer></script>
+pagination:
+  data: collections.blogTags
+  size: 1
+  alias: tag
+permalink: "/blog/tags/{{ tag | slugify }}/"
+eleventyComputed:
+  title: "{{ tag }} Posts | Jonathan Thompson"
+  tagPosts: "{{ collections.blogPosts | selectattr('data.tags', 'contains', tag) | reverse }}"
+---
+
+<div id="blog-page">
+    <header class="blog-header pop-in">
+        <h1 class="blog-title">{{ tag }}</h1>
+        <p class="blog-subtitle">{{ tagPosts.length }} post{% if tagPosts.length != 1 %}s{% endif %} tagged with "{{ tag }}"</p>
+    </header>
+
+    <div class="categories-strip pop-in">
+        <a href="/blog/" class="category-tag">← Back to Blog</a>
+        <a href="/blog/tags/" class="category-tag">All Tags</a>
+        <a href="/blog/posts/" class="category-tag">All Posts</a>
+    </div>
+
+    <div class="blog-grid">
+        {% for post in tagPosts %}
+        <article class="blog-post {% if loop.index0 == 0 %}featured{% endif %} pop-in">
+            <div class="post-meta">
+                {% for postTag in post.data.tags %}
+                <span class="post-category {{ postTag | slugify }}">{{ postTag }}</span>
+                {% endfor %}
+                <span class="post-date">{{ post.data.date | dateFormat }}</span>
+            </div>
+            <h2><a href="{{ post.url }}">{{ post.data.title }}</a></h2>
+            <p class="post-excerpt">{{ post.data.excerpt }}</p>
+            <a href="{{ post.url }}" class="read-more">Read More →</a>
+        </article>
+        {% endfor %}
+    </div>
+
+    {% if tagPosts.length == 0 %}
+    <div class="empty-state pop-in">
+        <h3>No posts found</h3>
+        <p>There are no posts tagged with "{{ tag }}" yet.</p>
+        <a href="/blog/" class="read-more">← Back to Blog</a>
+    </div>
+    {% endif %}
+</div>

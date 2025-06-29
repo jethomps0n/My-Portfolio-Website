@@ -1,0 +1,38 @@
+---
+layout: base.njk
+pagecss: <link rel="stylesheet" href="/resources/css/blog.css">
+pagejs: <script src="/resources/js/blog.js" defer></script>
+---
+
+<article class="blog-post-single">
+    <header class="post-header">
+        <div class="post-meta">
+            {% for tag in tags %}
+            <a href="/blog/tags/{{ tag | slugify }}/" class="post-tag">{{ tag }}</a>
+            {% endfor %}
+            <span class="post-date">{{ date | dateFormat }}</span>
+        </div>
+        <h1 class="post-title">{{ title }}</h1>
+        {% if excerpt %}
+        <p class="post-excerpt">{{ excerpt }}</p>
+        {% endif %}
+    </header>
+    
+    <div class="post-content">
+        {{ content | safe }}
+    </div>
+    
+    <footer class="post-footer">
+        <div class="post-navigation">
+            <a href="/blog/" class="nav-link">← Back to Blog</a>
+            <a href="/blog/posts/" class="nav-link">All Posts →</a>
+        </div>
+        
+        <div class="post-tags">
+            <h3>Tagged with:</h3>
+            {% for tag in tags %}
+            <a href="/blog/tags/{{ tag | slugify }}/" class="tag-link">#{{ tag }}</a>
+            {% endfor %}
+        </div>
+    </footer>
+</article>
