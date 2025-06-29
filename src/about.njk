@@ -6,124 +6,95 @@ pagejs: <script src="/resources/js/about.js" defer></script>
 ---
 
 <div id="about-page">
-    <div id="about-hero" class="pop-in">
-        <div class="hero-content">
-            <h1 class="about-title">About Jonathan</h1>
-            <p class="about-subtitle">Filmmaker & Visual Storyteller</p>
+    <aside class="about-sidebar pop-in">
+        <div class="profile-image">JT</div>
+        <div class="profile-name">Jonathan Thompson</div>
+        <div class="profile-title">Filmmaker & Visual Storyteller</div>
+        
+        <div class="quick-stats">
+            <div class="stat-item">
+                <span class="stat-label">Experience</span>
+                <span class="stat-value">5+ Years</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Projects</span>
+                <span class="stat-value">25+</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Primary Role</span>
+                <span class="stat-value">Editor</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Location</span>
+                <span class="stat-value">Available</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Specialty</span>
+                <span class="stat-value">Post-Production</span>
+            </div>
         </div>
-    </div>
+    </aside>
 
-    <div id="about-content">
+    <main class="about-main">
+        <section class="about-section intro pop-in">
+            <div class="intro-card">
+                <h1 class="intro-title">About Jonathan</h1>
+                <p class="intro-subtitle">Passionate about storytelling and visual innovation</p>
+                <p class="intro-description">From writing compelling narratives to editing dynamic footage, every project is an opportunity to push creative boundaries and craft experiences that resonate with audiences.</p>
+            </div>
+        </section>
+
         <section class="about-section pop-in">
-            <div class="section-content">
-                <h2>My Story</h2>
-                <p>Jonathan Thompson has a passion for storytelling and visual innovation in the filmmaking landscape. From writing compelling narratives to editing dynamic footage, every project is an opportunity to push creative boundaries and craft experiences that resonate with audiences.</p>
-                
+            <div class="section-header">
+                <h2>Background</h2>
+            </div>
+            <div class="content-card">
+                <h3>The Journey</h3>
+                <div class="meta">Film & Media • Self-Taught</div>
                 <p>My journey in filmmaking began with a curiosity about how stories are told through the lens. What started as experimentation with video editing has evolved into a comprehensive understanding of the entire production process - from initial concept development through post-production finishing.</p>
-                
+            </div>
+            <div class="content-card">
+                <h3>Philosophy</h3>
+                <div class="meta">Creative Approach</div>
                 <p>Whether working as a writer crafting the foundation of a story, an editor shaping its final form, or stepping into various production roles, I bring dedication and creative vision to every project. Each role offers unique insights that inform and enhance my overall approach to filmmaking.</p>
             </div>
         </section>
 
         <section class="about-section pop-in">
-            <div class="section-content">
-                <h2>What I Do</h2>
-                <div class="skills-grid">
-                    <div class="skill-item">
-                        <h3>Writing</h3>
-                        <p>Developing compelling narratives, character arcs, and dialogue that drive engaging stories forward.</p>
-                    </div>
-                    <div class="skill-item">
-                        <h3>Editing</h3>
-                        <p>Crafting the final vision through precise cuts, pacing, and visual storytelling techniques.</p>
-                    </div>
-                    <div class="skill-item">
-                        <h3>Directing</h3>
-                        <p>Leading creative vision and guiding collaborative teams to bring stories to life.</p>
-                    </div>
-                    <div class="skill-item">
-                        <h3>Production</h3>
-                        <p>Managing projects from conception to completion with attention to detail and creative excellence.</p>
-                    </div>
-                </div>
+            <div class="section-header">
+                <h2>Expertise</h2>
+            </div>
+            <div class="content-card">
+                <h3>Post-Production</h3>
+                <div class="meta">Primary Focus</div>
+                <p>Specializing in video editing, color grading, and audio post-production. Crafting the final vision through precise cuts, pacing, and visual storytelling techniques that enhance narrative impact.</p>
+            </div>
+            <div class="content-card">
+                <h3>Writing & Development</h3>
+                <div class="meta">Creative Foundation</div>
+                <p>Developing compelling narratives, character arcs, and dialogue that drive engaging stories forward. Understanding story structure and dramatic pacing from the ground up.</p>
+            </div>
+            <div class="content-card">
+                <h3>Production Support</h3>
+                <div class="meta">Collaborative Roles</div>
+                <p>Experience in various on-set roles including directing, camera operation, and production assistance. This hands-on experience informs better post-production decisions.</p>
             </div>
         </section>
 
         <section class="about-section pop-in">
-            <div class="section-content">
-                <h2>Creative Philosophy</h2>
-                <blockquote class="philosophy-quote">
-                    "Every frame tells a story. Every cut reveals truth. Every project is an opportunity to explore what it means to connect through visual narrative."
-                </blockquote>
-                <p>I believe in the power of collaboration and the importance of understanding every aspect of the filmmaking process. This comprehensive approach allows me to contribute meaningfully whether I'm behind the camera, in the editing suite, or developing the initial concept.</p>
-                
-                <p>My work is driven by curiosity - about human stories, about the technical craft of filmmaking, and about how these elements combine to create experiences that resonate with audiences. Each project teaches me something new and informs how I approach the next creative challenge.</p>
+            <div class="section-header">
+                <h2>Skills</h2>
+            </div>
+            <div class="skills-grid">
+                <div class="skill-tag">Video Editing</div>
+                <div class="skill-tag">Color Grading</div>
+                <div class="skill-tag">Audio Post</div>
+                <div class="skill-tag">Screenwriting</div>
+                <div class="skill-tag">Directing</div>
+                <div class="skill-tag">Cinematography</div>
+                <div class="skill-tag">Motion Graphics</div>
+                <div class="skill-tag">Project Management</div>
             </div>
         </section>
-
-        <section class="about-section pop-in">
-            <div class="section-content">
-                <h2>Experience & Recognition</h2>
-                <div class="experience-grid">
-                    <div class="experience-item">
-                        <h3>Projects Completed</h3>
-                        <div class="stat-number">{{ data.length or '15+' }}</div>
-                        <p>Films and productions spanning multiple roles and genres</p>
-                    </div>
-                    <div class="experience-item">
-                        <h3>Collaborative Network</h3>
-                        <div class="stat-number">Creative</div>
-                        <p>Working with diverse teams and talent across the filmmaking community</p>
-                    </div>
-                    <div class="experience-item">
-                        <h3>Continuous Learning</h3>
-                        <div class="stat-number">Always</div>
-                        <p>Staying current with industry trends, tools, and storytelling techniques</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="about-section pop-in">
-            <div class="section-content">
-                <h2>Beyond Filmmaking</h2>
-                <div class="interests-content">
-                    <p>When I'm not immersed in post-production or developing new projects, I'm often exploring other forms of creative expression and staying inspired by the world around me.</p>
-                    
-                    <div class="interests-list">
-                        <div class="interest-item">
-                            <span class="interest-icon">🎮</span>
-                            <h4>Interactive Media</h4>
-                            <p>Exploring storytelling in games and digital experiences</p>
-                        </div>
-                        <div class="interest-item">
-                            <span class="interest-icon">📚</span>
-                            <h4>Narrative Study</h4>
-                            <p>Reading widely to understand structure and character development</p>
-                        </div>
-                        <div class="interest-item">
-                            <span class="interest-icon">🎵</span>
-                            <h4>Music & Sound</h4>
-                            <p>Understanding how audio shapes emotional experience</p>
-                        </div>
-                        <div class="interest-item">
-                            <span class="interest-icon">🌱</span>
-                            <h4>Creative Growth</h4>
-                            <p>Always seeking new perspectives and creative challenges</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <div class="cta-section pop-in">
-            <div class="cta-container">
-                <p class="cta-text">Ready to collaborate on your next project?</p>
-                <div class="cta-buttons">
-                    <a href="/explore" class="cta-button">Explore My Work</a>
-                    <a href="/contact" class="cta-button secondary">Get In Touch</a>
-                </div>
-            </div>
-        </div>
-    </div>
+    </main>
 </div>

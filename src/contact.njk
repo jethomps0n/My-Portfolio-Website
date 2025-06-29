@@ -6,134 +6,143 @@ pagejs: <script src="/resources/js/contact.js" defer></script>
 ---
 
 <div id="contact-page">
-    <div id="contact-hero" class="pop-in">
+    <section class="contact-hero pop-in">
         <div class="hero-content">
             <h1 class="contact-title">Let's Collaborate</h1>
-            <p class="contact-subtitle">Ready to bring your vision to life</p>
-            <p class="contact-description">Whether you have a project in mind, need a creative partner, or just want to connect about filmmaking, I'd love to hear from you.</p>
+            <p class="contact-subtitle">Every great story starts with a conversation</p>
+            <div class="availability-status">
+                <span class="status-indicator"></span>
+                Currently Available for New Projects
+            </div>
+        </div>
+    </section>
+
+    <div class="contact-grid">
+        <div class="contact-methods pop-in">
+            <h2>Get In Touch</h2>
+            
+            <div class="method-card primary">
+                <div class="method-icon">📧</div>
+                <div class="method-content">
+                    <h3>Direct Email</h3>
+                    <p>The fastest way to reach me for project discussions</p>
+                    <a href="mailto:hello@itsjonathanthompson.com" class="method-link">hello@itsjonathanthompson.com</a>
+                </div>
+            </div>
+
+            <div class="method-card">
+                <div class="method-icon">💼</div>
+                <div class="method-content">
+                    <h3>Professional Network</h3>
+                    <p>Connect for industry opportunities and collaborations</p>
+                    <a href="https://www.linkedin.com/in/jethompsn/" target="_blank" class="method-link">LinkedIn Profile</a>
+                </div>
+            </div>
+
+            <div class="method-card">
+                <div class="method-icon">🎬</div>
+                <div class="method-content">
+                    <h3>Creative Work</h3>
+                    <p>See my latest projects and behind-the-scenes content</p>
+                    <a href="https://www.instagram.com/jethompsn/" target="_blank" class="method-link">@jethompsn</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="project-inquiry pop-in">
+            <h2>Project Details</h2>
+            <p class="inquiry-intro">Tell me about your vision. The more details you share, the better I can understand how to help bring your story to life.</p>
+            
+            <form class="inquiry-form" action="#" method="POST">
+                <div class="form-group">
+                    <label for="name">Your Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="project-type">Project Type</label>
+                    <select id="project-type" name="project-type">
+                        <option value="">Select project type</option>
+                        <option value="short-film">Short Film</option>
+                        <option value="documentary">Documentary</option>
+                        <option value="commercial">Commercial/Advertisement</option>
+                        <option value="music-video">Music Video</option>
+                        <option value="corporate">Corporate Video</option>
+                        <option value="rescore">Film Rescore</option>
+                        <option value="other">Other/Multiple</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="role-needed">Primary Role Needed</label>
+                    <select id="role-needed" name="role-needed">
+                        <option value="">Select primary role</option>
+                        <option value="editor">Video Editor</option>
+                        <option value="writer">Writer/Screenwriter</option>
+                        <option value="director">Director</option>
+                        <option value="producer">Producer</option>
+                        <option value="dp">Director of Photography</option>
+                        <option value="multiple">Multiple Roles</option>
+                        <option value="consultation">Creative Consultation</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="timeline">Project Timeline</label>
+                    <select id="timeline" name="timeline">
+                        <option value="">When do you need this completed?</option>
+                        <option value="asap">As soon as possible</option>
+                        <option value="1-month">Within 1 month</option>
+                        <option value="3-months">Within 3 months</option>
+                        <option value="6-months">Within 6 months</option>
+                        <option value="flexible">Timeline is flexible</option>
+                    </select>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label for="project-description">Project Vision</label>
+                    <textarea id="project-description" name="project-description" rows="6" placeholder="Describe your project concept, goals, target audience, style preferences, or any specific requirements. Include details about story, tone, visual style, or reference materials if applicable."></textarea>
+                </div>
+                
+                <button type="submit" class="submit-btn">
+                    <span>Send Project Inquiry</span>
+                    <div class="btn-glow"></div>
+                </button>
+            </form>
         </div>
     </div>
 
-    <div id="contact-content">
-        <section class="contact-section pop-in">
-            <div class="section-content">
-                <div class="contact-grid">
-                    <div class="contact-form-container">
-                        <h2>Send a Message</h2>
-                        <form id="contact-form" class="contact-form">
-                            <div class="form-group">
-                                <label for="name">Name *</label>
-                                <input type="text" id="name" name="name" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="email">Email *</label>
-                                <input type="email" id="email" name="email" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="subject">Subject</label>
-                                <input type="text" id="subject" name="subject">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="project-type">Project Type</label>
-                                <select id="project-type" name="project-type">
-                                    <option value="">Select type (optional)</option>
-                                    <option value="short-film">Short Film</option>
-                                    <option value="documentary">Documentary</option>
-                                    <option value="commercial">Commercial/Advertisement</option>
-                                    <option value="music-video">Music Video</option>
-                                    <option value="editing">Editing Services</option>
-                                    <option value="writing">Writing Services</option>
-                                    <option value="collaboration">Creative Collaboration</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="message">Message *</label>
-                                <textarea id="message" name="message" rows="6" required placeholder="Tell me about your project, vision, or what you'd like to discuss..."></textarea>
-                            </div>
-                            
-                            <div class="form-actions">
-                                <button type="submit" class="cta-button">Send Message</button>
-                                <button type="reset" class="cta-button secondary">Clear Form</button>
-                            </div>
-                        </form>
+    <section class="response-info pop-in">
+        <div class="info-content">
+            <h3>What happens next?</h3>
+            <div class="response-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Initial Review</h4>
+                        <p>I'll review your project details and respond within 24 hours</p>
                     </div>
-                    
-                    <div class="contact-info">
-                        <h2>Get in Touch</h2>
-                        
-                        <div class="contact-methods">
-                            <div class="contact-method">
-                                <h3>Direct Contact</h3>
-                                <p>For immediate inquiries or urgent project discussions.</p>
-                                <a href="mailto:hello@itsjonathanthompson.com" class="contact-link">
-                                    <span class="contact-icon">✉</span>
-                                    hello@itsjonathanthompson.com
-                                </a>
-                            </div>
-                            
-                            <div class="contact-method">
-                                <h3>Social & Portfolio</h3>
-                                <p>Follow my work and connect on social platforms.</p>
-                                <div class="social-links">
-                                    <a href="https://www.linkedin.com/in/jethompsn/" target="_blank" class="social-link">
-                                        <span class="social-icon">🔗</span>
-                                        LinkedIn
-                                    </a>
-                                    <a href="https://www.instagram.com/jethompsn/" target="_blank" class="social-link">
-                                        <span class="social-icon">📷</span>
-                                        Instagram
-                                    </a>
-                                    <a href="https://www.youtube.com/@jethompsn" target="_blank" class="social-link">
-                                        <span class="social-icon">🎬</span>
-                                        YouTube
-                                    </a>
-                                </div>
-                            </div>
-                            
-                            <div class="contact-method">
-                                <h3>Response Time</h3>
-                                <p>I typically respond to inquiries within 24-48 hours. For urgent matters, please mention "URGENT" in your subject line.</p>
-                            </div>
-                        </div>
-                        
-                        <div class="availability-status">
-                            <h3>Current Availability</h3>
-                            <div class="status-indicator">
-                                <span class="status-dot available"></span>
-                                <span class="status-text">Available for new projects</span>
-                            </div>
-                            <p class="status-description">Currently accepting new collaborations and client work for Q1 2025.</p>
-                        </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Discovery Call</h4>
+                        <p>We'll schedule a call to discuss your vision in detail</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Proposal & Timeline</h4>
+                        <p>I'll provide a detailed proposal with timeline and next steps</p>
                     </div>
                 </div>
             </div>
-        </section>
-        
-        <section class="contact-section pop-in">
-            <div class="section-content">
-                <div class="collaboration-info">
-                    <h2>Working Together</h2>
-                    <div class="collaboration-grid">
-                        <div class="collaboration-item">
-                            <h3>Project Development</h3>
-                            <p>From initial concept to final delivery, I work closely with clients to ensure creative vision aligns with practical execution.</p>
-                        </div>
-                        <div class="collaboration-item">
-                            <h3>Creative Flexibility</h3>
-                            <p>Whether you need a writer, editor, director, or multi-role contributor, I adapt to project needs and team dynamics.</p>
-                        </div>
-                        <div class="collaboration-item">
-                            <h3>Professional Standards</h3>
-                            <p>Committed to meeting deadlines, maintaining clear communication, and delivering high-quality work that exceeds expectations.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </section>
-    </div>
+        </div>
+    </section>
 </div>

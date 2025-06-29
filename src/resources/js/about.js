@@ -36,12 +36,9 @@ function staggerAnimations() {
     const elements = document.querySelectorAll('.pop-in');
     
     elements.forEach((element, index) => {
-        // Remove the pop-in class initially
-        element.classList.remove('pop-in');
-        
-        // Add it back with a delay
+        // Add visible class with staggered delay
         setTimeout(() => {
-            element.classList.add('pop-in');
+            element.classList.add('visible');
         }, index * 200);
     });
 }

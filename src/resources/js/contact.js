@@ -15,24 +15,21 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initializeContactPage() {
-    // Remove pop-in classes after animation completes (matching site pattern)
-    document.querySelectorAll('.pop-in').forEach(el => {
-        el.addEventListener('animationend', () => el.classList.remove('pop-in'), {once: true});
-    });
+    // Initialize pop-in animations (matching site pattern)
+    const popInElements = document.querySelectorAll('.pop-in');
     
-    // Stagger animations for contact sections
-    staggerAnimations();
-}
-
-function staggerAnimations() {
-    const sections = document.querySelectorAll('.contact-section');
-    sections.forEach((section, index) => {
-        section.style.animationDelay = `${index * 0.1}s`;
+    // Stagger the appearance of pop-in elements
+    popInElements.forEach((element, index) => {
+        setTimeout(() => {
+            element.classList.add('visible');
+        }, index * 200);
     });
 }
 
 function setupContactForm() {
     const form = document.getElementById('contact-form');
+    if (!form) return; // Guard clause if form doesn't exist
+    
     const submitButton = form.querySelector('button[type="submit"]');
     const resetButton = form.querySelector('button[type="reset"]');
     
@@ -40,7 +37,9 @@ function setupContactForm() {
     form.addEventListener('submit', handleFormSubmission);
     
     // Form reset handler with confirmation
-    resetButton.addEventListener('click', handleFormReset);
+    if (resetButton) {
+        resetButton.addEventListener('click', handleFormReset);
+    }
     
     // Real-time validation
     setupFormValidation(form);

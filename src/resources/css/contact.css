@@ -1,104 +1,192 @@
-/* Contact Page Styles - Following the design philosophy */
+/* Contact Page - Film Industry Focus */
 
 #contact-page {
     display: flex;
     flex-direction: column;
-    align-items: center;
     margin: 42px auto 0 auto;
     padding: 0 28px;
-    max-width: 1200px;
+    max-width: 1100px;
+    gap: 60px;
 }
 
 #contact-page * {
     z-index: 5;
 }
 
-/* Hero Section */
-#contact-hero {
-    width: 100%;
+/* Hero Section - Simplified and focused */
+.contact-hero {
     text-align: center;
-    margin-bottom: 42px;
+    padding: 80px 40px;
+    background: linear-gradient(135deg, 
+        hsla(242, 30%, 15%, 0.3) 0%, 
+        hsla(0, 0%, 8%, 0.4) 100%);
+    border-radius: 30px;
+    border: 1px solid hsla(248, 9%, 45%, 0.2);
+    backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 30% 20%, hsla(242, 61%, 80%, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 70% 80%, hsla(242, 61%, 80%, 0.05) 0%, transparent 50%);
+    pointer-events: none;
 }
 
 .hero-content {
-    background-color: hsla(201, 100%, 8%, 0.45);
-    border: 2px solid hsla(248, 9%, 45%, 0.2);
-    border-radius: 25px;
-    box-shadow: 0px 40px 100px 5px hsla(0, 0%, 0%, 0.25);
-    backdrop-filter: blur(15px) brightness(0.7);
-    padding: 60px 40px;
-    transition: all 300ms ease;
-}
-
-.hero-content:hover {
-    transform: translateY(-3px);
-    box-shadow: 0px 50px 120px 8px hsla(0, 0%, 0%, 0.35);
+    position: relative;
+    z-index: 2;
 }
 
 .contact-title {
-    font-size: 2.5rem;
+    font-size: 3rem;
     font-weight: 700;
-    margin: 0 0 15px 0;
+    margin: 0 0 20px 0;
     color: hsla(0, 0%, 100%, 1);
-    line-height: 1.2;
+    line-height: 1.1;
 }
 
 .contact-subtitle {
-    font-size: 1.3rem;
-    font-weight: 400;
-    margin: 0 0 20px 0;
-    color: hsla(242, 61%, 80%, 1);
-    line-height: 1.3;
-}
-
-.contact-description {
-    font-size: 1rem;
-    font-weight: 400;
-    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 300;
+    margin: 0 0 30px 0;
     color: hsla(0, 0%, 85%, 1);
-    line-height: 1.6;
-    max-width: 600px;
-    margin: 0 auto;
 }
 
-/* Contact Content */
-.contact-section {
-    width: 100%;
-    margin-bottom: 42px;
+.availability-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: hsla(120, 60%, 50%, 0.1);
+    border: 1px solid hsla(120, 60%, 50%, 0.3);
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    color: hsla(120, 60%, 70%, 1);
+    font-weight: 500;
 }
 
-.section-content {
-    background-color: hsla(201, 100%, 8%, 0.45);
-    border: 2px solid hsla(248, 9%, 45%, 0.2);
-    border-radius: 25px;
-    box-shadow: 0px 40px 100px 5px hsla(0, 0%, 0%, 0.25);
-    backdrop-filter: blur(15px) brightness(0.7);
-    padding: 40px;
-    transition: all 300ms ease;
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    background: hsla(120, 60%, 50%, 1);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
 }
 
-.section-content:hover {
-    transform: translateY(-2px);
-    box-shadow: 0px 45px 110px 7px hsla(0, 0%, 0%, 0.3);
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
 }
 
+/* Contact Grid - Two column layout */
 .contact-grid {
     display: grid;
-    grid-template-columns: 1fr 400px;
-    gap: 40px;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 50px;
     align-items: start;
 }
 
-/* Form Styles */
-.contact-form-container h2,
-.contact-info h2 {
-    font-size: 1.8rem;
+/* Contact Methods - Left side */
+.contact-methods h2 {
+    font-size: 2rem;
     font-weight: 600;
-    margin: 0 0 25px 0;
+    margin: 0 0 30px 0;
     color: hsla(0, 0%, 100%, 1);
 }
 
-.contact-form {
+.method-card {
+    display: flex;
+    gap: 20px;
+    padding: 25px;
+    margin-bottom: 20px;
+    background: hsla(248, 9%, 45%, 0.1);
+    border: 1px solid hsla(248, 9%, 45%, 0.2);
+    border-radius: 20px;
+    transition: all 300ms ease;
+    cursor: pointer;
+}
+
+.method-card:hover {
+    background: hsla(248, 9%, 45%, 0.15);
+    border-color: hsla(242, 61%, 80%, 0.3);
+    transform: translateY(-2px);
+}
+
+.method-card.primary {
+    background: hsla(242, 61%, 80%, 0.1);
+    border-color: hsla(242, 61%, 80%, 0.3);
+}
+
+.method-card.primary:hover {
+    background: hsla(242, 61%, 80%, 0.15);
+    border-color: hsla(242, 61%, 80%, 0.5);
+}
+
+.method-icon {
+    font-size: 1.5rem;
+    min-width: 40px;
+    text-align: center;
+}
+
+.method-content h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: hsla(0, 0%, 100%, 1);
+}
+
+.method-content p {
+    font-size: 0.95rem;
+    color: hsla(0, 0%, 75%, 1);
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+}
+
+.method-link {
+    color: hsla(242, 61%, 80%, 1);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: color 300ms ease;
+}
+
+.method-link:hover {
+    color: hsla(0, 0%, 100%, 1);
+}
+
+/* Project Inquiry - Right side */
+.project-inquiry {
+    background: hsla(201, 100%, 8%, 0.4);
+    border: 1px solid hsla(248, 9%, 45%, 0.3);
+    border-radius: 25px;
+    padding: 40px;
+    backdrop-filter: blur(15px);
+}
+
+.project-inquiry h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0 0 15px 0;
+    color: hsla(0, 0%, 100%, 1);
+}
+
+.inquiry-intro {
+    font-size: 1rem;
+    color: hsla(0, 0%, 85%, 1);
+    margin: 0 0 30px 0;
+    line-height: 1.5;
+}
+
+/* Form Styling */
+.inquiry-form {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -107,390 +195,222 @@
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
 }
 
 .form-group label {
     font-size: 0.9rem;
     font-weight: 500;
     color: hsla(0, 0%, 90%, 1);
+    margin-bottom: 8px;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
-    background: hsla(228, 48%, 60%, 0.1);
-    border: 1px solid hsla(248, 9%, 45%, 0.5);
-    border-radius: 15px;
+    background: hsla(248, 9%, 45%, 0.15);
+    border: 1px solid hsla(248, 9%, 45%, 0.3);
+    border-radius: 12px;
     padding: 12px 16px;
-    font-size: 0.9rem;
-    color: hsla(0, 0%, 90%, 1);
-    transition: all 200ms ease;
-    font-family: inherit;
+    font-size: 0.95rem;
+    color: hsla(0, 0%, 100%, 1);
+    transition: all 300ms ease;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: hsla(242, 61%, 80%, 1);
-    background: hsla(228, 48%, 60%, 0.15);
+    border-color: hsla(242, 61%, 80%, 0.5);
+    background: hsla(248, 9%, 45%, 0.2);
     box-shadow: 0 0 0 3px hsla(242, 61%, 80%, 0.1);
-}
-
-.form-group select {
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ccc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6,9 12,15 18,9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 16px;
-    padding-right: 40px;
 }
 
 .form-group textarea {
     resize: vertical;
     min-height: 120px;
-    line-height: 1.5;
-}
-
-.form-actions {
-    display: flex;
-    gap: 15px;
-    margin-top: 10px;
-}
-
-/* CTA Buttons (matching site pattern) */
-.cta-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 15px 30px;
-    font-size: 1rem;
-    font-weight: 600;
-    text-decoration: none;
-    border-radius: 25px;
-    transition: all 200ms ease;
-    min-width: 140px;
-    text-align: center;
-    border: none;
-    cursor: pointer;
     font-family: inherit;
 }
 
-.cta-button:not(.secondary) {
-    background: hsla(228, 48%, 60%, 1);
-    color: hsla(0, 0%, 100%, 1);
-    border: 2px solid hsla(228, 48%, 60%, 1);
-}
-
-.cta-button:not(.secondary):hover {
-    transform: translateY(-2px);
-    box-shadow: 0px 15px 35px hsla(228, 48%, 60%, 0.4);
-    background: hsla(228, 48%, 65%, 1);
-}
-
-.cta-button.secondary {
-    background: transparent;
-    color: hsla(0, 0%, 80%, 1);
-    border: 2px solid hsla(248, 9%, 45%, 0.5);
-}
-
-.cta-button.secondary:hover {
-    transform: translateY(-2px);
-    border-color: hsla(242, 61%, 80%, 1);
-    color: hsla(242, 61%, 80%, 1);
-    backdrop-filter: blur(10px) brightness(1.2);
-}
-
-/* Contact Info Styles */
-.contact-methods {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-    margin-bottom: 30px;
-}
-
-.contact-method {
-    padding: 20px 0;
-    border-bottom: 1px solid hsla(248, 9%, 45%, 0.3);
-}
-
-.contact-method:last-child {
-    border-bottom: none;
-}
-
-.contact-method h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin: 0 0 8px 0;
-    color: hsla(242, 61%, 80%, 1);
-}
-
-.contact-method p {
-    font-size: 0.9rem;
-    margin: 0 0 12px 0;
-    color: hsla(0, 0%, 80%, 1);
-    line-height: 1.5;
-}
-
-.contact-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: hsla(0, 0%, 90%, 1);
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: all 200ms ease;
-}
-
-.contact-link:hover {
-    color: hsla(242, 61%, 80%, 1);
-    transform: translateX(3px);
-}
-
-.contact-icon {
-    font-size: 1.1rem;
-}
-
-/* Social Links */
-.social-links {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.social-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: hsla(0, 0%, 85%, 1);
-    text-decoration: none;
-    font-size: 0.85rem;
-    transition: all 200ms ease;
-    padding: 4px 0;
-}
-
-.social-link:hover {
-    color: hsla(242, 61%, 80%, 1);
-    transform: translateX(3px);
-}
-
-.social-icon {
-    font-size: 1rem;
-}
-
-/* Availability Status */
-.availability-status {
-    background: hsla(228, 48%, 60%, 0.1);
-    border: 1px solid hsla(248, 9%, 45%, 0.5);
+.submit-btn {
+    position: relative;
+    background: linear-gradient(135deg, 
+        hsla(242, 61%, 80%, 1) 0%, 
+        hsla(242, 61%, 75%, 1) 100%);
+    border: none;
     border-radius: 15px;
-    padding: 20px;
-    margin-top: 25px;
-}
-
-.availability-status h3 {
-    font-size: 1.1rem;
+    padding: 15px 30px;
+    color: hsla(0, 0%, 10%, 1);
     font-weight: 600;
-    margin: 0 0 12px 0;
-    color: hsla(0, 0%, 100%, 1);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 300ms ease;
+    overflow: hidden;
+    margin-top: 10px;
 }
 
-.status-indicator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 10px;
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px hsla(242, 61%, 80%, 0.3);
 }
 
-.status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    animation: pulse 2s infinite;
+.btn-glow {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        hsla(0, 0%, 100%, 0.3) 50%, 
+        transparent 100%);
+    transition: left 0.5s ease;
 }
 
-.status-dot.available {
-    background: #4ade80;
-    box-shadow: 0 0 8px #4ade80;
+.submit-btn:hover .btn-glow {
+    left: 100%;
 }
 
-.status-dot.busy {
-    background: #fbbf24;
-    box-shadow: 0 0 8px #fbbf24;
+/* Response Info Section */
+.response-info {
+    background: hsla(248, 9%, 45%, 0.08);
+    border: 1px solid hsla(248, 9%, 45%, 0.2);
+    border-radius: 25px;
+    padding: 50px 40px;
 }
 
-.status-dot.unavailable {
-    background: #f87171;
-    box-shadow: 0 0 8px #f87171;
-}
-
-.status-text {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: hsla(0, 0%, 90%, 1);
-}
-
-.status-description {
-    font-size: 0.85rem;
-    color: hsla(0, 0%, 75%, 1);
-    margin: 0;
-    line-height: 1.4;
-}
-
-/* Collaboration Section */
-.collaboration-info h2 {
+.info-content h3 {
     font-size: 1.8rem;
     font-weight: 600;
-    margin: 0 0 25px 0;
+    text-align: center;
+    margin: 0 0 40px 0;
     color: hsla(0, 0%, 100%, 1);
-    text-align: center;
 }
 
-.collaboration-grid {
+.response-steps {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
-.collaboration-item {
-    background: hsla(228, 48%, 60%, 0.1);
-    border: 1px solid hsla(248, 9%, 45%, 0.5);
-    border-radius: 15px;
-    padding: 25px 20px;
-    transition: all 200ms ease;
+.step {
     text-align: center;
+    position: relative;
 }
 
-.collaboration-item:hover {
-    transform: translateY(-2px);
-    border-color: hsla(242, 61%, 80%, 1);
-    background: hsla(228, 48%, 60%, 0.15);
-}
-
-.collaboration-item h3 {
+.step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background: hsla(242, 61%, 80%, 1);
+    color: hsla(0, 0%, 10%, 1);
+    border-radius: 50%;
+    font-weight: 700;
     font-size: 1.2rem;
+    margin: 0 auto 20px auto;
+}
+
+.step-content h4 {
+    font-size: 1.1rem;
     font-weight: 600;
-    margin: 0 0 12px 0;
-    color: hsla(242, 61%, 80%, 1);
+    margin: 0 0 10px 0;
+    color: hsla(0, 0%, 100%, 1);
 }
 
-.collaboration-item p {
-    font-size: 0.9rem;
+.step-content p {
+    font-size: 0.95rem;
+    color: hsla(0, 0%, 75%, 1);
+    line-height: 1.4;
     margin: 0;
-    color: hsla(0, 0%, 80%, 1);
-    line-height: 1.5;
 }
 
-/* Animations */
-@keyframes popIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
+/* Animation classes */
 .pop-in {
-    animation: popIn 0.4s ease-out;
-    transform-origin: center center;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 600ms ease;
 }
 
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.5;
-    }
-}
-
-/* Form Animation States */
-.form-group input:valid,
-.form-group select:valid,
-.form-group textarea:valid {
-    border-color: hsla(152, 81%, 60%, 0.7);
-}
-
-.form-group input:invalid:not(:placeholder-shown),
-.form-group textarea:invalid:not(:placeholder-shown) {
-    border-color: hsla(0, 84%, 60%, 0.7);
+.pop-in.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
     #contact-page {
         padding: 0 20px;
+        gap: 40px;
     }
     
-    .hero-content {
-        padding: 40px 25px;
+    .contact-hero {
+        padding: 60px 30px;
     }
     
     .contact-title {
-        font-size: 2rem;
-    }
-    
-    .contact-subtitle {
-        font-size: 1.1rem;
-    }
-    
-    .section-content {
-        padding: 25px 20px;
+        font-size: 2.2rem;
     }
     
     .contact-grid {
         grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    
+    .project-inquiry {
+        padding: 30px;
+    }
+    
+    .response-steps {
+        grid-template-columns: 1fr;
         gap: 30px;
     }
     
-    .form-actions {
+    .method-card {
         flex-direction: column;
-    }
-    
-    .cta-button {
-        width: 100%;
-    }
-    
-    .collaboration-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
+        text-align: center;
+        gap: 15px;
     }
 }
 
 @media (max-width: 480px) {
+    #contact-page {
+        padding: 0 15px;
+        gap: 30px;
+    }
+    
+    .contact-hero {
+        padding: 40px 20px;
+    }
+    
     .contact-title {
         font-size: 1.8rem;
     }
     
-    .hero-content {
-        padding: 30px 20px;
+    .project-inquiry {
+        padding: 25px;
     }
     
-    .section-content {
-        padding: 20px 15px;
+    .response-info {
+        padding: 40px 25px;
     }
 }
 
-/* Reduced motion for accessibility */
-@media (prefers-reduced-motion: reduce) {
-    .pop-in {
-        animation: none;
-    }
-    
-    .hero-content:hover,
-    .section-content:hover,
-    .collaboration-item:hover,
-    .contact-link:hover,
-    .social-link:hover,
-    .cta-button:hover {
-        transform: none;
-    }
-    
-    .status-dot {
-        animation: none;
-    }
+/* Focus and accessibility */
+.method-card:focus,
+.submit-btn:focus {
+    outline: 2px solid hsla(242, 61%, 80%, 0.8);
+    outline-offset: 2px;
+}
+
+/* Ensure proper stacking context */
+#contact-page {
+    position: relative;
+    z-index: 5;
 }
