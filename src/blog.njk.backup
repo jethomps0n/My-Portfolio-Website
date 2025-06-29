@@ -1,0 +1,155 @@
+---
+layout: base.njk
+title: My Blog | Jonathan Thompson
+pagecss: <link rel="stylesheet" href="/resources/css/blog.css">
+pagejs: <script src="/resources/js/blog.js" defer></script>
+---
+
+<div id="blog-page">
+    <div id="blog-hero" class="pop-in">
+        <div class="hero-content">
+            <h1 class="blog-title">The Cutting Room</h1>
+            <p class="blog-subtitle">Insights from behind the scenes</p>
+            <p class="blog-description">A space for reflections on filmmaking, storytelling techniques, industry insights, and the creative process that drives visual narrative.</p>
+        </div>
+    </div>
+
+    <div id="blog-content">
+        <div class="posts-grid pop-in">
+            <article class="blog-post featured">
+                <div class="post-content">
+                    <div class="post-header">
+                        <h3><a href="#post-1">The Art of the Edit: Finding Rhythm in Chaos</a></h3>
+                        <div class="post-meta">
+                            <span class="post-date">Dec 15, 2024</span>
+                            <span class="post-category">Editorial</span>
+                        </div>
+                    </div>
+                    <p class="post-excerpt">Every cut tells a story. In the editing suite, chaos transforms into narrative through rhythm, pacing, and intentional choices.</p>
+                    <a href="#post-1" class="read-more">Read More →</a>
+                </div>
+            </article>
+
+            <article class="blog-post">
+                <div class="post-content">
+                    <div class="post-header">
+                        <h3><a href="#post-2">Collaborative Storytelling</a></h3>
+                        <div class="post-meta">
+                            <span class="post-date">Nov 28, 2024</span>
+                            <span class="post-category">Production</span>
+                        </div>
+                    </div>
+                    <p class="post-excerpt">Behind every great film is a team of passionate individuals bringing unique perspectives to the table.</p>
+                    <a href="#post-2" class="read-more">Read More →</a>
+                </div>
+            </article>
+
+            <article class="blog-post">
+                <div class="post-content">
+                    <div class="post-header">
+                        <h3><a href="#post-3">From Script to Screen</a></h3>
+                        <div class="post-meta">
+                            <span class="post-date">Nov 12, 2024</span>
+                            <span class="post-category">Writing</span>
+                        </div>
+                    </div>
+                    <p class="post-excerpt">Ideas are living things that grow and change throughout production. Tracking concept evolution.</p>
+                    <a href="#post-3" class="read-more">Read More →</a>
+                </div>
+            </article>
+
+            <article class="blog-post">
+                <div class="post-content">
+                    <div class="post-header">
+                        <h3><a href="#post-4">Visual Language</a></h3>
+                        <div class="post-meta">
+                            <span class="post-date">Oct 25, 2024</span>
+                            <span class="post-category">Cinematography</span>
+                        </div>
+                    </div>
+                    <p class="post-excerpt">Every frame communicates meaning beyond dialogue. Exploring the visual language of cinema.</p>
+                    <a href="#post-4" class="read-more">Read More →</a>
+                </div>
+            </article>
+
+            <article class="blog-post">
+                <div class="post-content">
+                    <div class="post-header">
+                        <h3><a href="#post-5">Sound as Story</a></h3>
+                        <div class="post-meta">
+                            <span class="post-date">Oct 8, 2024</span>
+                            <span class="post-category">Sound Design</span>
+                        </div>
+                    </div>
+                    <p class="post-excerpt">Audio design is often the unsung hero of filmmaking. From ambient textures to strategic silence.</p>
+                    <a href="#post-5" class="read-more">Read More →</a>
+                </div>
+            </article>
+        </div>
+
+        <div class="blog-sidebar pop-in">
+            <div class="sidebar-section categories-section">
+                <h2>Categories</h2>
+                <div class="categories-list">
+                    <a href="#editorial" class="category-tag">Editorial</a>
+                    <a href="#production" class="category-tag">Production</a>
+                    <a href="#writing" class="category-tag">Writing</a>
+                    <a href="#cinematography" class="category-tag">Cinematography</a>
+                    <a href="#sound-design" class="category-tag">Sound Design</a>
+                    <a href="#industry-insights" class="category-tag">Industry Insights</a>
+                </div>
+            </div>
+
+            <div class="sidebar-section upcoming-section">
+                <h2>Coming Soon</h2>
+                <div class="upcoming-list">
+                    <div class="upcoming-item">
+                        <h4>My Editing Workflow</h4>
+                        <p>Tools and techniques behind the process</p>
+                    </div>
+                    <div class="upcoming-item">
+                        <h4>Music in Visual Storytelling</h4>
+                        <p>Rescoring insights and audio-visual harmony</p>
+                    </div>
+                    <div class="upcoming-item">
+                        <h4>Independent Film Lessons</h4>
+                        <p>Creative problem-solving in diverse projects</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="blog-about pop-in">
+            <h2>About The Cutting Room</h2>
+            <p>The cutting room is where stories truly come alive. This space shares insights from the filmmaking world - editorial techniques, collaborative processes, and the creative discoveries that make visual storytelling compelling.</p>
+            
+            <div class="blog-connect">
+                <h3>Let's Discuss</h3>
+                <div class="connect-links">
+                    <a href="https://www.linkedin.com/in/jethompsn/" target="_blank" class="connect-link">
+                        <span class="connect-icon">🔗</span>
+                        LinkedIn
+                    </a>
+                    <a href="https://www.instagram.com/jethompsn/" target="_blank" class="connect-link">
+                        <span class="connect-icon">📷</span>
+                        Instagram
+                    </a>
+                    <a href="/contact" class="connect-link">
+                        <span class="connect-icon">✉</span>
+                        Contact
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section pop-in">
+            <div class="cta-container">
+                <p class="cta-text">Have a project in mind or want to collaborate?</p>
+                <div class="cta-buttons">
+                    <a href="/contact" class="cta-button">Start a Conversation</a>
+                    <a href="/explore" class="cta-button secondary">View My Work</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

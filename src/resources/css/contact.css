@@ -162,8 +162,8 @@
     color: hsla(0, 0%, 100%, 1);
 }
 
-/* Project Inquiry - Right side */
-.project-inquiry {
+/* Contact Form - Right side */
+.contact-form {
     background: hsla(201, 100%, 8%, 0.4);
     border: 1px solid hsla(248, 9%, 45%, 0.3);
     border-radius: 25px;
@@ -171,14 +171,14 @@
     backdrop-filter: blur(15px);
 }
 
-.project-inquiry h2 {
+.contact-form h2 {
     font-size: 2rem;
     font-weight: 600;
     margin: 0 0 15px 0;
     color: hsla(0, 0%, 100%, 1);
 }
 
-.inquiry-intro {
+.form-intro {
     font-size: 1rem;
     color: hsla(0, 0%, 85%, 1);
     margin: 0 0 30px 0;
@@ -186,7 +186,7 @@
 }
 
 /* Form Styling */
-.inquiry-form {
+.contact-form-fields {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -363,7 +363,7 @@
         gap: 40px;
     }
     
-    .project-inquiry {
+    .contact-form {
         padding: 30px;
     }
     
@@ -393,7 +393,7 @@
         font-size: 1.8rem;
     }
     
-    .project-inquiry {
+    .contact-form {
         padding: 25px;
     }
     
