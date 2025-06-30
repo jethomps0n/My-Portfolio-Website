@@ -636,7 +636,42 @@ header {
 
 /* Reduced motion overrides for cursor */
 @media (prefers-reduced-motion: reduce) {
-    .refined-cursor {
+    .refined-cursor,
+    .refined-cursor::before,
+    .refined-cursor::after {
+        animation: none !important;
         transition: none !important;
     }
+}
+
+/* ----Custom Scrollbar Styles---- */
+/* Firefox scrollbar */
+html {
+    /* scrollbar-width: thin; */
+    scrollbar-color: hsla(228, 48%, 60%, 1) hsla(201, 100%, 10%, 1);
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar-track {
+    background: hsla(201, 100%, 10%, 1);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: hsla(228, 48%, 60%, 1);
+    border-radius: 6px;
+    border: 2px solid hsla(201, 100%, 10%, 1);
+    transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: hsla(228, 48%, 70%, 1);
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: hsla(228, 48%, 50%, 1);
+}
+
+::-webkit-scrollbar-corner {
+    background: hsla(201, 100%, 10%, 1);
 }
