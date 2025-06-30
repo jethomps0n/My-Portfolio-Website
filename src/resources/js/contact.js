@@ -47,7 +47,7 @@ function handleFormValidation(e) {
     e.preventDefault(); // Always prevent default form submission
     
     const form = e.target;
-    const requiredFields = form.querySelectorAll('input[required], textarea[required]');
+    const requiredFields = form.querySelectorAll('input[required], textarea[required], select[required]');
     let hasErrors = false;
     
     // Clear previous error states
@@ -93,15 +93,38 @@ async function submitFormAsync(form) {
         // Prepare form data
         const formData = new FormData(form);
         
+        // Log what we're sending for debugging
+        console.log('Submitting form data to Web3Forms...');
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+        }
+        
         // Submit to Web3Forms
         const response = await fetch('https://api.web3forms.com/submit', {
             method: 'POST',
             body: formData
         });
         
-        const result = await response.json();
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+        console.log('Response headers:', response.headers);
         
-        if (result.success) {
+        // Check if we can parse the response as JSON
+        let result;
+        try {
+            const responseText = await response.text();
+            console.log('Raw response text:', responseText);
+            result = JSON.parse(responseText);
+        } catch (jsonError) {
+            console.error('Failed to parse JSON response:', jsonError);
+            throw new Error('Invalid server response format');
+        }
+        
+        console.log('Parsed result:', result);
+        
+        // Web3Forms returns 200 status code with success: true/false
+        // Check both response status and result.success
+        if (response.ok && (result.success === true || result.success === "true")) {
             showFormStatus('success', 'Message sent successfully! I\'ll get back to you soon.');
             form.reset();
             // Clear any character counters
@@ -114,12 +137,36 @@ async function submitFormAsync(form) {
                 }
             });
         } else {
-            throw new Error(result.message || 'Submission failed');
+            // Log the actual response for debugging
+            console.log('Submission failed. Full response:', result);
+            throw new Error(result.message || `Server returned status ${response.status}`);
         }
         
     } catch (error) {
         console.error('Form submission error:', error);
-        showFormStatus('error', 'There was an issue sending your message. Please try again or contact me directly via email.');
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+        });
+        
+        // More specific error message based on error type
+        let errorMessage = 'There was an issue sending your message. Please try again or contact me directly via email.';
+        
+        // Check for specific error types
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            errorMessage = 'Network connection error. Please check your internet connection and try again.';
+        } else if (error.message.includes('CORS')) {
+            errorMessage = 'Browser security restriction. Please try refreshing the page and submitting again.';
+        } else if (error.message.includes('Invalid server response')) {
+            errorMessage = 'Server communication error. The message may have been sent - please check your email.';
+        } else if (error.message.includes('Server returned status')) {
+            errorMessage = `Server error (${error.message}). Please try again in a moment.`;
+        } else if (error.message.includes('JSON')) {
+            errorMessage = 'Server response error. The message may have been sent - please check your email.';
+        }
+        
+        showFormStatus('error', errorMessage);
     } finally {
         // Reset button state
         submitButton.querySelector('span').textContent = originalButtonText;
@@ -140,7 +187,7 @@ function setupWeb3FormsHandling(form) {
 }
 
 function setupFormValidation(form) {
-    const inputs = form.querySelectorAll('input[required], textarea[required]');
+    const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
     
     inputs.forEach(input => {
         input.addEventListener('blur', validateField);
