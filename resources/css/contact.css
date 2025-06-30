@@ -501,6 +501,29 @@
     transform: translateY(0);
 }
 
+/* Clickable card and tile styles */
+.clickable-card,
+.clickable-tile {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+}
+
+.clickable-card:hover,
+.clickable-card:focus,
+.clickable-tile:hover,
+.clickable-tile:focus {
+    text-decoration: none;
+    color: inherit;
+    outline: none;
+}
+
+.clickable-card .method-link,
+.clickable-tile .social-link {
+    text-decoration: none;
+    pointer-events: none; /* Prevent double-click issues */
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     #contact-page {

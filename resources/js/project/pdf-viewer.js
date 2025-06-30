@@ -277,21 +277,42 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   printBtn.addEventListener('click', async () => {
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
     try {
-      const res = await fetch(url);
-      const blob = await res.blob();
-      iframe.src = URL.createObjectURL(blob);
+      // Fetch PDF from B2 and create blob URL to avoid cross-origin issues
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      const iframe = document.createElement("iframe");
+      iframe.style.position = "fixed";
+      iframe.style.right = "100%";
+      iframe.style.bottom = "100%";
+      iframe.src = blobUrl;
+
       iframe.onload = () => {
         iframe.contentWindow.focus();
         iframe.contentWindow.print();
-        URL.revokeObjectURL(iframe.src);
-        document.body.removeChild(iframe);
+        
+        // Clean up after a longer delay to allow print dialog interaction
+        setTimeout(() => {
+          URL.revokeObjectURL(blobUrl);
+          if (document.body.contains(iframe)) {
+            document.body.removeChild(iframe);
+          }
+        }, 600000); // 10 minutes
       };
-    } catch (e) {
-      console.error('Print failed', e);
+
+      iframe.onerror = () => {
+        console.error('Failed to load PDF in iframe');
+        URL.revokeObjectURL(blobUrl);
+        if (document.body.contains(iframe)) {
+          document.body.removeChild(iframe);
+        }
+      };
+
+      document.body.appendChild(iframe);
+    } catch (error) {
+      console.error('Print failed:', error);
     }
   });
 
@@ -636,21 +657,42 @@ document.addEventListener('DOMContentLoaded', () => {
               });
 
               modalPrintBtn.addEventListener('click', async () => {
-                  const iframe = document.createElement('iframe');
-                  iframe.style.display = 'none';
-                  document.body.appendChild(iframe);
                   try {
-                      const res = await fetch(url);
-                      const blob = await res.blob();
-                      iframe.src = URL.createObjectURL(blob);
-                      iframe.onload = () => {
-                          iframe.contentWindow.focus();
-                          iframe.contentWindow.print();
-                          URL.revokeObjectURL(iframe.src);
+                    // Fetch PDF from B2 and create blob URL to avoid cross-origin issues
+                    const response = await fetch(url);
+                    const blob = await response.blob();
+                    const blobUrl = URL.createObjectURL(blob);
+
+                    const iframe = document.createElement("iframe");
+                    iframe.style.position = "fixed";
+                    iframe.style.right = "100%";
+                    iframe.style.bottom = "100%";
+                    iframe.src = blobUrl;
+
+                    iframe.onload = () => {
+                      iframe.contentWindow.focus();
+                      iframe.contentWindow.print();
+                      
+                      // Clean up after a longer delay to allow print dialog interaction
+                      setTimeout(() => {
+                        URL.revokeObjectURL(blobUrl);
+                        if (document.body.contains(iframe)) {
                           document.body.removeChild(iframe);
-                      };
-                  } catch (e) {
-                      console.error('Print failed', e);
+                        }
+                      }, 600000); // 10 minutes
+                    };
+
+                    iframe.onerror = () => {
+                      console.error('Failed to load PDF in iframe');
+                      URL.revokeObjectURL(blobUrl);
+                      if (document.body.contains(iframe)) {
+                        document.body.removeChild(iframe);
+                      }
+                    };
+
+                    document.body.appendChild(iframe);
+                  } catch (error) {
+                    console.error('Print failed:', error);
                   }
               });
 
