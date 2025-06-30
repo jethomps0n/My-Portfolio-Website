@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   printBtn.addEventListener('click', async () => {
     try {
-      // Fetch the PDF as blob to avoid cross-origin issues
+      // Fetch PDF from B2 and create blob URL to avoid cross-origin issues
       const response = await fetch(url);
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
@@ -287,37 +287,32 @@ document.addEventListener('DOMContentLoaded', () => {
       iframe.style.position = "fixed";
       iframe.style.right = "100%";
       iframe.style.bottom = "100%";
-      iframe.src = blobUrl; // Use blob URL instead of original URL
+      iframe.src = blobUrl;
 
       iframe.onload = () => {
-        try {
-          iframe.contentWindow.focus();
-          iframe.contentWindow.print();
-          
-          // Clean up the blob URL after a delay
-          setTimeout(() => {
-            URL.revokeObjectURL(blobUrl);
-            document.body.removeChild(iframe);
-          }, 1000);
-        } catch (e) {
-          console.error('Print failed:', e);
-          // Fallback: remove iframe and clean up
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+        
+        // Clean up after a longer delay to allow print dialog interaction
+        setTimeout(() => {
           URL.revokeObjectURL(blobUrl);
-          document.body.removeChild(iframe);
-        }
+          if (document.body.contains(iframe)) {
+            document.body.removeChild(iframe);
+          }
+        }, 600000); // 10 minutes
       };
 
       iframe.onerror = () => {
         console.error('Failed to load PDF in iframe');
         URL.revokeObjectURL(blobUrl);
-        document.body.removeChild(iframe);
+        if (document.body.contains(iframe)) {
+          document.body.removeChild(iframe);
+        }
       };
 
       document.body.appendChild(iframe);
     } catch (error) {
-      console.error('Failed to fetch PDF:', error);
-      // Fallback to opening in new window
-      window.open(url, '_blank');
+      console.error('Print failed:', error);
     }
   });
 
@@ -663,7 +658,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
               modalPrintBtn.addEventListener('click', async () => {
                   try {
-                    // Fetch the PDF as blob to avoid cross-origin issues
+                    // Fetch PDF from B2 and create blob URL to avoid cross-origin issues
                     const response = await fetch(url);
                     const blob = await response.blob();
                     const blobUrl = URL.createObjectURL(blob);
@@ -672,37 +667,32 @@ document.addEventListener('DOMContentLoaded', () => {
                     iframe.style.position = "fixed";
                     iframe.style.right = "100%";
                     iframe.style.bottom = "100%";
-                    iframe.src = blobUrl; // Use blob URL instead of original URL
+                    iframe.src = blobUrl;
 
                     iframe.onload = () => {
-                      try {
-                        iframe.contentWindow.focus();
-                        iframe.contentWindow.print();
-                        
-                        // Clean up the blob URL after a delay
-                        setTimeout(() => {
-                          URL.revokeObjectURL(blobUrl);
-                          document.body.removeChild(iframe);
-                        }, 1000);
-                      } catch (e) {
-                        console.error('Print failed:', e);
-                        // Fallback: remove iframe and clean up
+                      iframe.contentWindow.focus();
+                      iframe.contentWindow.print();
+                      
+                      // Clean up after a longer delay to allow print dialog interaction
+                      setTimeout(() => {
                         URL.revokeObjectURL(blobUrl);
-                        document.body.removeChild(iframe);
-                      }
+                        if (document.body.contains(iframe)) {
+                          document.body.removeChild(iframe);
+                        }
+                      }, 600000); // 10 minutes
                     };
 
                     iframe.onerror = () => {
                       console.error('Failed to load PDF in iframe');
                       URL.revokeObjectURL(blobUrl);
-                      document.body.removeChild(iframe);
+                      if (document.body.contains(iframe)) {
+                        document.body.removeChild(iframe);
+                      }
                     };
 
                     document.body.appendChild(iframe);
                   } catch (error) {
-                    console.error('Failed to fetch PDF:', error);
-                    // Fallback to opening in new window
-                    window.open(url, '_blank');
+                    console.error('Print failed:', error);
                   }
               });
 
