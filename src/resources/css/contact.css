@@ -136,6 +136,12 @@
     text-align: center;
 }
 
+.method-icon img {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+}
+
 .method-content h3 {
     font-size: 1.1rem;
     font-weight: 600;
@@ -206,6 +212,49 @@
     font-weight: 500;
     color: hsla(0, 0%, 90%, 1);
     margin-bottom: 8px;
+}
+
+/* Required field asterisk styling */
+.form-group label:has(+ input[required])::after,
+.form-group label:has(+ textarea[required])::after {
+    content: ' *';
+    color: hsla(0, 84%, 60%, 1);
+    font-weight: 600;
+}
+
+/* Style for manually added asterisks in HTML - they'll inherit the red color from the text */
+.form-group label {
+    position: relative;
+    color: hsla(0, 0%, 90%, 1);
+}
+
+/* Make asterisks in labels red using a span or by styling the character */
+.form-group label .required-asterisk {
+    color: hsla(0, 84%, 60%, 1);
+    font-weight: 600;
+    margin-left: 2px;
+}
+
+/* Error states for required fields */
+.form-group input.error,
+.form-group textarea.error {
+    border-color: hsla(0, 84%, 60%, 0.8) !important;
+    background: hsla(0, 84%, 60%, 0.1) !important;
+    box-shadow: 0 0 0 3px hsla(0, 84%, 60%, 0.2) !important;
+    animation: errorShake 0.5s ease-in-out;
+}
+
+.form-group input.error:focus,
+.form-group textarea.error:focus {
+    border-color: hsla(0, 84%, 60%, 1) !important;
+    box-shadow: 0 0 0 3px hsla(0, 84%, 60%, 0.3) !important;
+}
+
+/* Error shake animation */
+@keyframes errorShake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+    20%, 40%, 60%, 80% { transform: translateX(2px); }
 }
 
 .form-group input,
@@ -331,6 +380,115 @@
     margin: 0;
 }
 
+/* Social Media Grid Section */
+.social-grid {
+    margin-top: 30px;
+}
+
+.social-grid h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 20px 0;
+    color: hsla(0, 0%, 100%, 1);
+    text-align: center;
+}
+
+.social-tiles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.social-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px 15px;
+    background: hsla(248, 9%, 45%, 0.1);
+    border: 1px solid hsla(248, 9%, 45%, 0.2);
+    border-radius: 15px;
+    transition: all 300ms ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.social-tile::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent 0%, hsla(242, 61%, 80%, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 300ms ease;
+}
+
+.social-tile:hover {
+    transform: translateY(-3px);
+    border-color: hsla(242, 61%, 80%, 0.4);
+}
+
+.social-tile:hover::before {
+    opacity: 1;
+}
+
+.social-tile.youtube:hover {
+    border-color: hsla(0, 100%, 50%, 0.4);
+}
+
+.social-tile.instagram:hover {
+    border-color: hsla(320, 100%, 50%, 0.4);
+}
+
+.social-tile.github:hover {
+    border-color: hsla(210, 12%, 84%, 0.4);
+}
+
+.social-tile.letterboxd:hover {
+    border-color: hsla(39, 100%, 50%, 0.4);
+}
+
+.social-icon {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 2;
+}
+
+.social-icon img {
+    width: 50px;
+    height: 50px;
+    filter: drop-shadow(0 2px 15px hsla(0, 0%, 0%, 0.5));
+    object-fit: contain;
+}
+
+.social-content {
+    position: relative;
+    z-index: 2;
+}
+
+.social-content h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 5px 0;
+    color: hsla(0, 0%, 100%, 1);
+}
+
+.social-link {
+    color: hsla(242, 61%, 80%, 1);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.8rem;
+    transition: color 300ms ease;
+}
+
+.social-link:hover {
+    color: hsla(0, 0%, 100%, 1);
+}
+
 /* Animation classes */
 .pop-in {
     opacity: 0;
@@ -376,6 +534,18 @@
         flex-direction: column;
         text-align: center;
         gap: 15px;
+    }
+    
+    .social-tiles {
+        gap: 12px;
+    }
+    
+    .social-tile {
+        padding: 15px 10px;
+    }
+    
+    .social-icon {
+        font-size: 1.5rem;
     }
 }
 
