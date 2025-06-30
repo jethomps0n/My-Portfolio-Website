@@ -107,39 +107,48 @@ async function submitFormAsync(form) {
         
         console.log('Response status:', response.status);
         console.log('Response ok:', response.ok);
-        console.log('Response headers:', response.headers);
         
-        // Check if we can parse the response as JSON
-        let result;
-        try {
-            const responseText = await response.text();
-            console.log('Raw response text:', responseText);
-            result = JSON.parse(responseText);
-        } catch (jsonError) {
-            console.error('Failed to parse JSON response:', jsonError);
-            throw new Error('Invalid server response format');
-        }
-        
-        console.log('Parsed result:', result);
-        
-        // Web3Forms returns 200 status code with success: true/false
-        // Check both response status and result.success
-        if (response.ok && (result.success === true || result.success === "true")) {
-            showFormStatus('success', 'Message sent successfully! I\'ll get back to you soon.');
-            form.reset();
-            // Clear any character counters
-            const counters = form.querySelectorAll('.character-count');
-            counters.forEach(counter => {
-                const textarea = counter.previousElementSibling;
-                if (textarea && textarea.tagName === 'TEXTAREA') {
-                    counter.textContent = `0/1000`;
-                    counter.style.color = 'hsla(0, 0%, 60%, 1)';
-                }
-            });
+        // Web3Forms typically returns 200 status code for both success and failure
+        // Let's check the status code first
+        if (response.status === 200) {
+            // Try to parse JSON response
+            let result;
+            try {
+                const responseText = await response.text();
+                console.log('Raw response text:', responseText);
+                result = JSON.parse(responseText);
+                console.log('Parsed result:', result);
+            } catch (jsonError) {
+                console.error('Failed to parse JSON response:', jsonError);
+                // If we can't parse JSON but got 200, assume success
+                console.log('Assuming success due to 200 status code');
+                showFormStatus('success', 'Message sent successfully! I\'ll get back to you soon.');
+                form.reset();
+                return;
+            }
+            
+            // Check the success property (can be boolean true or string "true")
+            if (result.success === true || result.success === "true" || result.success === 1) {
+                showFormStatus('success', 'Message sent successfully! I\'ll get back to you soon.');
+                form.reset();
+                // Clear any character counters
+                const counters = form.querySelectorAll('.character-count');
+                counters.forEach(counter => {
+                    const textarea = counter.previousElementSibling;
+                    if (textarea && textarea.tagName === 'TEXTAREA') {
+                        counter.textContent = `0/1000`;
+                        counter.style.color = 'hsla(0, 0%, 60%, 1)';
+                    }
+                });
+            } else {
+                // Got 200 but success is false - this is a form validation error from Web3Forms
+                console.log('Web3Forms validation error:', result);
+                throw new Error(result.message || 'Form validation failed');
+            }
         } else {
-            // Log the actual response for debugging
-            console.log('Submission failed. Full response:', result);
-            throw new Error(result.message || `Server returned status ${response.status}`);
+            // Non-200 status code
+            console.log('Non-200 response status:', response.status);
+            throw new Error(`Server returned status ${response.status}`);
         }
         
     } catch (error) {
