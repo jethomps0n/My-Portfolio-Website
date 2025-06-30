@@ -157,7 +157,7 @@ header.navbar-animate .nav {
 #navbar .nav:hover {
     background-color: hsla(228, 48%, 60%, 1);
     color: hsla(0, 0%, 100%, 1);
-    transform: translateY(-2px);
+    /* transform: translateY(-2px); */
 }
 
 #navbar .nav:active {

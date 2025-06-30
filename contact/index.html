@@ -103,7 +103,7 @@
                 </div>
             </a>
 
-            <a href="https://www.linkedin.com/in/jethompson/" target="_blank" class="method-card clickable-card">
+            <a href="https://www.linkedin.com/in/jethompsn/" target="_blank" class="method-card clickable-card">
                 <div class="method-icon">
                     <img src="/resources/images/icons/LinkedIn-alt2.png" alt="LinkedIn" />
                 </div>
@@ -164,69 +164,51 @@
             <p class="form-intro">Have something on your mind? I'd love to hear from you! Drop me a message and I'll get back to you as soon as I can.</p>
             
             <form class="contact-form-fields" action="https://api.web3forms.com/submit" method="POST">
-                
+                <input type="hidden" name="access_key" value="25b68a1f-b0e8-4083-b110-2fa5b71a5759">
                 <input type="hidden" name="redirect" value="false">
                 <input type="hidden" name="from_name" value="itsjonathanthompson.com">
-                <input type="hidden" name="subject" value="Contact Form Submission - itsjonathanthompson.com">
+                <input type="hidden" name="subject" id="dynamic-subject" value="Contact Form Submission">
                 <div class="form-group">
                     <label for="name">Your Name</label>
-                    <input type="text" id="name" name="name" required>
+                    <input type="text" id="name" name="Name" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" name="Email" required>
                 </div>
 
                 <div class="form-group">
                     <label for="connection-type">What's on your mind?<span class="required-asterisk"> *</span></label>
-                    <select id="connection-type" name="connection-type" required>
+                    <select id="connection-type" name="Connection Type" required>
                         <option value="">What would you like to talk about?</option>
-                        <option value="job-opportunity">Job Opportunity</option>
-                        <option value="collaboration">Collaboration</option>
-                        <option value="freelance">Freelance Work</option>
-                        <option value="networking">Networking</option>
-                        <option value="question">Question</option>
-                        <option value="feedback">Feedback</option>
-                        <option value="just-saying-hi">Just Saying Hi</option>
-                        <option value="other">Something Else</option>
+                        <option value="Work Opportunity">Work Opportunity</option>
+                        <option value="Collaboration Request">Collaboration Request</option>
+                        <option value="General Inquiry">General Inquiry</option>
+                        <option value="Feedback">Feedback</option>
+                        <option value="Just Saying Hi">Just Saying Hi</option>
+                        <option value="Something Else">Something Else</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label for="interest-area">Area of Interest (Optional)</label>
-                    <select id="interest-area" name="interest-area">
+                    <select id="interest-area" name="Area of Interest">
                         <option value="">Any specific area?</option>
-                        <option value="video-editing">Video Editing</option>
-                        <option value="writing">Writing/Screenwriting</option>
-                        <option value="directing">Directing</option>
-                        <option value="producing">Producing</option>
-                        <option value="cinematography">Cinematography</option>
-                        <option value="music-sound">Music/Sound Design</option>
-                        <option value="photography">Photography</option>
-                        <option value="creative-general">Creative Work</option>
-                        <option value="personal-projects">Personal Projects</option>
-                        <option value="just-chatting">Just Chatting</option>
-                        <option value="other">Something Else</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="timeline">Timeline (Optional)</label>
-                    <select id="timeline" name="timeline">
-                        <option value="">Any timing in mind?</option>
-                        <option value="immediate">ASAP</option>
-                        <option value="soon">Soon</option>
-                        <option value="month">Within a month</option>
-                        <option value="future">Sometime in the future</option>
-                        <option value="no-timeline">No rush</option>
-                        <option value="casual">Whenever works</option>
+                        <option value="Video Editing">Video Editing</option>
+                        <option value="Writing/Screenwriting">Writing/Screenwriting</option>
+                        <option value="Directing">Directing</option>
+                        <option value="Producing">Producing</option>
+                        <option value="Cinematography">Cinematography</option>
+                        <option value="Music/Sound Design">Music/Sound Design</option>
+                        <option value="Creative Work">Creative Work</option>
+                        <option value="Something Else">Something Else</option>
                     </select>
                 </div>
                 
                 <div class="form-group full-width">
                     <label for="message">Your Message</label>
-                    <textarea id="message" name="message" rows="6" placeholder="What's on your mind? I'd love to hear from you!" required></textarea>
+                    <textarea id="message" name="Message" rows="6" placeholder="What's on your mind? I'd love to hear from you!" required></textarea>
                 </div>
 
                 <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
@@ -333,7 +315,7 @@
                     <path class="lastname o" d="M721.61,72.79c-6.21,9.85-12.31,14.58-18.22,14.58-7.58,0-11.72-6.6-11.72-14.58,0-13.2,13.69-45.01,29.94-45.01,4.63,0,11.13,2.96,11.13,13.69,0,9.16-5.22,21.96-11.13,31.32ZM721.61,37.63c-2.46,0-6.11,2.76-10.44,9.36-5.12,7.78-9.65,18.71-9.65,25.81,0,3.84,1.18,4.73,1.87,4.73,1.48,0,4.73-1.87,9.95-10.05,5.02-7.78,9.55-19.4,9.55-26,0-3.15-.79-3.84-1.28-3.84Z"/>
                     <path class="lastname n" d="M767.51,67.18c-2.56,6.7-5.02,14.18-5.91,17.33l-9.46-2.76c1.58-5.42,4.14-13,6.11-18.12,1.18-3.05,4.33-11.23,8.18-20.19l-.1-.1c-5.61,5.32-11.03,9.55-15.46,14.58s-7.58,10.54-10.44,17.24c-.99,2.36-2.07,4.83-2.86,7.49l-9.36-3.15c1.58-4.24,3.25-8.47,4.63-12.11,1.48-3.94,6.21-14.68,8.57-20.68,1.87-4.73,4.33-10.93,5.12-13.99l9.65,2.36c-.29,1.48-3.05,7.98-4.24,11.03,5.22-5.22,10.64-10.83,17.24-15.17,3.64-2.36,6.89-2.36,8.67-.69,2.07,1.87,2.66,4.83,1.28,8.08-3.05,6.99-7.88,19.01-11.62,28.86Z"/>
                 </svg></a>
-                <div id="set-center"><small id="copyright">© 2025 Jonathan Thompson. All Rights Reserved.</small></div>
+                <div id="set-center"><small id="copyright">© 2024-2025 Jonathan Thompson. All Rights Reserved.</small></div>
                 <ul id="socials">
                     <li><a href="https://www.youtube.com/@jethompsn" target="_blank"><img src="/resources/images/icons/YouTube.png" alt="YouTube"></a></li>
                     <li><a href="https://www.instagram.com/jethompsn/" target="_blank"><img src="/resources/images/icons/Instagram.png" alt="Instagram"></a></li>
