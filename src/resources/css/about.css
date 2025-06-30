@@ -93,6 +93,48 @@
     font-weight: 600;
 }
 
+/* Social Media Tiles */
+.social-tiles {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid hsla(0, 0%, 100%, 0.1);
+}
+
+.social-tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: hsla(0, 0%, 100%, 0.05);
+    border: 1px solid hsla(0, 0%, 100%, 0.1);
+    border-radius: 10px;
+    transition: all 300ms ease;
+    text-decoration: none;
+    backdrop-filter: blur(10px);
+}
+
+.social-tile:hover {
+    background: hsla(242, 61%, 80%, 0.2);
+    border-color: hsla(242, 61%, 80%, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px hsla(242, 61%, 80%, 0.3);
+}
+
+.social-tile img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    transition: transform 200ms ease;
+}
+
+.social-tile:hover img {
+    transform: scale(1.1);
+}
+
 /* Main Content - Card-based Professional Layout */
 .about-main {
     display: flex;
@@ -268,6 +310,20 @@
         padding: 25px;
     }
     
+    .social-tiles {
+        gap: 10px;
+    }
+    
+    .social-tile {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .social-tile img {
+        width: 18px;
+        height: 18px;
+    }
+    
     .intro-title {
         font-size: 2rem;
     }
@@ -304,6 +360,20 @@
         padding: 20px;
     }
     
+    .social-tiles {
+        gap: 8px;
+    }
+    
+    .social-tile {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .social-tile img {
+        width: 16px;
+        height: 16px;
+    }
+    
     .intro-title {
         font-size: 1.8rem;
     }
@@ -328,7 +398,8 @@
 }
 
 /* Focus states for accessibility */
-.skill-tag:focus {
+.skill-tag:focus,
+.social-tile:focus {
     outline: 2px solid hsla(242, 61%, 80%, 0.8);
     outline-offset: 2px;
 }

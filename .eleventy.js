@@ -153,6 +153,18 @@ module.exports = function (eleventyConfig) {
         return readingTime;
     });
 
+    // Add copyright year filter for automatic year updates
+    eleventyConfig.addFilter("copyrightYear", function() {
+        const currentYear = new Date().getFullYear();
+        const startYear = 2024; // The year the website was created
+        
+        if (currentYear > startYear) {
+            return `${startYear}-${currentYear}`;
+        } else {
+            return `${startYear}`;
+        }
+    });
+
     return {
       templateFormats: ["njk", "html", "md"],
       markdownTemplateEngine: "njk",

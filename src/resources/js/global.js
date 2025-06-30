@@ -382,6 +382,29 @@ function setupRefinedInteractions(cursorEl) {
     }
 }
 
+//-------AUTOMATIC COPYRIGHT YEAR UPDATE-------------//
+document.addEventListener('DOMContentLoaded', () => {
+    updateCopyrightYear();
+});
+
+function updateCopyrightYear() {
+    const copyrightElement = document.getElementById('copyright');
+    if (!copyrightElement) return;
+    
+    const currentYear = new Date().getFullYear();
+    const startYear = 2024; // The year the website was created
+    
+    // Generate the expected copyright text
+    const expectedText = currentYear > startYear 
+        ? `© ${startYear}-${currentYear} Jonathan Thompson. All Rights Reserved.`
+        : `© ${startYear} Jonathan Thompson. All Rights Reserved.`;
+    
+    // Only update if the current text doesn't match (in case the build is outdated)
+    if (copyrightElement.textContent.trim() !== expectedText) {
+        copyrightElement.textContent = expectedText;
+    }
+}
+
 //-------GLOBAL ANIMATIONS-------------//
 document.addEventListener('DOMContentLoaded', () => {
     // Always scroll to top on page load/refresh - ensure this happens immediately

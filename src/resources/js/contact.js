@@ -41,6 +41,9 @@ function setupContactForm() {
     
     // Setup Web3Forms success/error handling
     setupWeb3FormsHandling(form);
+    
+    // Setup dynamic subject line based on connection type
+    setupDynamicSubject(form);
 }
 
 function handleFormValidation(e) {
@@ -389,5 +392,28 @@ if (typeof cursor !== 'undefined') {
         element.addEventListener('mouseleave', () => {
             cursor.removeState('-pointer');
         });
+    });
+}
+
+// Setup dynamic subject line based on connection type selection
+function setupDynamicSubject(form) {
+    const connectionTypeSelect = form.querySelector('#connection-type');
+    const subjectField = form.querySelector('#dynamic-subject');
+    
+    if (!connectionTypeSelect || !subjectField) return;
+    
+    // Subject line mapping based on connection type
+    const subjectMap = {
+        'work-opportunity': 'Work Opportunity Inquiry',
+        'collaboration': 'Collaboration Request',
+        'question': 'General Inquiry',
+        'feedback': 'Feedback/Comments'
+    };
+    
+    // Update subject when connection type changes
+    connectionTypeSelect.addEventListener('change', function() {
+        const selectedValue = this.value;
+        const newSubject = subjectMap[selectedValue] || 'Contact Form Submission';
+        subjectField.value = newSubject;
     });
 }

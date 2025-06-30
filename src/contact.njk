@@ -32,7 +32,7 @@ pagejs: <script src="/resources/js/contact.js" defer></script>
                 </div>
             </a>
 
-            <a href="https://www.linkedin.com/in/jethompson/" target="_blank" class="method-card clickable-card">
+            <a href="https://www.linkedin.com/in/jethompsn/" target="_blank" class="method-card clickable-card">
                 <div class="method-icon">
                     <img src="/resources/images/icons/LinkedIn-alt2.png" alt="LinkedIn" />
                 </div>
@@ -93,69 +93,51 @@ pagejs: <script src="/resources/js/contact.js" defer></script>
             <p class="form-intro">Have something on your mind? I'd love to hear from you! Drop me a message and I'll get back to you as soon as I can.</p>
             
             <form class="contact-form-fields" action="https://api.web3forms.com/submit" method="POST">
-                {# <input type="hidden" name="access_key" value="25b68a1f-b0e8-4083-b110-2fa5b71a5759"> #}
+                <input type="hidden" name="access_key" value="25b68a1f-b0e8-4083-b110-2fa5b71a5759">
                 <input type="hidden" name="redirect" value="false">
                 <input type="hidden" name="from_name" value="itsjonathanthompson.com">
-                <input type="hidden" name="subject" value="Contact Form Submission - itsjonathanthompson.com">
+                <input type="hidden" name="subject" id="dynamic-subject" value="Contact Form Submission">
                 <div class="form-group">
                     <label for="name">Your Name</label>
-                    <input type="text" id="name" name="name" required>
+                    <input type="text" id="name" name="Name" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" name="Email" required>
                 </div>
 
                 <div class="form-group">
                     <label for="connection-type">What's on your mind?<span class="required-asterisk"> *</span></label>
-                    <select id="connection-type" name="connection-type" required>
+                    <select id="connection-type" name="Connection Type" required>
                         <option value="">What would you like to talk about?</option>
-                        <option value="job-opportunity">Job Opportunity</option>
-                        <option value="collaboration">Collaboration</option>
-                        <option value="freelance">Freelance Work</option>
-                        <option value="networking">Networking</option>
-                        <option value="question">Question</option>
-                        <option value="feedback">Feedback</option>
-                        <option value="just-saying-hi">Just Saying Hi</option>
-                        <option value="other">Something Else</option>
+                        <option value="Work Opportunity">Work Opportunity</option>
+                        <option value="Collaboration Request">Collaboration Request</option>
+                        <option value="General Inquiry">General Inquiry</option>
+                        <option value="Feedback">Feedback</option>
+                        <option value="Just Saying Hi">Just Saying Hi</option>
+                        <option value="Something Else">Something Else</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label for="interest-area">Area of Interest (Optional)</label>
-                    <select id="interest-area" name="interest-area">
+                    <select id="interest-area" name="Area of Interest">
                         <option value="">Any specific area?</option>
-                        <option value="video-editing">Video Editing</option>
-                        <option value="writing">Writing/Screenwriting</option>
-                        <option value="directing">Directing</option>
-                        <option value="producing">Producing</option>
-                        <option value="cinematography">Cinematography</option>
-                        <option value="music-sound">Music/Sound Design</option>
-                        <option value="photography">Photography</option>
-                        <option value="creative-general">Creative Work</option>
-                        <option value="personal-projects">Personal Projects</option>
-                        <option value="just-chatting">Just Chatting</option>
-                        <option value="other">Something Else</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="timeline">Timeline (Optional)</label>
-                    <select id="timeline" name="timeline">
-                        <option value="">Any timing in mind?</option>
-                        <option value="immediate">ASAP</option>
-                        <option value="soon">Soon</option>
-                        <option value="month">Within a month</option>
-                        <option value="future">Sometime in the future</option>
-                        <option value="no-timeline">No rush</option>
-                        <option value="casual">Whenever works</option>
+                        <option value="Video Editing">Video Editing</option>
+                        <option value="Writing/Screenwriting">Writing/Screenwriting</option>
+                        <option value="Directing">Directing</option>
+                        <option value="Producing">Producing</option>
+                        <option value="Cinematography">Cinematography</option>
+                        <option value="Music/Sound Design">Music/Sound Design</option>
+                        <option value="Creative Work">Creative Work</option>
+                        <option value="Something Else">Something Else</option>
                     </select>
                 </div>
                 
                 <div class="form-group full-width">
                     <label for="message">Your Message</label>
-                    <textarea id="message" name="message" rows="6" placeholder="What's on your mind? I'd love to hear from you!" required></textarea>
+                    <textarea id="message" name="Message" rows="6" placeholder="What's on your mind? I'd love to hear from you!" required></textarea>
                 </div>
 
                 <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
