@@ -65,7 +65,10 @@ function handleFormValidation(e) {
     
     // If there are errors, show message and focus first error
     if (hasErrors) {
-        showFormStatus('error', 'Please fill in all required fields (marked with *).');
+        const result = document.getElementById('result');
+        result.innerHTML = "❌ Please fill in all required fields (marked with *).";
+        result.className = "form-result error";
+        result.style.display = "block";
         
         // Focus on first error field
         const firstError = form.querySelector('.error');
@@ -81,106 +84,78 @@ function handleFormValidation(e) {
     return false;
 }
 
-async function submitFormAsync(form) {
+function submitFormAsync(form) {
     const submitButton = form.querySelector('button[type="submit"]');
     const originalButtonText = submitButton.querySelector('span').textContent;
+    const result = document.getElementById('result');
     
     // Show loading state
     submitButton.querySelector('span').textContent = 'Sending...';
     submitButton.disabled = true;
+    result.innerHTML = "Sending your message...";
+    result.style.display = "block";
+    result.className = "form-result loading";
     
-    try {
-        // Prepare form data
-        const formData = new FormData(form);
-        
-        // Log what we're sending for debugging
-        console.log('Submitting form data to Web3Forms...');
-        for (let [key, value] of formData.entries()) {
-            console.log(`${key}: ${value}`);
-        }
-        
-        // Submit to Web3Forms
-        const response = await fetch('https://api.web3forms.com/submit', {
-            method: 'POST',
-            body: formData
-        });
-        
-        console.log('Response status:', response.status);
-        console.log('Response ok:', response.ok);
-        
-        // Web3Forms typically returns 200 status code for both success and failure
-        // Let's check the status code first
-        if (response.status === 200) {
-            // Try to parse JSON response
-            let result;
-            try {
-                const responseText = await response.text();
-                console.log('Raw response text:', responseText);
-                result = JSON.parse(responseText);
-                console.log('Parsed result:', result);
-            } catch (jsonError) {
-                console.error('Failed to parse JSON response:', jsonError);
-                // If we can't parse JSON but got 200, assume success
-                console.log('Assuming success due to 200 status code');
-                showFormStatus('success', 'Message sent successfully! I\'ll get back to you soon.');
-                form.reset();
-                return;
-            }
+    // Prepare form data following Web3Forms documentation
+    const formData = new FormData(form);
+    const object = Object.fromEntries(formData);
+    const json = JSON.stringify(object);
+    
+    fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: json
+    })
+    .then(async (response) => {
+        let responseJson = await response.json();
+        if (response.status == 200) {
+            // Success
+            result.innerHTML = "Message sent successfully! I'll get back to you soon.";
+            result.className = "form-result success";
             
-            // Check the success property (can be boolean true or string "true")
-            if (result.success === true || result.success === "true" || result.success === 1) {
-                showFormStatus('success', 'Message sent successfully! I\'ll get back to you soon.');
-                form.reset();
-                // Clear any character counters
-                const counters = form.querySelectorAll('.character-count');
-                counters.forEach(counter => {
-                    const textarea = counter.previousElementSibling;
-                    if (textarea && textarea.tagName === 'TEXTAREA') {
-                        counter.textContent = `0/1000`;
-                        counter.style.color = 'hsla(0, 0%, 60%, 1)';
-                    }
-                });
-            } else {
-                // Got 200 but success is false - this is a form validation error from Web3Forms
-                console.log('Web3Forms validation error:', result);
-                throw new Error(result.message || 'Form validation failed');
-            }
+            // Clear any character counters
+            const counters = form.querySelectorAll('.character-count');
+            counters.forEach(counter => {
+                const textarea = counter.previousElementSibling;
+                if (textarea && textarea.tagName === 'TEXTAREA') {
+                    counter.textContent = `0/1000`;
+                    counter.style.color = 'hsla(0, 0%, 60%, 1)';
+                }
+            });
         } else {
-            // Non-200 status code
-            console.log('Non-200 response status:', response.status);
-            throw new Error(`Server returned status ${response.status}`);
+            // Error from Web3Forms
+            console.log(response);
+            result.innerHTML = `${responseJson.message || 'There was an issue sending your message. Please try again.'}`;
+            result.className = "form-result error";
         }
-        
-    } catch (error) {
-        console.error('Form submission error:', error);
-        console.error('Error details:', {
-            message: error.message,
-            stack: error.stack,
-            name: error.name
-        });
-        
-        // More specific error message based on error type
-        let errorMessage = 'There was an issue sending your message. Please try again or contact me directly via email.';
-        
-        // Check for specific error types
-        if (error.name === 'TypeError' && error.message.includes('fetch')) {
-            errorMessage = 'Network connection error. Please check your internet connection and try again.';
-        } else if (error.message.includes('CORS')) {
-            errorMessage = 'Browser security restriction. Please try refreshing the page and submitting again.';
-        } else if (error.message.includes('Invalid server response')) {
-            errorMessage = 'Server communication error. The message may have been sent - please check your email.';
-        } else if (error.message.includes('Server returned status')) {
-            errorMessage = `Server error (${error.message}). Please try again in a moment.`;
-        } else if (error.message.includes('JSON')) {
-            errorMessage = 'Server response error. The message may have been sent - please check your email.';
-        }
-        
-        showFormStatus('error', errorMessage);
-    } finally {
+    })
+    .catch(error => {
+        console.log(error);
+        result.innerHTML = "Network error. Please check your connection and try again.";
+        result.className = "form-result error";
+    })
+    .then(function() {
         // Reset button state
         submitButton.querySelector('span').textContent = originalButtonText;
         submitButton.disabled = false;
-    }
+        
+        // Reset form only on success
+        if (result.className.includes('success')) {
+            form.reset();
+        }
+        
+        // Auto-hide result after 5 seconds
+        setTimeout(() => {
+            result.style.opacity = "0";
+            setTimeout(() => {
+                result.style.display = "none";
+                result.style.opacity = "1";
+            }, 300);
+        }, 5000);
+    });
 }
 
 function setupWeb3FormsHandling(form) {
@@ -260,48 +235,6 @@ function clearFieldError(field) {
     }
     field.style.borderColor = '';
     field.classList.remove('error');
-}
-
-function showFormStatus(type, message) {
-    // Remove existing status
-    const existingStatus = document.querySelector('.form-status');
-    if (existingStatus) {
-        existingStatus.remove();
-    }
-    
-    // Create status element
-    const statusElement = document.createElement('div');
-    statusElement.className = `form-status ${type}`;
-    statusElement.textContent = message;
-    
-    const colors = {
-        success: 'hsla(152, 81%, 60%, 1)',
-        error: 'hsla(0, 84%, 60%, 1)',
-        info: 'hsla(214, 100%, 60%, 1)'
-    };
-    
-    statusElement.style.cssText = `
-        background: ${colors[type]}20;
-        border: 1px solid ${colors[type]}60;
-        color: ${colors[type]};
-        padding: 12px 16px;
-        border-radius: 10px;
-        margin-top: 15px;
-        font-size: 0.9rem;
-        animation: popIn 0.3s ease-out;
-    `;
-    
-    const form = document.querySelector('.contact-form-fields');
-    form.appendChild(statusElement);
-    
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-        if (statusElement.parentNode) {
-            statusElement.style.opacity = '0';
-            statusElement.style.transform = 'translateY(-10px)';
-            setTimeout(() => statusElement.remove(), 300);
-        }
-    }, 5000);
 }
 
 function setupInputEffects(form) {
@@ -444,22 +377,6 @@ function enhanceStatusIndicator() {
         });
     }
 }
-
-// Add custom animation keyframes
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes contactRipple {
-        from {
-            transform: translate(-50%, -50%) scale(0);
-            opacity: 0.6;
-        }
-        to {
-            transform: translate(-50%, -50%) scale(2);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(style);
 
 // Mouse cursor integration (if mouse-follower is available)
 if (typeof cursor !== 'undefined') {
