@@ -13,24 +13,24 @@ pagejs: <script src="/resources/js/blog.js" defer></script>
 
     <div class="categories-strip pop-in">
         <a href="/blog/" class="category-tag active">All</a>
-        <a href="/blog/tags/editorial/" class="category-tag">Editorial</a>
+        <a href="/blog/tags/post-production/" class="category-tag">Post-Production</a>
         <a href="/blog/tags/production/" class="category-tag">Production</a>
         <a href="/blog/tags/writing/" class="category-tag">Writing</a>
-        <a href="/blog/tags/cinematography/" class="category-tag">Cinematography</a>
         <a href="/blog/tags/sound-design/" class="category-tag">Sound Design</a>
-        <a href="/blog/tags/post-production/" class="category-tag">Post-Production</a>
-        <a href="/blog/tags/collaboration/" class="category-tag">Collaboration</a>
+        <a href="/blog/tags/film-tv/" class="category-tag">Film & TV</a>
+        <a href="/blog/tags/the-walking-dead/" class="category-tag">The Walking Dead</a>
     </div>
 
     <div class="blog-grid">
-        {% set latestPosts = collections.blogPosts | reverse | slice(0, 4) %}
+        {% set latestPosts = collections.blogPosts | slice(0, 4) %}
         {% for post in latestPosts %}
         <article class="blog-post {% if loop.index0 == 0 %}featured{% endif %} pop-in">
             <div class="post-meta">
                 {% for tag in post.data.tags %}
-                <span class="post-category {{ tag | slugify }}">{{ tag }}</span>
+                <a href="/blog/tags/{{ tag | slugify }}/" class="post-category {{ tag | slugify }}">{{ tag | titleCase }}</a>
                 {% endfor %}
                 <span class="post-date">{{ post.data.date | dateFormat }}</span>
+                <span class="reading-time">{{ post.templateContent | readingTime }} min read</span>
             </div>
             {% if loop.index0 == 0 %}
             <h2><a href="{{ post.url }}">{{ post.data.title }}</a></h2>

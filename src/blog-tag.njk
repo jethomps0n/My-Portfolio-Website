@@ -3,19 +3,24 @@ layout: base.njk
 pagecss: <link rel="stylesheet" href="/resources/css/blog.css">
 pagejs: <script src="/resources/js/blog.js" defer></script>
 pagination:
-  data: collections.blogTags
+  data: collections.tagPaginationData
   size: 1
-  alias: tag
-permalink: "/blog/tags/{{ tag | slugify }}/"
+  alias: tagPage
+permalink: "/blog/tags/{{ tagPage.tag | slugify }}/{% if tagPage.pageNumber > 0 %}page-{{ tagPage.pageNumber + 1 }}/{% endif %}index.html"
 eleventyComputed:
-  title: "{{ tag }} Posts | Jonathan Thompson"
-  tagPosts: "{{ collections.blogPosts | selectattr('data.tags', 'contains', tag) | reverse }}"
+  title: "{{ tagPage.tag | titleCase }} Posts | Jonathan Thompson"
 ---
 
 <div id="blog-page">
+    {% set tag = tagPage.tag %}
+    {% set currentPage = tagPage.pageNumber %}
+    {% set totalPages = tagPage.totalPages %}
+    {% set allTagPosts = tagPage.totalPosts %}
+    {% set posts = tagPage.posts %}
+    
     <header class="blog-header pop-in">
-        <h1 class="blog-title">{{ tag }}</h1>
-        <p class="blog-subtitle">{{ tagPosts.length }} post{% if tagPosts.length != 1 %}s{% endif %} tagged with "{{ tag }}"</p>
+        <h1 class="blog-title">{{ tag | titleCase }}</h1>
+        <p class="blog-subtitle">{{ allTagPosts }} post{% if allTagPosts != 1 %}s{% endif %} tagged with "{{ tag | titleCase }}"{% if totalPages > 1 %} • Page {{ currentPage + 1 }} of {{ totalPages }}{% endif %}</p>
     </header>
 
     <div class="categories-strip pop-in">
@@ -24,14 +29,15 @@ eleventyComputed:
         <a href="/blog/posts/" class="category-tag">All Posts</a>
     </div>
 
-    <div class="blog-grid">
-        {% for post in tagPosts %}
-        <article class="blog-post {% if loop.index0 == 0 %}featured{% endif %} pop-in">
+    <div class="blog-posts-list">
+        {% for post in tagPage.posts %}
+        <article class="blog-post-item pop-in">
             <div class="post-meta">
                 {% for postTag in post.data.tags %}
-                <span class="post-category {{ postTag | slugify }}">{{ postTag }}</span>
+                <a href="/blog/tags/{{ postTag | slugify }}/" class="post-category {{ postTag | slugify }}">{{ postTag | titleCase }}</a>
                 {% endfor %}
                 <span class="post-date">{{ post.data.date | dateFormat }}</span>
+                <span class="reading-time">{{ post.data.excerpt | readingTime }} min read</span>
             </div>
             <h2><a href="{{ post.url }}">{{ post.data.title }}</a></h2>
             <p class="post-excerpt">{{ post.data.excerpt }}</p>
@@ -40,10 +46,40 @@ eleventyComputed:
         {% endfor %}
     </div>
 
-    {% if tagPosts.length == 0 %}
+    {% if tagPage.totalPages > 1 %}
+    <nav class="pagination pop-in">
+        <div class="pagination-links">
+            {% if tagPage.pageNumber > 0 %}
+            {% if tagPage.pageNumber == 1 %}
+            <a href="/blog/tags/{{ tag | slugify }}/" class="pagination-link prev">← Previous</a>
+            {% else %}
+            <a href="/blog/tags/{{ tag | slugify }}/page-{{ tagPage.pageNumber }}/" class="pagination-link prev">← Previous</a>
+            {% endif %}
+            {% endif %}
+
+            {% for pageNum in range(0, tagPage.totalPages) %}
+            {% if pageNum == tagPage.pageNumber %}
+            <span class="pagination-link current">{{ pageNum + 1 }}</span>
+            {% else %}
+            {% if pageNum == 0 %}
+            <a href="/blog/tags/{{ tag | slugify }}/" class="pagination-link">{{ pageNum + 1 }}</a>
+            {% else %}
+            <a href="/blog/tags/{{ tag | slugify }}/page-{{ pageNum + 1 }}/" class="pagination-link">{{ pageNum + 1 }}</a>
+            {% endif %}
+            {% endif %}
+            {% endfor %}
+
+            {% if tagPage.pageNumber < tagPage.totalPages - 1 %}
+            <a href="/blog/tags/{{ tag | slugify }}/page-{{ tagPage.pageNumber + 2 }}/" class="pagination-link next">Next →</a>
+            {% endif %}
+        </div>
+    </nav>
+    {% endif %}
+
+    {% if tagPage.totalPosts == 0 %}
     <div class="empty-state pop-in">
         <h3>No posts found</h3>
-        <p>There are no posts tagged with "{{ tag }}" yet.</p>
+        <p>There are no posts tagged with "{{ tag | titleCase }}" yet.</p>
         <a href="/blog/" class="read-more">← Back to Blog</a>
     </div>
     {% endif %}

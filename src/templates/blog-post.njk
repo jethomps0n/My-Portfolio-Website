@@ -8,7 +8,7 @@ pagejs: <script src="/resources/js/blog.js" defer></script>
     <header class="post-header">
         <div class="post-meta">
             {% for tag in tags %}
-            <a href="/blog/tags/{{ tag | slugify }}/" class="post-tag">{{ tag }}</a>
+            <a href="/blog/tags/{{ tag | slugify }}/" class="post-category {{ tag | slugify }}">{{ tag | titleCase }}</a>
             {% endfor %}
             <span class="post-date">{{ date | dateFormat }}</span>
         </div>
@@ -28,11 +28,15 @@ pagejs: <script src="/resources/js/blog.js" defer></script>
             <a href="/blog/posts/" class="nav-link">All Posts →</a>
         </div>
         
+        {% if tags and tags.length > 0 %}
         <div class="post-tags">
             <h3>Tagged with:</h3>
-            {% for tag in tags %}
-            <a href="/blog/tags/{{ tag | slugify }}/" class="tag-link">#{{ tag }}</a>
-            {% endfor %}
+            <div class="tag-links">
+                {% for tag in tags %}
+                <a href="/blog/tags/{{ tag | slugify }}/" class="tag-link">{{ tag | titleCase }}</a>
+                {% endfor %}
+            </div>
         </div>
+        {% endif %}
     </footer>
 </article>

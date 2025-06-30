@@ -20,6 +20,47 @@ module.exports = function (eleventyConfig) {
         return [...tagSet].sort();
     });
 
+    // Create collection for tag pagination data
+    eleventyConfig.addCollection("tagPaginationData", function(collectionApi) {
+        const posts = collectionApi.getFilteredByGlob("src/blog-posts/*.md").sort((a, b) => {
+            return new Date(b.data.date) - new Date(a.data.date);
+        });
+        
+        let tagSet = new Set();
+        posts.forEach(post => {
+            if (post.data.tags) {
+                post.data.tags.forEach(tag => tagSet.add(tag));
+            }
+        });
+        
+        let paginationData = [];
+        const pageSize = 8;
+        
+        [...tagSet].forEach(tag => {
+            const tagPosts = posts.filter(post => 
+                post.data.tags && post.data.tags.includes(tag)
+            );
+            
+            const totalPages = Math.ceil(tagPosts.length / pageSize);
+            
+            for (let pageNum = 0; pageNum < totalPages; pageNum++) {
+                const startIndex = pageNum * pageSize;
+                const endIndex = startIndex + pageSize;
+                const pagePosts = tagPosts.slice(startIndex, endIndex);
+                
+                paginationData.push({
+                    tag: tag,
+                    pageNumber: pageNum,
+                    posts: pagePosts,
+                    totalPages: totalPages,
+                    totalPosts: tagPosts.length
+                });
+            }
+        });
+        
+        return paginationData;
+    });
+
     // Add slugify filter
     eleventyConfig.addFilter("slugify", function(str) {
         return str
@@ -55,12 +96,18 @@ module.exports = function (eleventyConfig) {
     });
 
     // Add selectattr filter for filtering by attribute
-    eleventyConfig.addFilter("selectattr", function(array, attr, value) {
+    eleventyConfig.addFilter("selectattr", function(array, attr, operation, value) {
         return array.filter(item => {
             const attrValue = attr.split('.').reduce((obj, key) => obj && obj[key], item);
-            if (typeof value === 'string') {
-                return attrValue && attrValue.includes && attrValue.includes(value);
+            
+            if (operation === 'contains') {
+                return attrValue && Array.isArray(attrValue) && attrValue.includes(value);
             }
+            
+            if (typeof value === 'string' && attrValue && attrValue.includes) {
+                return attrValue.includes(value);
+            }
+            
             return attrValue === value;
         });
     });
@@ -70,6 +117,42 @@ module.exports = function (eleventyConfig) {
         return array && array.includes && array.includes(value);
     });
   
+    // Add title case filter - preserves intentional capitalization
+    eleventyConfig.addFilter("titleCase", function(str) {
+        // If the string has mixed case (indicating intentional formatting), preserve it
+        if (str !== str.toLowerCase() && str !== str.toUpperCase()) {
+            return str;
+        }
+        
+        // Otherwise, apply title case for all-lowercase or all-uppercase strings
+        return str.replace(/\w\S*/g, (txt) => 
+            txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+        );
+    });
+
+    // Add range filter for pagination
+    eleventyConfig.addFilter("range", function(start, end) {
+        const result = [];
+        for (let i = start; i < end; i++) {
+            result.push(i);
+        }
+        return result;
+    });
+
+    // Add reading time filter
+    eleventyConfig.addFilter("readingTime", function(content) {
+        if (!content) return 1;
+        
+        // Strip HTML tags and count words
+        const text = content.replace(/<[^>]*>/g, '');
+        const wordCount = text.trim().split(/\s+/).filter(word => word.length > 0).length;
+        
+        // Calculate reading time based on 200 words per minute
+        const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+        
+        return readingTime;
+    });
+
     return {
       templateFormats: ["njk", "html", "md"],
       markdownTemplateEngine: "njk",

@@ -21,7 +21,7 @@ permalink: "/blog/tags/"
         {% for tag in collections.blogTags %}
         {% set tagPosts = collections.blogPosts | selectattr("data.tags", "contains", tag) %}
         <div class="tag-card">
-            <h3><a href="/blog/tags/{{ tag | slugify }}/" class="tag-link">{{ tag }}</a></h3>
+            <h3><a href="/blog/tags/{{ tag | slugify }}/" class="tag-link">{{ tag | titleCase }}</a></h3>
             <span class="tag-count">{{ tagPosts.length }} post{% if tagPosts.length != 1 %}s{% endif %}</span>
             <div class="tag-preview">
                 {% for post in tagPosts | reverse | slice(0, 2) %}

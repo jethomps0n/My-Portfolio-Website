@@ -7,7 +7,7 @@ pagination:
   data: collections.blogPosts
   size: 8
   alias: posts
-permalink: "/blog/posts/{% if pagination.pageNumber > 0 %}page-{{ pagination.pageNumber + 1 }}/{% endif %}"
+permalink: "/blog/posts/{% if pagination.pageNumber > 0 %}page-{{ pagination.pageNumber + 1 }}/{% endif %}index.html"
 ---
 
 <div id="blog-page">
@@ -21,14 +21,15 @@ permalink: "/blog/posts/{% if pagination.pageNumber > 0 %}page-{{ pagination.pag
         <a href="/blog/tags/" class="category-tag">Browse by Tag</a>
     </div>
 
-    <div class="blog-grid">
+    <div class="blog-posts-list">
         {% for post in posts %}
-        <article class="blog-post {% if loop.index0 == 0 and pagination.pageNumber == 0 %}featured{% endif %} pop-in">
+        <article class="blog-post-item pop-in">
             <div class="post-meta">
                 {% for tag in post.data.tags %}
-                <span class="post-category {{ tag | slugify }}">{{ tag }}</span>
+                <a href="/blog/tags/{{ tag | slugify }}/" class="post-category {{ tag | slugify }}">{{ tag | titleCase }}</a>
                 {% endfor %}
                 <span class="post-date">{{ post.data.date | dateFormat }}</span>
+                <span class="reading-time">{{ post.templateContent | readingTime }} min read</span>
             </div>
             <h2><a href="{{ post.url }}">{{ post.data.title }}</a></h2>
             <p class="post-excerpt">{{ post.data.excerpt }}</p>
@@ -40,20 +41,28 @@ permalink: "/blog/posts/{% if pagination.pageNumber > 0 %}page-{{ pagination.pag
     {% if pagination.pages.length > 1 %}
     <nav class="pagination pop-in">
         <div class="pagination-links">
-            {% if pagination.previousPageLink %}
-            <a href="{{ pagination.previousPageLink }}" class="pagination-link prev">← Previous</a>
+            {% if pagination.pageNumber > 0 %}
+            {% if pagination.pageNumber == 1 %}
+            <a href="/blog/posts/" class="pagination-link prev">← Previous</a>
+            {% else %}
+            <a href="/blog/posts/page-{{ pagination.pageNumber }}/" class="pagination-link prev">← Previous</a>
+            {% endif %}
             {% endif %}
 
-            {% for page in pagination.pages %}
-            {% if page == pagination.pageNumber %}
-            <span class="pagination-link current">{{ page + 1 }}</span>
+            {% for pageNum in range(0, pagination.pages.length) %}
+            {% if pageNum == pagination.pageNumber %}
+            <span class="pagination-link current">{{ pageNum + 1 }}</span>
             {% else %}
-            <a href="{{ pagination.hrefs[loop.index0] }}" class="pagination-link">{{ page + 1 }}</a>
+            {% if pageNum == 0 %}
+            <a href="/blog/posts/" class="pagination-link">{{ pageNum + 1 }}</a>
+            {% else %}
+            <a href="/blog/posts/page-{{ pageNum + 1 }}/" class="pagination-link">{{ pageNum + 1 }}</a>
+            {% endif %}
             {% endif %}
             {% endfor %}
 
-            {% if pagination.nextPageLink %}
-            <a href="{{ pagination.nextPageLink }}" class="pagination-link next">Next →</a>
+            {% if pagination.pageNumber < pagination.pages.length - 1 %}
+            <a href="/blog/posts/page-{{ pagination.pageNumber + 2 }}/" class="pagination-link next">Next →</a>
             {% endif %}
         </div>
     </nav>
