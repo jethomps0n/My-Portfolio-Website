@@ -61,8 +61,8 @@ function setupScrollAnimations() {
         });
     }, observerOptions);
     
-    // Observe upcoming topics and category tags
-    document.querySelectorAll('.topic-preview, .category-tag').forEach(item => {
+    // Observe upcoming topics and category tags (but not navigation category tags)
+    document.querySelectorAll('.topic-preview, .category-tag:not(.categories-strip .category-tag)').forEach(item => {
         item.style.opacity = '0';
         item.style.transform = 'translateY(20px)';
         item.style.transition = 'all 0.4s ease';
@@ -118,21 +118,6 @@ function setupBlogPostEffects() {
     const blogPosts = document.querySelectorAll('.blog-post');
     
     blogPosts.forEach(post => {
-        post.addEventListener('mouseenter', () => {
-            // Subtle glow effect on post category
-            const category = post.querySelector('.post-category');
-            if (category) {
-                category.style.boxShadow = '0 0 8px hsla(242, 61%, 80%, 0.3)';
-            }
-        });
-        
-        post.addEventListener('mouseleave', () => {
-            const category = post.querySelector('.post-category');
-            if (category) {
-                category.style.boxShadow = '';
-            }
-        });
-        
         // Enhanced click tracking
         post.addEventListener('click', (e) => {
             if (e.target.closest('.read-more')) {
@@ -143,7 +128,8 @@ function setupBlogPostEffects() {
 }
 
 function setupCategoryTagEffects() {
-    const categoryTags = document.querySelectorAll('.category-tag');
+    // Only apply effects to non-navigation category tags
+    const categoryTags = document.querySelectorAll('.category-tag:not(.categories-strip .category-tag)');
     
     categoryTags.forEach(tag => {
         tag.addEventListener('mouseenter', () => {
@@ -156,10 +142,14 @@ function setupCategoryTagEffects() {
         });
         
         tag.addEventListener('click', (e) => {
-            e.preventDefault();
-            const category = tag.textContent.toLowerCase().replace(/\s+/g, '-');
-            filterByCategory(category);
-            trackBlogInteraction('category_click', category);
+            // Only prevent default for non-navigation category tags
+            if (!tag.href || tag.href.includes('#')) {
+                e.preventDefault();
+                const category = tag.textContent.toLowerCase().replace(/\s+/g, '-');
+                filterByCategory(category);
+                trackBlogInteraction('category_click', category);
+            }
+            // Let normal navigation links work naturally
         });
     });
 }
@@ -250,29 +240,39 @@ function animateBlogTitle() {
 
 // Enhanced reading time calculation
 function calculateReadingTime() {
-    const posts = document.querySelectorAll('.blog-post');
-    
-    posts.forEach(post => {
-        const excerpt = post.querySelector('.post-excerpt');
-        if (excerpt) {
-            const wordCount = excerpt.textContent.split(/\s+/).length;
-            const readingTime = Math.ceil(wordCount / 200); // Assume 200 WPM
+    // Handle individual blog post page
+    const singlePost = document.querySelector('.blog-post-single');
+    if (singlePost) {
+        // Check if reading time already exists in post meta
+        const existingReadingTime = singlePost.querySelector('.reading-time');
+        if (existingReadingTime) return; // Exit if already present
+        
+        const content = singlePost.querySelector('.post-content');
+        if (content) {
+            const wordCount = content.textContent.trim().split(/\s+/).filter(word => word.length > 0).length;
+            const readingTime = Math.max(1, Math.ceil(wordCount / 200)); // Minimum 1 min, assume 200 WPM
             
             const readingTimeElement = document.createElement('span');
             readingTimeElement.className = 'reading-time';
             readingTimeElement.textContent = `${readingTime} min read`;
             readingTimeElement.style.cssText = `
                 color: hsla(0, 0%, 70%, 1);
-                font-size: 0.8rem;
-                margin-left: auto;
+                font-size: 0.85rem;
+                margin-left: 12px;
+                opacity: 0.8;
             `;
             
-            const postMeta = post.querySelector('.post-meta');
+            const postMeta = singlePost.querySelector('.post-meta');
             if (postMeta) {
                 postMeta.appendChild(readingTimeElement);
             }
         }
-    });
+        return; // Exit early for single post page
+    }
+    
+    // For blog listing pages, reading times are now pre-calculated by Eleventy
+    // No need to estimate - they're already included in the templates
+    console.log('Reading times are pre-calculated by Eleventy for blog listings');
 }
 
 // Theme-aware time-based greeting
