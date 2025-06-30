@@ -27,66 +27,116 @@ function initializeContactPage() {
 }
 
 function setupContactForm() {
-    const form = document.getElementById('contact-form');
+    const form = document.querySelector('.contact-form-fields');
     if (!form) return; // Guard clause if form doesn't exist
     
-    const submitButton = form.querySelector('button[type="submit"]');
-    const resetButton = form.querySelector('button[type="reset"]');
-    
-    // Form submission handler
-    form.addEventListener('submit', handleFormSubmission);
-    
-    // Form reset handler with confirmation
-    if (resetButton) {
-        resetButton.addEventListener('click', handleFormReset);
-    }
+    // Form submission handler for validation and effects
+    form.addEventListener('submit', handleFormValidation);
     
     // Real-time validation
     setupFormValidation(form);
     
     // Enhanced input interactions
     setupInputEffects(form);
+    
+    // Setup Web3Forms success/error handling
+    setupWeb3FormsHandling(form);
 }
 
-function handleFormSubmission(e) {
-    e.preventDefault();
+function handleFormValidation(e) {
+    e.preventDefault(); // Always prevent default form submission
     
-    const submitButton = e.target.querySelector('button[type="submit"]');
-    const originalText = submitButton.textContent;
+    const form = e.target;
+    const requiredFields = form.querySelectorAll('input[required], textarea[required]');
+    let hasErrors = false;
     
-    // Show loading state
-    submitButton.textContent = 'Sending...';
-    submitButton.disabled = true;
+    // Clear previous error states
+    requiredFields.forEach(field => {
+        field.classList.remove('error');
+    });
     
-    // Get form data
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData);
-    
-    // Simulate form submission (replace with actual endpoint)
-    setTimeout(() => {
-        showFormStatus('success', 'Message sent successfully! I\'ll get back to you soon.');
-        e.target.reset();
-        submitButton.textContent = originalText;
-        submitButton.disabled = false;
-        
-        // Track form submission (analytics)
-        trackFormSubmission(data);
-    }, 1500);
-}
-
-function handleFormReset(e) {
-    const form = e.target.closest('form');
-    const hasData = Array.from(form.querySelectorAll('input, textarea')).some(input => input.value.trim());
-    
-    if (hasData) {
-        if (!confirm('Are you sure you want to clear all form data?')) {
-            e.preventDefault();
-            return;
+    // Validate required fields
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            field.classList.add('error');
+            hasErrors = true;
         }
+    });
+    
+    // If there are errors, show message and focus first error
+    if (hasErrors) {
+        showFormStatus('error', 'Please fill in all required fields (marked with *).');
+        
+        // Focus on first error field
+        const firstError = form.querySelector('.error');
+        if (firstError) {
+            firstError.focus();
+        }
+        return false;
     }
     
-    // Show reset confirmation
-    showFormStatus('info', 'Form cleared.');
+    // Submit form asynchronously
+    submitFormAsync(form);
+    
+    return false;
+}
+
+async function submitFormAsync(form) {
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.querySelector('span').textContent;
+    
+    // Show loading state
+    submitButton.querySelector('span').textContent = 'Sending...';
+    submitButton.disabled = true;
+    
+    try {
+        // Prepare form data
+        const formData = new FormData(form);
+        
+        // Submit to Web3Forms
+        const response = await fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showFormStatus('success', 'Message sent successfully! I\'ll get back to you soon.');
+            form.reset();
+            // Clear any character counters
+            const counters = form.querySelectorAll('.character-count');
+            counters.forEach(counter => {
+                const textarea = counter.previousElementSibling;
+                if (textarea && textarea.tagName === 'TEXTAREA') {
+                    counter.textContent = `0/1000`;
+                    counter.style.color = 'hsla(0, 0%, 60%, 1)';
+                }
+            });
+        } else {
+            throw new Error(result.message || 'Submission failed');
+        }
+        
+    } catch (error) {
+        console.error('Form submission error:', error);
+        showFormStatus('error', 'There was an issue sending your message. Please try again or contact me directly via email.');
+    } finally {
+        // Reset button state
+        submitButton.querySelector('span').textContent = originalButtonText;
+        submitButton.disabled = false;
+    }
+}
+
+function setupWeb3FormsHandling(form) {
+    // This function is now simplified since we handle everything asynchronously
+    // Remove any URL parameter checks since we no longer redirect
+    
+    // Clean up any existing URL parameters from previous sessions
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('success')) {
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+    }
 }
 
 function setupFormValidation(form) {
@@ -153,6 +203,7 @@ function clearFieldError(field) {
         errorElement.remove();
     }
     field.style.borderColor = '';
+    field.classList.remove('error');
 }
 
 function showFormStatus(type, message) {
@@ -184,7 +235,7 @@ function showFormStatus(type, message) {
         animation: popIn 0.3s ease-out;
     `;
     
-    const form = document.getElementById('contact-form');
+    const form = document.querySelector('.contact-form-fields');
     form.appendChild(statusElement);
     
     // Auto-remove after 5 seconds
@@ -336,14 +387,6 @@ function enhanceStatusIndicator() {
             statusDot.style.transform = '';
         });
     }
-}
-
-function trackFormSubmission(data) {
-    // Analytics tracking (placeholder)
-    console.log('Form submitted:', data);
-    
-    // You can integrate with analytics services here
-    // gtag('event', 'form_submit', { event_category: 'contact' });
 }
 
 // Add custom animation keyframes
