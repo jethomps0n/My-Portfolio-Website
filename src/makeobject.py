@@ -19,14 +19,26 @@ try:
 except ImportError:
     PyPDF2 = None
 
-# ==== USER-CONFIGURABLE VARIABLES ====
-DATA_JSON_PATH = "resources/json/data.json"  # Change this to your desired data.json location
+DATA_JSON_PATH = "resources/json/data.json"
 PREVIEW_DIR = "resources/videos/previews"
-IMAGE_DIR = "resources/images"
 PREVIEW_EXTENSION = ".webm"
+PDF_THUMBNAIL_PATH = "/resources/images/screenplay-thumbnail.webp"
+PDF_AUTOFILL_PREFIX = "https://files.itsjonathanthompson.com/screenplays/"
+
+# ===== WINDOW SIZE VARIABLE =====
+DEFAULT_WINDOW_WIDTH = 1000
+DEFAULT_WINDOW_HEIGHT = 800
+
+ENTRY_TYPES = [
+    "Short Film", "Rescore", "Advertisement", "Documentary",
+    "Video Essay", "Feature Film", "Audio Mix", "Show"
+]
+ENTRY_ROLES = [
+    "Writer", "Editor", "Director", "Producer", "DP",
+    "Camera Operator", "Production Assistant", "Sound Recordist", "Actor"
+]
 
 os.makedirs(PREVIEW_DIR, exist_ok=True)
-os.makedirs(IMAGE_DIR, exist_ok=True)
 
 def slugify(value):
     value = re.sub(r'[^\w\s-]', '', value).strip().lower()
@@ -90,18 +102,75 @@ def get_video_info(url):
             print(f"Failed to fetch video info: {e}")
             return {}
 
-def get_pdf_title(pdf_path):
-    if PyPDF2 is None:
-        return os.path.splitext(os.path.basename(pdf_path))[0]
+def fetch_pdf_and_get_local_path(pdf_url):
     try:
-        with open(pdf_path, 'rb') as f:
-            reader = PyPDF2.PdfReader(f)
-            title = reader.metadata.title if reader.metadata and reader.metadata.title else None
-            if title:
-                return title
+        response = requests.get(pdf_url, timeout=10)
+        if response.status_code == 200:
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+                tmp.write(response.content)
+                tmp.flush()
+                return tmp.name
+    except Exception as e:
+        print(f"Failed to fetch PDF from url: {e}")
+    return None
+
+def get_pdf_title(pdf_path):
+    local_path = pdf_path
+    cleanup = False
+    if str(pdf_path).startswith("http://") or str(pdf_path).startswith("https://"):
+        local_path = fetch_pdf_and_get_local_path(pdf_path)
+        cleanup = True
+    title = None
+    try:
+        if PyPDF2 is not None and local_path and os.path.exists(local_path):
+            with open(local_path, 'rb') as f:
+                reader = PyPDF2.PdfReader(f)
+                if reader.metadata and getattr(reader.metadata, "title", None):
+                    title = reader.metadata.title
+                if not title and reader.pages:
+                    first_page = reader.pages[0]
+                    text = first_page.extract_text() or ""
+                    for line in text.split('\n'):
+                        line = line.strip()
+                        if line:
+                            possible_title = line.split(" by ")[0].strip()
+                            if len(possible_title) > 1:
+                                title = possible_title
+                                break
+            if not title and local_path:
+                title = os.path.splitext(os.path.basename(local_path))[0]
     except Exception as e:
         print(f"Failed to read PDF: {e}")
-    return os.path.splitext(os.path.basename(pdf_path))[0]
+        title = os.path.splitext(os.path.basename(pdf_path))[0]
+    if cleanup and local_path and os.path.exists(local_path):
+        try:
+            os.remove(local_path)
+        except Exception:
+            pass
+    return title or os.path.splitext(os.path.basename(pdf_path))[0]
+
+def get_pdf_first_page_text(pdf_path):
+    local_path = pdf_path
+    cleanup = False
+    if str(pdf_path).startswith("http://") or str(pdf_path).startswith("https://"):
+        local_path = fetch_pdf_and_get_local_path(pdf_path)
+        cleanup = True
+    text = ""
+    try:
+        if PyPDF2 is not None and local_path and os.path.exists(local_path):
+            with open(local_path, 'rb') as f:
+                reader = PyPDF2.PdfReader(f)
+                if reader.pages:
+                    first_page = reader.pages[0]
+                    text = first_page.extract_text() or ""
+    except Exception as e:
+        print(f"Failed to extract PDF text: {e}")
+    if cleanup and local_path and os.path.exists(local_path):
+        try:
+            os.remove(local_path)
+        except Exception:
+            pass
+    return text
 
 def load_data():
     if os.path.exists(DATA_JSON_PATH):
@@ -197,7 +266,6 @@ def generate_preview(input_path_or_url, slug="preview", output_dir=PREVIEW_DIR):
         for i in range(numminiclips):
             start = startseconds + i * interval
             mini_out = os.path.join(tmp_dir, f"mini_{i}{ext}")
-            # Use libvpx for webm, libx264 for mp4
             if ext == ".webm":
                 ffmpeg_cmd = [
                     "ffmpeg", "-y",
@@ -253,7 +321,6 @@ def ensure_leading_slash_if_local(path):
         return path
     if path.startswith("http://") or path.startswith("https://"):
         return path
-    # Do not add a slash if this is the data.json file itself
     if os.path.abspath(path) == os.path.abspath(DATA_JSON_PATH):
         return path
     if not path.startswith("/"):
@@ -261,13 +328,15 @@ def ensure_leading_slash_if_local(path):
     return path
 
 class CreditsEditor(tk.Toplevel):
-    def __init__(self, master, credits):
+    def __init__(self, master, credits, on_save=None):
         super().__init__(master)
         self.title("Edit Credits")
         self.geometry("400x400")
         self.credits = credits.copy()
         self.role_vars = []
         self.name_vars = []
+        self.rows = []
+        self.on_save = on_save
         self.configure(bg="#f8f8f8")
         self.setup_ui()
 
@@ -276,16 +345,17 @@ class CreditsEditor(tk.Toplevel):
         self.frame.pack(fill='both', expand=True, padx=10, pady=10)
         header = ttk.Frame(self.frame)
         header.pack(fill='x')
-        ttk.Label(header, text="Role", width=15).pack(side='left')
-        ttk.Label(header, text="Names (comma separated)").pack(side='left')
-        for role, names in self.credits.items():
+        ttk.Label(header, text="Role", width=15, foreground="black").pack(side='left')
+        ttk.Label(header, text="Names (comma separated)", foreground="black").pack(side='left')
+        ttk.Label(header, text="Move", width=15, foreground="black").pack(side='left')
+        for role, names in list(self.credits.items()):
             self.add_row(role, ", ".join(names))
         add_btn = ttk.Button(self.frame, text="Add Role", command=lambda: self.add_row("", ""))
         add_btn.pack(pady=10)
         btns = ttk.Frame(self.frame)
         btns.pack(side='bottom', fill='x', pady=10)
         ttk.Button(btns, text="Save", command=self.save).pack(side='right', padx=5)
-        ttk.Button(btns, text="Cancel", command=self.destroy).pack(side='right')
+        ttk.Button(btns, text="Cancel", command=self.cancel).pack(side='right')
 
     def add_row(self, role, names):
         row = ttk.Frame(self.frame)
@@ -294,19 +364,37 @@ class CreditsEditor(tk.Toplevel):
         name_var = tk.StringVar(value=names)
         self.role_vars.append(role_var)
         self.name_vars.append(name_var)
-        e1 = tk.Entry(row, textvariable=role_var, width=15, insertbackground='black', insertofftime=300,
-                      bg="#f8f8f8", fg="black", insertwidth=2)
-        e2 = tk.Entry(row, textvariable=name_var, insertbackground='black', insertofftime=300,
-                      bg="#f8f8f8", fg="black", insertwidth=2)
+        self.rows.append(row)
+        e1 = tk.Entry(row, textvariable=role_var, width=15, insertbackground='black', fg="black", bg="#f8f8f8")
+        e2 = tk.Entry(row, textvariable=name_var, insertbackground='black', fg="black", bg="#f8f8f8")
         e1.pack(side='left')
         e2.pack(side='left', fill='x', expand=True)
+        move_frame = tk.Frame(row, bg="#f8f8f8")
+        move_frame.pack(side='left', padx=10)
+        btn_up = ttk.Button(move_frame, text="↑", width=2, command=lambda r=row: self.move_row(r, -1))
+        btn_down = ttk.Button(move_frame, text="↓", width=2, command=lambda r=row: self.move_row(r, 1))
+        btn_up.pack(side='left')
+        btn_down.pack(side='left')
         ttk.Button(row, text="Remove", command=lambda: self.remove_row(row, role_var, name_var)).pack(side='left')
+
+    def move_row(self, row, direction):
+        idx = self.rows.index(row)
+        new_idx = idx + direction
+        if 0 <= new_idx < len(self.rows):
+            self.role_vars[idx], self.role_vars[new_idx] = self.role_vars[new_idx], self.role_vars[idx]
+            self.name_vars[idx], self.name_vars[new_idx] = self.name_vars[new_idx], self.name_vars[idx]
+            self.rows[idx], self.rows[new_idx] = self.rows[new_idx], self.rows[idx]
+            for r in self.rows:
+                r.pack_forget()
+            for r in self.rows:
+                r.pack(fill='x', pady=2)
 
     def remove_row(self, row, role_var, name_var):
         row.destroy()
         idx = self.role_vars.index(role_var)
-        self.role_vars.pop(idx)
-        self.name_vars.pop(idx)
+        del self.role_vars[idx]
+        del self.name_vars[idx]
+        del self.rows[idx]
 
     def save(self):
         new_credits = {}
@@ -316,50 +404,220 @@ class CreditsEditor(tk.Toplevel):
             if role and names:
                 new_credits[role] = names
         self.credits = new_credits
+        if self.on_save:
+            self.on_save(self.credits)
         self.destroy()
+
+    def cancel(self):
+        self.destroy()
+
+class TileEditor(tk.Toplevel):
+    def __init__(self, master, entry, on_save, on_delete):
+        super().__init__(master)
+        self.title("Edit Entry")
+        self.resizable(True, True)
+        self.entry = entry
+        self.on_save = on_save
+        self.on_delete = on_delete
+        self.vars = {}
+        self.role_vars = []
+        self.type_var = tk.StringVar()
+        self.screenplay_var = tk.StringVar()
+        self.credits = entry.get("credits", {}).copy() if entry.get("credits") else {}
+        self.create_widgets()
+
+    def create_widgets(self):
+        frame = tk.Frame(self)
+        frame.pack(fill='both', expand=True, padx=10, pady=10)
+        label_opts = {"fg": "black", "bg": "#f8f8f8"}
+        width = 28
+
+        gridrow = 0
+        for key in ["imgSrc", "previewSrc", "videoSrc", "PDFSrc", "slug", "title", "date"]:
+            tk.Label(frame, text=key, width=10, anchor='w', **label_opts).grid(row=gridrow, column=0, sticky='w')
+            var = tk.StringVar(value=str(self.entry.get(key, "")))
+            ent = tk.Entry(frame, textvariable=var, width=width, fg="black", bg="#f8f8f8")
+            ent.grid(row=gridrow, column=1, sticky='ew')
+            self.vars[key] = var
+            gridrow += 1
+
+        tk.Label(frame, text="role", width=10, anchor='w', **label_opts).grid(row=gridrow, column=0, sticky='w')
+        role_frame = tk.Frame(frame, bg="#f8f8f8")
+        role_frame.grid(row=gridrow, column=1, sticky='w')
+        current_roles = (self.entry.get('role') or "").split("/")
+        self.role_vars = []
+        for role in ENTRY_ROLES:
+            var = tk.BooleanVar()
+            if role in current_roles:
+                var.set(True)
+            cb = tk.Checkbutton(role_frame, text=role, variable=var, fg="black", bg="#f8f8f8")
+            cb.pack(side='left')
+            self.role_vars.append((role, var))
+        gridrow += 1
+
+        tk.Label(frame, text="description", width=10, anchor='w', **label_opts).grid(row=gridrow, column=0, sticky='nw')
+        desc_text = tk.Text(frame, height=4, width=width, fg="black", bg="#f8f8f8", wrap="word")
+        desc_val = self.entry.get("description", "")
+        desc_text.insert("1.0", desc_val)
+        desc_text.grid(row=gridrow, column=1, sticky='ew')
+        self.vars["description"] = desc_text
+        gridrow += 1
+
+        credits_btn = ttk.Button(frame, text="Edit Credits", command=self.open_credits_editor)
+        credits_btn.grid(row=gridrow, column=0, columnspan=2, sticky='w', pady=5)
+        gridrow += 1
+
+        tk.Label(frame, text="type", width=10, anchor='w', **label_opts).grid(row=gridrow, column=0, sticky='w')
+        type_frame = tk.Frame(frame, bg="#f8f8f8")
+        type_frame.grid(row=gridrow, column=1, sticky='w')
+        current_type = self.entry.get("type", "")
+        self.type_var.set(current_type)
+        for t in ENTRY_TYPES:
+            rb = tk.Radiobutton(type_frame, text=t, variable=self.type_var, value=t, fg="black", bg="#f8f8f8")
+            rb.pack(side="left")
+        gridrow += 1
+
+        tk.Label(frame, text="Screenplay", width=10, anchor='w', **label_opts).grid(row=gridrow, column=0, sticky='w')
+        screenplay_frame = tk.Frame(frame, bg="#f8f8f8")
+        screenplay_frame.grid(row=gridrow, column=1, sticky='w')
+        current_screenplay = self.entry.get("Screenplay", "")
+        self.screenplay_var.set(current_screenplay)
+        for label, val in [("None", ""), ("Yes", "Yes"), ("Sole", "Sole")]:
+            rb = tk.Radiobutton(screenplay_frame, text=label, variable=self.screenplay_var, value=val, fg="black", bg="#f8f8f8")
+            rb.pack(side="left")
+        gridrow += 1
+
+        btns = tk.Frame(self)
+        btns.pack(fill='x', pady=5)
+        ttk.Button(btns, text="Delete", command=self.confirm_delete).pack(side='left', padx=5)
+        ttk.Button(btns, text="Save", command=self.save).pack(side='right', padx=5)
+        ttk.Button(btns, text="Cancel", command=self.destroy).pack(side='right')
+
+    def open_credits_editor(self):
+        def credits_callback(new_credits):
+            self.credits = new_credits
+        CreditsEditor(self, self.credits, on_save=credits_callback).grab_set()
+
+    def confirm_delete(self):
+        if messagebox.askyesno("Delete", "Are you sure you want to delete this entry?"):
+            self.on_delete(self.entry)
+            self.destroy()
+
+    def save(self):
+        for key in ["imgSrc", "previewSrc", "videoSrc", "PDFSrc", "slug", "title", "date"]:
+            self.entry[key] = self.vars[key].get()
+        roles_selected = [role for role, var in self.role_vars if var.get()]
+        self.entry["role"] = "/".join(roles_selected)
+        self.entry["description"] = self.vars["description"].get("1.0", "end-1c")
+        self.entry["credits"] = self.credits
+        self.entry["type"] = self.type_var.get()
+        self.entry["Screenplay"] = self.screenplay_var.get()
+        self.on_save(self.entry)
+        self.destroy()
+
+class DataJsonViewer(ttk.Frame):
+    def __init__(self, master, data, on_entry_update):
+        super().__init__(master)
+        self.data = data
+        self.on_entry_update = on_entry_update
+        self.tiles = []
+        self.create_widgets()
+
+    def create_widgets(self):
+        self.canvas = tk.Canvas(self, borderwidth=0, background="#f8f8f8")
+        self.frame = tk.Frame(self.canvas, background="#f8f8f8")
+        self.scroll = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
+        self.canvas.configure(yscrollcommand=self.scroll.set)
+        self.scroll.pack(side="right", fill="y")
+        self.canvas.pack(side="left", fill="both", expand=True)
+        self.canvas.create_window((0, 0), window=self.frame, anchor='nw')
+        self.frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+        self.populate_tiles()
+
+    def populate_tiles(self):
+        for widget in self.frame.winfo_children():
+            widget.destroy()
+        self.tiles.clear()
+        for idx, entry in enumerate(self.data):
+            tile = tk.Frame(self.frame, relief="groove", borderwidth=2, bg="#f4f4f4")
+            tile.pack(fill='x', padx=6, pady=5)
+            header = f"{entry.get('title', '(untitled)')} | {entry.get('slug', '')} | {entry.get('date', '')}"
+            tk.Label(tile, text=header, font=("Arial", 12, "bold"), anchor='w', bg="#f4f4f4", fg="black").pack(anchor='w', padx=5)
+            for key in ["role", "type", "Screenplay"]:
+                value = entry.get(key, "")
+                if value:
+                    tk.Label(tile, text=f"{key}: {value}", anchor='w', bg="#f4f4f4", fg="black").pack(anchor='w', padx=10)
+            for key, value in entry.items():
+                if key not in ("title", "slug", "date", "role", "type", "Screenplay"):
+                    tk.Label(tile, text=f"{key}: {str(value)[:100]}", anchor='w', bg="#f4f4f4", fg="#333").pack(anchor='w', padx=10)
+            btns = tk.Frame(tile, bg="#f4f4f4")
+            btns.pack(anchor='sw', side='bottom', padx=8, pady=2, fill='x')
+            ttk.Button(btns, text="Edit", command=lambda idx=idx: self.edit_entry(idx)).pack(side='left')
+        self.frame.update_idletasks()
+
+    def edit_entry(self, idx):
+        def on_save(updated_entry):
+            self.data[idx] = updated_entry
+            self.on_entry_update(self.data)
+            self.populate_tiles()
+        def on_delete(entry):
+            del self.data[idx]
+            self.on_entry_update(self.data)
+            self.populate_tiles()
+        TileEditor(self, dict(self.data[idx]), on_save, on_delete).grab_set()
 
 class ContentEntryApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Content Entry Creator")
-        self.geometry("750x900")
-        self.minsize(700, 700)
+        self.geometry(f"{DEFAULT_WINDOW_WIDTH}x{DEFAULT_WINDOW_HEIGHT}")
+        self.minsize(600, 600)
         self.configure(bg="#f8f8f8")
         self.style = ttk.Style(self)
         self.style.theme_use("clam")
         self.data = load_data()
         self.credits = {}
+        self.editing_idx = None
         self.create_widgets()
 
     def create_widgets(self):
+        self.tabs = ttk.Notebook(self)
+        self.tabs.pack(expand=True, fill='both')
+
+        self.entry_tab = ttk.Frame(self.tabs)
+        self.tabs.add(self.entry_tab, text="Create/Edit Entry")
+        self._setup_entry_tab(self.entry_tab)
+
+        self.data_tab = DataJsonViewer(self.tabs, self.data, self._on_data_update)
+        self.tabs.add(self.data_tab, text="View/Edit data.json")
+
+    def _setup_entry_tab(self, parent):
         self.mode_var = tk.StringVar(value="video")
-        mode_frame = ttk.LabelFrame(self, text="Start from")
+        mode_frame = ttk.LabelFrame(parent, text="Start from")
         mode_frame.pack(fill='x', padx=10, pady=5)
         ttk.Radiobutton(mode_frame, text="Video", variable=self.mode_var, value="video", command=self.switch_mode).pack(side='left', padx=10)
         ttk.Radiobutton(mode_frame, text="PDF", variable=self.mode_var, value="pdf", command=self.switch_mode).pack(side='left', padx=10)
 
         self.fields = {}
-        form = tk.Frame(self, bg="#f8f8f8")
+        form = tk.Frame(parent, bg="#f8f8f8")
         form.pack(fill='both', expand=True, padx=10, pady=5)
 
         def add_field(label, var_type=tk.StringVar, **kwargs):
             row = tk.Frame(form, bg="#f8f8f8")
             row.pack(fill='x', pady=3)
-            tk.Label(row, text=label, width=18, anchor='w', bg="#f8f8f8", fg="black").pack(side='left')
+            tk.Label(row, text=label, width=10, anchor='w', fg="black", bg="#f8f8f8").pack(side='left')
             var = var_type()
-            entry = tk.Entry(row, textvariable=var, insertbackground='black', insertofftime=300,
-                             bg="#f8f8f8", fg="black", insertwidth=2, **kwargs)
+            entry = tk.Entry(row, textvariable=var, insertbackground='black', fg="black", bg="#f8f8f8", width=28, **kwargs)
             entry.pack(side='left', fill='x', expand=True)
             self.fields[label] = var
             return entry
 
-        self.source_label = tk.Label(form, text="Video Source:", bg="#f8f8f8", fg="black")
+        self.source_label = tk.Label(form, text="Video Source:", fg="black", bg="#f8f8f8")
         self.source_label.pack(anchor='w')
         self.source_var = tk.StringVar()
         src_row = tk.Frame(form, bg="#f8f8f8")
         src_row.pack(fill='x', pady=3)
-        self.src_entry = tk.Entry(src_row, textvariable=self.source_var, insertbackground='black', insertofftime=300,
-                                 bg="#f8f8f8", fg="black", insertwidth=2)
+        self.src_entry = tk.Entry(src_row, textvariable=self.source_var, insertbackground='black', fg="black", bg="#f8f8f8", width=28)
         self.src_entry.pack(side='left', fill='x', expand=True)
         ttk.Button(src_row, text="Browse...", command=self.browse_source).pack(side='left', padx=3)
         ttk.Button(src_row, text="Fetch Info", command=self.fetch_info).pack(side='left', padx=3)
@@ -372,30 +630,53 @@ class ContentEntryApp(tk.Tk):
         self.slug_entry = add_field("slug")
         self.title_entry = add_field("title")
         self.date_entry = add_field("date")
-        self.role_entry = add_field("role")
+
+        roles_frame = tk.Frame(form, bg="#f8f8f8")
+        roles_frame.pack(fill='x', pady=3)
+        tk.Label(roles_frame, text="role", width=10, anchor='w', fg="black", bg="#f8f8f8").pack(side='left')
+        self.role_vars = []
+        for role in ENTRY_ROLES:
+            var = tk.BooleanVar()
+            cb = tk.Checkbutton(roles_frame, text=role, variable=var, fg="black", bg="#f8f8f8")
+            cb.pack(side='left')
+            self.role_vars.append((role, var))
+        self.fields['role'] = tk.StringVar()
 
         row = tk.Frame(form, bg="#f8f8f8")
         row.pack(fill='both', pady=3, expand=True)
-        tk.Label(row, text="description", width=18, anchor='nw', bg="#f8f8f8", fg="black").pack(side='left', anchor='n')
-        self.description_text = tk.Text(row, height=10, wrap="word",
-                                        insertbackground='black', insertofftime=300,
-                                        bg="#f8f8f8", fg="black", insertwidth=2)
+        tk.Label(row, text="description", width=10, anchor='nw', fg="black", bg="#f8f8f8").pack(side='left', anchor='n')
+        self.description_text = tk.Text(row, height=6, wrap="word", fg="black", bg="#f8f8f8", width=28)
         self.description_text.pack(side='left', fill='both', expand=True)
         self.fields['description'] = self.description_text
         desc_scroll = ttk.Scrollbar(row, orient="vertical", command=self.description_text.yview)
         desc_scroll.pack(side="right", fill="y")
         self.description_text.configure(yscrollcommand=desc_scroll.set)
 
-        self.type_entry = add_field("type")
-        self.screenplay_entry = add_field("Screenplay")
+        type_frame = tk.Frame(form, bg="#f8f8f8")
+        type_frame.pack(fill='x', pady=3)
+        tk.Label(type_frame, text="type", width=10, anchor='w', fg="black", bg="#f8f8f8").pack(side='left')
+        self.type_var = tk.StringVar()
+        for t in ENTRY_TYPES:
+            rb = tk.Radiobutton(type_frame, text=t, variable=self.type_var, value=t, fg="black", bg="#f8f8f8")
+            rb.pack(side='left')
+        self.fields['type'] = self.type_var
+
+        screenplay_frame = tk.Frame(form, bg="#f8f8f8")
+        screenplay_frame.pack(fill='x', pady=3)
+        tk.Label(screenplay_frame, text="Screenplay", width=10, anchor='w', fg="black", bg="#f8f8f8").pack(side='left')
+        self.screenplay_var = tk.StringVar(value="")
+        for label, val in [("None", ""), ("Yes", "Yes"), ("Sole", "Sole")]:
+            rb = tk.Radiobutton(screenplay_frame, text=label, variable=self.screenplay_var, value=val, fg="black", bg="#f8f8f8")
+            rb.pack(side='left')
+        self.fields['Screenplay'] = self.screenplay_var
 
         credits_frame = ttk.LabelFrame(form, text="Credits")
         credits_frame.pack(fill='x', pady=5)
-        self.credits_label = ttk.Label(credits_frame, text="(No credits yet)")
+        self.credits_label = ttk.Label(credits_frame, text="(No credits yet)", foreground="black")
         self.credits_label.pack(anchor='w')
         ttk.Button(credits_frame, text="Edit Credits", command=self.edit_credits).pack(anchor='w', pady=2)
 
-        btns = ttk.Frame(self)
+        btns = ttk.Frame(parent)
         btns.pack(fill='x', pady=5)
         ttk.Button(btns, text="Save Entry", command=self.save_entry).pack(side='right', padx=10)
         ttk.Button(btns, text="Clear", command=self.clear_fields).pack(side='right')
@@ -408,9 +689,12 @@ class ContentEntryApp(tk.Tk):
         if mode == "video":
             self.source_label['text'] = "Video Source:"
             self.src_entry['state'] = 'normal'
+            self.source_var.set('')
         else:
             self.source_label['text'] = "PDF File:"
             self.src_entry['state'] = 'normal'
+            self.source_var.set(f"{PDF_AUTOFILL_PREFIX}[file-name.pdf]")
+            self.fields['imgSrc'].set(PDF_THUMBNAIL_PATH)
 
     def browse_source(self):
         mode = self.mode_var.get()
@@ -420,7 +704,11 @@ class ContentEntryApp(tk.Tk):
             filetypes = [('PDF files', '*.pdf')]
         path = filedialog.askopenfilename(filetypes=filetypes)
         if path:
-            self.source_var.set(path)
+            if self.mode_var.get() == "pdf":
+                file_name = os.path.basename(path)
+                self.source_var.set(f"{PDF_AUTOFILL_PREFIX}{file_name}")
+            else:
+                self.source_var.set(path)
 
     def fetch_info(self):
         mode = self.mode_var.get()
@@ -466,7 +754,12 @@ class ContentEntryApp(tk.Tk):
             self.fields['PDFSrc'].set(src)
             self.fields['slug'].set(slug)
             self.fields['date'].set(datetime.now().strftime('%B %d, %Y'))
+            self.fields['imgSrc'].set(PDF_THUMBNAIL_PATH)
+            desc_text = get_pdf_first_page_text(src)
             self.description_text.delete(1.0, tk.END)
+            if desc_text:
+                desc_snippet = re.sub(r'\s+', ' ', desc_text).strip()[:300]
+                self.description_text.insert(tk.END, desc_snippet)
 
     def clear_fields(self):
         for key, var in self.fields.items():
@@ -477,6 +770,14 @@ class ContentEntryApp(tk.Tk):
         self.credits = {}
         self.update_credits_label()
         self.source_var.set('')
+        self.editing_idx = None
+        if self.mode_var.get() == "pdf":
+            self.fields['imgSrc'].set(PDF_THUMBNAIL_PATH)
+            self.source_var.set(f"{PDF_AUTOFILL_PREFIX}[file-name.pdf]")
+        for _, var in self.role_vars:
+            var.set(False)
+        self.type_var.set("")
+        self.screenplay_var.set("")
 
     def update_credits_label(self):
         if not self.credits:
@@ -511,6 +812,9 @@ class ContentEntryApp(tk.Tk):
         def add_slash_if_local(path):
             return ensure_leading_slash_if_local(path) if path else ""
 
+        roles_selected = [role for role, var in self.role_vars if var.get()]
+        joined_roles = "/".join(roles_selected)
+
         entry = {
             "imgSrc": add_slash_if_local(self.fields['imgSrc'].get()),
             "previewSrc": add_slash_if_local(self.fields['previewSrc'].get()),
@@ -519,19 +823,36 @@ class ContentEntryApp(tk.Tk):
             "slug": self.fields['slug'].get(),
             "title": self.fields['title'].get(),
             "date": self.fields['date'].get(),
-            "role": self.fields['role'].get(),
+            "role": joined_roles,
             "description": self.description_text.get(1.0, tk.END).rstrip(),
             "credits": self.credits.copy(),
-            "type": self.fields['type'].get(),
-            "Screenplay": self.fields['Screenplay'].get()
+            "type": self.type_var.get(),
+            "Screenplay": self.screenplay_var.get()
         }
         if not entry["title"] or not entry["slug"]:
             messagebox.showerror("Missing fields", "Title and slug are required.")
             return
-        self.data.append(entry)
+
+        if self.editing_idx is not None:
+            self.data[self.editing_idx] = entry
+            self.editing_idx = None
+        else:
+            for idx, obj in enumerate(self.data):
+                if obj.get("slug") == entry["slug"]:
+                    self.data[idx] = entry
+                    break
+            else:
+                self.data.append(entry)
+
         save_data(self.data)
-        messagebox.showinfo("Saved", "Entry added to data.json.")
+        self.data_tab.data = self.data
+        self.data_tab.populate_tiles()
+        messagebox.showinfo("Saved", f"Entry saved to {DATA_JSON_PATH}.")
         self.clear_fields()
+
+    def _on_data_update(self, new_data):
+        self.data = new_data
+        save_data(self.data)
 
 if __name__ == '__main__':
     app = ContentEntryApp()
