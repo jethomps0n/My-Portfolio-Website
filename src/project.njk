@@ -16,8 +16,10 @@ eleventyComputed:
         <script src="/resources/js/project/main.js" defer></script>
         {% if i.Screenplay == "Sole" %}<script type="module" src="/resources/js/project/pdf-viewer.js" defer></script>{% endif %}
         {% if i.Screenplay != "Sole" %}<script type="module" src="/resources/js/project/video-viewer.js" defer></script>{% endif %}
+    addcss: >
+        {% if i.Screenplay != "Sole" %}<link rel="stylesheet" href="https://cdn.vidstack.io/player.css" />{% endif %}
     addjs: >
-        {% if i.Screenplay != "Sole" %}<script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"></script>{% endif %}
+        {% if i.Screenplay != "Sole" %}<script src="https://cdn.vidstack.io/player.core" type="module"></script>{% endif %}
 ---
 
 <div id="project-page">
@@ -89,7 +91,10 @@ eleventyComputed:
                     </div>
                 </div>
                 {% else %}
-                <lite-youtube videoid="{{ i.YTSrc }}" autopause></lite-youtube>
+                <media-player src="{{ i.videoSrc }}" controls>
+                    <media-provider></media-provider>
+                    <media-ui></media-ui>
+                </media-player>
                 {% endif %}
             </div>
             <div id="info">

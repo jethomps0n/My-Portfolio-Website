@@ -369,7 +369,7 @@ function renderResults(){
         const thumbClass = hasScreenplay ? 'thumb screenplay-attached' : 'thumb';
         const disablePreview = item.Screenplay === 'Sole';
         if (disablePreview) a.classList.add('no-preview');
-        a.innerHTML=`<div class="${thumbClass}"><img class="thumbnail active" src="${item.imgSrc}" alt=""><video class="thumbnail passive" src="${item.videoSrc}" muted loop></video></div>`;
+        a.innerHTML=`<div class="${thumbClass}"><img class="thumbnail active" src="${item.imgSrc}" alt=""><video class="thumbnail passive" src="${item.previewSrc}" muted loop></video></div>`;
 
         const info=document.createElement('div');
         info.className='result-info';
