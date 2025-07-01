@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
         newContentContainer.innerHTML = `
             <a class="frame" href="/explore/${data.slug}">
                 <img class="thumbnail active" src="${data.imgSrc}" alt="">
-                <video class="thumbnail passive" src="${data.videoSrc}" muted loop></video>
+                <video class="thumbnail passive" src="${data.previewSrc}" muted loop></video>
             </a>
             <div class="info">
                 <a class="expand" href="/explore/${data.slug}"></a>
