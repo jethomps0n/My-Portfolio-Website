@@ -2,7 +2,7 @@
   {
     "imgSrc": "/resources/images/That-One-ROMCOM-From-2003-thumbnail.webp",
     "previewSrc": "/resources/videos/That-One-ROMCOM-From-2003-preview.webm",
-    "videoSrc": "https://www.youtube.com/watch?v=guJLfqTFfIw",
+    "videoSrc": "https://www.youtube.com/embed/guJLfqTFfIw",
     "PDFSrc": "https://files.itsjonathanthompson.com/screenplays/10-page-sample.pdf",
     "slug": "00-That-One-ROMCOM-From-2003",
     "title": "00 That One ROMCOM From 2003",
@@ -16,7 +16,7 @@
   {
     "imgSrc": "/resources/images/That-One-ROMCOM-From-2003-thumbnail.webp",
     "previewSrc": "/resources/videos/That-One-ROMCOM-From-2003-preview.webm",
-    "videoSrc": "https://www.youtube.com/watch?v=guJLfqTFfIw",
+    "videoSrc": "https://drive.google.com/file/d/1Hj2BvxqQ2OCeMDIaKO92vLA4EhVQWEUq/preview",
     "PDFSrc": "https://files.itsjonathanthompson.com/screenplays/example.pdf",
     "slug": "1-That-One-ROMCOM-From-2003",
     "title": "1 That One ROMCOM From 2003",
@@ -30,7 +30,7 @@
   {
     "imgSrc": "/resources/images/testThumbnail1.webp",
     "previewSrc": "/resources/videos/testVideo1.mp4",
-    "videoSrc": "https://www.youtube.com/watch?v=guJLfqTFfIw",
+    "videoSrc": "/resources/videos/That-One-ROMCOM-From-2003-preview.webm",
     "PDFSrc": "https://files.itsjonathanthompson.com/screenplays/example.pdf",
     "slug": "2-The-Walking-Dead-Game-RESCORE-feat-John-Paesano",
     "title": "2 The Walking Dead Game: RESCORE feat. John Paesano",
@@ -44,7 +44,7 @@
   {
     "imgSrc": "/resources/images/testThumbnail2.webp",
     "previewSrc": "/resources/videos/testVideo2.mp4",
-    "videoSrc": "https://www.youtube.com/watch?v=guJLfqTFfIw",
+    "videoSrc": "https://player.vimeo.com/video/524933864?h=1ac4fd9fb4",
     "PDFSrc": "https://files.itsjonathanthompson.com/screenplays/example.pdf",
     "slug": "3-That-One-ROMCOM-From-2003",
     "title": "3 That One ROMCOM From 2003",
@@ -58,7 +58,7 @@
   {
     "imgSrc": "/resources/images/That-One-ROMCOM-From-2003-thumbnail.webp",
     "previewSrc": "/resources/videos/That-One-ROMCOM-From-2003-preview.webm",
-    "videoSrc": "https://www.youtube.com/watch?v=guJLfqTFfIw",
+    "videoSrc": "https://files.itsjonathanthompson.com/videos/my_trailer.mp4",
     "PDFSrc": "https://files.itsjonathanthompson.com/screenplays/example.pdf",
     "slug": "4-That-One-ROMCOM-From-2003",
     "title": "4 That One ROMCOM From 2003",
@@ -72,7 +72,7 @@
   {
     "imgSrc": "/resources/images/testThumbnail1.webp",
     "previewSrc": "/resources/videos/testVideo1.mp4",
-    "videoSrc": "https://www.youtube.com/watch?v=guJLfqTFfIw",
+    "videoSrc": "https://www.youtube.com/embed/guJLfqTFfIw",
     "PDFSrc": "https://files.itsjonathanthompson.com/screenplays/example.pdf",
     "slug": "5-The-Walking-Dead-Game-RESCORE-feat-John-Paesano",
     "title": "5 The Walking Dead Game: RESCORE feat. John Paesano",
@@ -86,7 +86,7 @@
   {
     "imgSrc": "/resources/images/testThumbnail2.webp",
     "previewSrc": "/resources/videos/testVideo2.mp4",
-    "videoSrc": "https://www.youtube.com/watch?v=guJLfqTFfIw",
+    "videoSrc": "https://www.youtube.com/embed/guJLfqTFfIw",
     "PDFSrc": "https://files.itsjonathanthompson.com/screenplays/example.pdf",
     "slug": "6-That-One-ROMCOM-From-2003",
     "title": "6 That One ROMCOM From 2003",
@@ -100,7 +100,7 @@
   {
     "imgSrc": "/resources/images/That-One-ROMCOM-From-2003-thumbnail.webp",
     "previewSrc": "/resources/videos/That-One-ROMCOM-From-2003-preview.webm",
-    "videoSrc": "https://www.youtube.com/watch?v=guJLfqTFfIw",
+    "videoSrc": "https://www.youtube.com/embed/guJLfqTFfIw",
     "PDFSrc": "https://files.itsjonathanthompson.com/screenplays/example.pdf",
     "slug": "7-That-One-ROMCOM-From-2003",
     "title": "7 That One ROMCOM From 2003",
@@ -114,7 +114,7 @@
   {
     "imgSrc": "/resources/images/testThumbnail1.webp",
     "previewSrc": "/resources/videos/testVideo1.mp4",
-    "videoSrc": "https://www.youtube.com/watch?v=guJLfqTFfIw",
+    "videoSrc": "https://www.youtube.com/embed/guJLfqTFfIw",
     "PDFSrc": "https://files.itsjonathanthompson.com/screenplays/example.pdf",
     "slug": "2The-Walking-Dead-Game-RESCORE-feat-John-Paesano",
     "title": "2The Walking Dead Game: RESCORE feat. John Paesano",
@@ -128,7 +128,7 @@
   {
     "imgSrc": "/resources/images/testThumbnail2.webp",
     "previewSrc": "/resources/videos/testVideo2.mp4",
-    "videoSrc": "https://www.youtube.com/watch?v=guJLfqTFfIw",
+    "videoSrc": "https://www.youtube.com/embed/guJLfqTFfIw",
     "PDFSrc": "https://files.itsjonathanthompson.com/screenplays/example.pdf",
     "slug": "That-One-ROMCOM-From-2003",
     "title": "That One ROMCOM From 2003",
