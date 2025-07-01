@@ -135,8 +135,8 @@ eleventyComputed:
         <aside id="credits">
             <h2>Credits</h2>
             <ul>
-                {% for credit in i.credits %}
-                    <li>{{ credit }}</li>
+                {% for role, names in i.credits %}
+                    <li><strong>{{ role }}:</strong> {{ names | join(', ') }}</li>
                 {% endfor %}
             </ul>
         </aside>
