@@ -24,13 +24,13 @@ except ImportError:
 DATA_JSON_PATH = "resources/json/data.json"
 PREVIEW_DIR = "resources/videos/previews"
 PREVIEW_EXTENSION = ".webm"
-PDF_THUMBNAIL_PATH = "/resources/images/screenplay-thumbnail.webp"
+PDF_THUMBNAIL_PATH = "/resources/images/thumbnails/screenplay-thumbnail.webp"
 PDF_AUTOFILL_PREFIX = "https://files.itsjonathanthompson.com/screenplays/"
-VIDEO_THUMBNAIL_TEMPLATE = "/resources/images/[file-name.webp]"
+VIDEO_THUMBNAIL_TEMPLATE = "/resources/images/thumbnails/[file-name.webp]"
 
 # ===== WINDOW SIZE VARIABLE =====
 DEFAULT_WINDOW_WIDTH = 1200
-DEFAULT_WINDOW_HEIGHT = 800
+DEFAULT_WINDOW_HEIGHT = 900
 
 # ===== PREVIEW GENERATION SETTINGS =====
 PREVIEW_START_SECONDS = 30
@@ -191,9 +191,75 @@ def detect_and_embed_video(url):
         return gdrive_embed(url)
     return url
 
+def is_pure_playlist_url(url):
+    """Detect if URL is a PURE playlist (not an individual video)"""
+    if not url:
+        return False
+    
+    debug_log(f"Checking if pure playlist: {url}")
+    
+    # YouTube playlist patterns - ONLY pure playlists, not videos in playlists
+    if 'youtube.com' in url and ('list=' in url):
+        parsed = parse_qs(urlparse(url).query)
+        # It's a playlist ONLY if it has 'list' but NO 'v' parameter
+        is_pure = 'list' in parsed and 'v' not in parsed
+        debug_log(f"YouTube playlist check: list={('list' in parsed)}, v={('v' in parsed)}, pure={is_pure}")
+        return is_pure
+    
+    # Vimeo playlist/showcase patterns
+    if 'vimeo.com' in url and ('/showcase/' in url or '/channels/' in url or '/groups/' in url):
+        # Make sure it's not an individual video within a showcase
+        is_pure = not re.match(r'https?://vimeo\.com/\d+', url)
+        debug_log(f"Vimeo playlist check: pure={is_pure}")
+        return is_pure
+    
+    debug_log("Not a pure playlist")
+    return False
+
+def get_playlist_info(url):
+    """Get playlist information using yt-dlp"""
+    if YoutubeDL is None:
+        debug_log("YoutubeDL not available")
+        return None
+    
+    debug_log(f"Getting playlist info for: {url}")
+    ffmpeg_path, _ = get_ffmpeg_tools()
+    
+    ydl_opts = {
+        'quiet': True,
+        'extract_flat': True,  # Don't extract individual video info, just playlist structure
+        'force_generic_extractor': False,
+    }
+    
+    if ffmpeg_path != 'ffmpeg':
+        ydl_opts['ffmpeg_location'] = os.path.dirname(ffmpeg_path)
+    
+    try:
+        with YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(url, download=False)
+            if info and info.get('_type') == 'playlist':
+                entries = info.get('entries', [])
+                playlist_info = {
+                    'title': info.get('title', 'Unknown Playlist'),
+                    'count': len(entries),
+                    'entries': entries,
+                    'description': info.get('description', ''),
+                    'uploader': info.get('uploader', ''),
+                }
+                debug_log(f"Playlist info extracted: {playlist_info['title']} with {playlist_info['count']} videos")
+                return playlist_info
+    except Exception as e:
+        debug_log(f"Failed to extract playlist info: {e}")
+        return None
+    
+    debug_log("No playlist info found")
+    return None
+
 def get_video_info(url):
     if YoutubeDL is None:
         return {}
+    
+    debug_log(f"Getting video info for: {url}")
     
     # Get ffmpeg path for yt-dlp
     ffmpeg_path, _ = get_ffmpeg_tools()
@@ -212,11 +278,12 @@ def get_video_info(url):
     with YoutubeDL(ydl_opts) as ydl:
         try:
             info = ydl.extract_info(url, download=False)
-            return {
+            video_info = {
                 'title': info.get('title', ''),
                 'date': info.get('upload_date', ''),
                 'description': info.get('description', ''),
                 'thumbnail': info.get('thumbnail', ''),
+                'url': info.get('webpage_url', url),
                 # Get additional date fields for debugging
                 'timestamp': info.get('timestamp', ''),
                 'release_timestamp': info.get('release_timestamp', ''),
@@ -224,8 +291,10 @@ def get_video_info(url):
                 'release_date': info.get('release_date', ''),
                 'modified_date': info.get('modified_date', '')
             }
+            debug_log(f"Video info extracted: {video_info['title']}")
+            return video_info
         except Exception as e:
-            print(f"Failed to fetch video info: {e}")
+            debug_log(f"Failed to fetch video info: {e}")
             return {}
 
 def parse_video_date(date_str, video_title="", url=""):
@@ -450,16 +519,13 @@ def clean_name(name):
 
 def setup_responsive_scrollable_frame(parent):
     """
-    Create a responsive scrollable frame that:
-    1. Expands with window width (dynamic resizing)
-    2. Adds vertical scrolling when content exceeds height
-    3. Maintains proper clipboard/focus behavior
+    Create a responsive scrollable frame with universal scroll wheel support
     """
     # Main container
     container = ttk.Frame(parent)
     container.pack(fill='both', expand=True)
     
-    # Create canvas for scrolling - Fixed the bg parameter issue
+    # Create canvas for scrolling
     canvas = tk.Canvas(container, highlightthickness=0, bg='#f8f8f8')
     scrollbar = ttk.Scrollbar(container, orient="vertical", command=canvas.yview)
     scrollable_frame = ttk.Frame(canvas)
@@ -472,44 +538,106 @@ def setup_responsive_scrollable_frame(parent):
     
     # KEY: Bind canvas width to window width changes
     def configure_canvas_width(event=None):
-        # Make canvas window width match canvas width
         canvas_width = canvas.winfo_width()
-        if canvas_width > 1:  # Only if canvas is actually rendered
+        if canvas_width > 1:
             canvas.itemconfig(canvas_window, width=canvas_width)
     
     def configure_scroll_region(event=None):
-        # Update scroll region when content changes
         canvas.configure(scrollregion=canvas.bbox("all"))
     
     # Bind events for responsive behavior
     canvas.bind('<Configure>', configure_canvas_width)
     scrollable_frame.bind('<Configure>', configure_scroll_region)
     
-    # Universal mouse wheel scrolling
-    def on_mousewheel(event):
+    # ENHANCED UNIVERSAL SCROLL WHEEL FUNCTIONALITY
+    def find_scrollable_canvas_under_cursor(widget, x_root, y_root):
+        """Find the scrollable canvas that should handle the scroll event"""
         try:
-            canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+            # Convert root coordinates to widget coordinates
+            x_widget = widget.winfo_pointerx() - widget.winfo_rootx()
+            y_widget = widget.winfo_pointery() - widget.winfo_rooty()
+            
+            # Check if cursor is within this widget's bounds
+            if (0 <= x_widget <= widget.winfo_width() and 
+                0 <= y_widget <= widget.winfo_height()):
+                
+                # If this is a scrollable canvas, return it
+                if isinstance(widget, tk.Canvas) and widget.cget('yscrollcommand'):
+                    return widget
+                
+                # Recursively check children
+                for child in widget.winfo_children():
+                    result = find_scrollable_canvas_under_cursor(child, x_root, y_root)
+                    if result:
+                        return result
+            
+            return None
+        except tk.TclError:
+            return None
+    
+    def universal_scroll_handler(event):
+        """Handle scroll wheel events universally"""
+        try:
+            # Get cursor position
+            x_root = event.x_root
+            y_root = event.y_root
+            
+            # Find the appropriate scrollable canvas
+            target_canvas = find_scrollable_canvas_under_cursor(container, x_root, y_root)
+            
+            # If we found a target canvas, scroll it
+            if target_canvas:
+                # Calculate scroll amount
+                if hasattr(event, 'delta'):
+                    # Windows/Mac
+                    delta = -1 * (event.delta / 120)
+                else:
+                    # Linux
+                    delta = -1 if event.num == 4 else 1
+                
+                # Perform the scroll
+                target_canvas.yview_scroll(int(delta), "units")
+                return "break"  # Prevent further event propagation
+            
+        except Exception as e:
+            debug_log(f"Scroll handler error: {e}")
+        
+        return None
+    
+    def bind_universal_scroll(widget):
+        """Recursively bind scroll events to all widgets"""
+        try:
+            # Bind scroll events
+            widget.bind("<MouseWheel>", universal_scroll_handler, add='+')
+            widget.bind("<Button-4>", universal_scroll_handler, add='+')
+            widget.bind("<Button-5>", universal_scroll_handler, add='+')
+            
+            # Recursively bind to children
+            for child in widget.winfo_children():
+                bind_universal_scroll(child)
+                
+        except tk.TclError:
+            pass
+    
+    # Apply universal scrolling to the entire container
+    bind_universal_scroll(container)
+    
+    # Also bind to the parent window to catch any missed events
+    def bind_to_parent():
+        try:
+            parent_window = parent
+            while parent_window and not isinstance(parent_window, tk.Tk):
+                parent_window = parent_window.master
+            
+            if parent_window:
+                parent_window.bind("<MouseWheel>", universal_scroll_handler, add='+')
+                parent_window.bind("<Button-4>", universal_scroll_handler, add='+')
+                parent_window.bind("<Button-5>", universal_scroll_handler, add='+')
         except:
             pass
     
-    def on_mousewheel_linux(event):
-        try:
-            if event.num == 4:
-                canvas.yview_scroll(-1, "units")
-            elif event.num == 5:
-                canvas.yview_scroll(1, "units")
-        except:
-            pass
-    
-    def bind_mousewheel_recursive(widget):
-        widget.bind("<MouseWheel>", on_mousewheel, add='+')
-        widget.bind("<Button-4>", on_mousewheel_linux, add='+')
-        widget.bind("<Button-5>", on_mousewheel_linux, add='+')
-        for child in widget.winfo_children():
-            bind_mousewheel_recursive(child)
-    
-    # Apply scrolling to all widgets
-    bind_mousewheel_recursive(container)
+    # Bind to parent after a short delay to ensure window is ready
+    container.after(100, bind_to_parent)
     
     # Pack components
     canvas.pack(side="left", fill="both", expand=True)
@@ -945,6 +1073,253 @@ class GeneratingDialog(tk.Toplevel):
         except tk.TclError:
             pass  # Already destroyed
 
+class PlaylistDialog(tk.Toplevel):
+    """Dialog for handling playlist processing options"""
+    def __init__(self, parent, playlist_info, original_url, app_instance):
+        super().__init__(parent)
+        self.title("Playlist Detected")
+        self.geometry("600x500")
+        self.resizable(True, True)
+        self.transient(parent)
+        self.grab_set()  # Make modal
+        
+        self.playlist_info = playlist_info
+        self.original_url = original_url
+        self.app_instance = app_instance  # Reference to main app
+        self.result = None
+        self.selected_videos = []
+        
+        # Center the dialog
+        self.geometry("+{}+{}".format(
+            parent.winfo_rootx() + 50,
+            parent.winfo_rooty() + 50
+        ))
+        
+        self.setup_ui()
+        
+    def setup_ui(self):
+        # Main container
+        main_frame = ttk.Frame(self, padding="20")
+        main_frame.pack(fill='both', expand=True)
+        
+        # Header info
+        header_frame = ttk.Frame(main_frame)
+        header_frame.pack(fill='x', pady=(0, 20))
+        
+        title_label = ttk.Label(header_frame, text=f"Playlist: {self.playlist_info['title']}", 
+                               font=("Arial", 12, "bold"))
+        title_label.pack(anchor='w')
+        
+        count_label = ttk.Label(header_frame, text=f"Contains {self.playlist_info['count']} videos")
+        count_label.pack(anchor='w', pady=(5, 0))
+        
+        if self.playlist_info.get('uploader'):
+            uploader_label = ttk.Label(header_frame, text=f"By: {self.playlist_info['uploader']}")
+            uploader_label.pack(anchor='w', pady=(2, 0))
+        
+        # Options
+        options_frame = ttk.LabelFrame(main_frame, text="Processing Options")
+        options_frame.pack(fill='x', pady=(0, 20))
+        
+        self.option_var = tk.StringVar(value="all")
+        
+        # Process all videos option
+        all_radio = ttk.Radiobutton(options_frame, text=f"Process all {self.playlist_info['count']} videos", 
+                                   variable=self.option_var, value="all")
+        all_radio.pack(anchor='w', padx=10, pady=5)
+        
+        # Select specific videos option
+        select_radio = ttk.Radiobutton(options_frame, text="Select specific videos", 
+                                      variable=self.option_var, value="select")
+        select_radio.pack(anchor='w', padx=10, pady=5)
+        
+        # Process first video only option
+        first_radio = ttk.Radiobutton(options_frame, text="Process only the first video", 
+                                     variable=self.option_var, value="first")
+        first_radio.pack(anchor='w', padx=10, pady=5)
+        
+        # Video selection area (for when "select" is chosen)
+        selection_frame = ttk.LabelFrame(main_frame, text="Video Selection")
+        selection_frame.pack(fill='both', expand=True, pady=(0, 20))
+        
+        # Create scrollable list of videos
+        list_container = ttk.Frame(selection_frame)
+        list_container.pack(fill='both', expand=True, padx=10, pady=10)
+        
+        # Listbox with scrollbar
+        list_frame = ttk.Frame(list_container)
+        list_frame.pack(fill='both', expand=True)
+        
+        self.video_listbox = tk.Listbox(list_frame, selectmode='multiple', height=10)
+        list_scrollbar = ttk.Scrollbar(list_frame, orient="vertical", command=self.video_listbox.yview)
+        self.video_listbox.configure(yscrollcommand=list_scrollbar.set)
+        
+        self.video_listbox.pack(side='left', fill='both', expand=True)
+        list_scrollbar.pack(side='right', fill='y')
+        
+        # Populate video list
+        for i, entry in enumerate(self.playlist_info['entries']):
+            title = entry.get('title', f'Video {i+1}')
+            duration = entry.get('duration', '')
+            if duration:
+                duration_str = f" ({duration}s)"
+            else:
+                duration_str = ""
+            self.video_listbox.insert(tk.END, f"{i+1}. {title}{duration_str}")
+        
+        # Select all/none buttons
+        select_buttons_frame = ttk.Frame(list_container)
+        select_buttons_frame.pack(fill='x', pady=(10, 0))
+        
+        ttk.Button(select_buttons_frame, text="Select All", 
+                  command=self.select_all_videos).pack(side='left', padx=(0, 5))
+        ttk.Button(select_buttons_frame, text="Select None", 
+                  command=self.select_no_videos).pack(side='left')
+        
+        # Buttons
+        button_frame = ttk.Frame(main_frame)
+        button_frame.pack(fill='x')
+        
+        ttk.Button(button_frame, text="Cancel", command=self.cancel).pack(side='right', padx=(5, 0))
+        ttk.Button(button_frame, text="Process", command=self.process).pack(side='right')
+        
+        # FIXED: Use the correct trace method for Python 3.13
+        try:
+            self.option_var.trace_add('write', self.on_option_change)
+        except AttributeError:
+            # Fallback for older Python versions
+            self.option_var.trace('w', self.on_option_change)
+        
+        self.on_option_change()
+        
+    def on_option_change(self, *args):
+        """Update UI based on selected option"""
+        option = self.option_var.get()
+        if option == "select":
+            self.video_listbox.config(state='normal')
+        else:
+            self.video_listbox.config(state='disabled')
+    
+    def select_all_videos(self):
+        self.video_listbox.selection_set(0, tk.END)
+        
+    def select_no_videos(self):
+        self.video_listbox.selection_clear(0, tk.END)
+        
+    def cancel(self):
+        self.result = None
+        self.destroy()
+        
+    def process(self):
+        debug_log("Process button clicked in playlist dialog")
+        option = self.option_var.get()
+        
+        if option == "all":
+            self.result = "all"
+            self.selected_videos = list(range(len(self.playlist_info['entries'])))
+        elif option == "first":
+            self.result = "first"
+            self.selected_videos = [0] if self.playlist_info['entries'] else []
+        elif option == "select":
+            selected_indices = self.video_listbox.curselection()
+            if not selected_indices:
+                messagebox.showwarning("No Selection", "Please select at least one video.")
+                return
+            self.result = "select"
+            self.selected_videos = list(selected_indices)
+        
+        debug_log(f"Processing option: {option}, selected videos: {self.selected_videos}")
+        
+        # CRITICAL FIX: Call processing directly on main thread
+        try:
+            # Close dialog first
+            self.withdraw()
+            
+            # Call processing directly (no additional threading needed)
+            self.app_instance.process_playlist_videos(self.playlist_info, self.selected_videos, self.original_url)
+            
+            # Destroy dialog
+            self.destroy()
+            
+        except Exception as e:
+            debug_log(f"Error in process method: {e}")
+            messagebox.showerror("Processing Error", f"Error starting processing: {str(e)}")
+            self.destroy()
+
+class PlaylistProgressDialog(tk.Toplevel):
+    """Dialog showing progress of playlist processing"""
+    def __init__(self, parent, total_videos):
+        super().__init__(parent)
+        self.title("Processing Playlist")
+        self.geometry("500x200")
+        self.resizable(False, False)
+        self.transient(parent)
+        self.grab_set()  # Make modal
+        
+        self.total_videos = total_videos
+        self.current_video = 0
+        self.cancelled = False
+        
+        # Center the dialog
+        self.geometry("+{}+{}".format(
+            parent.winfo_rootx() + 100,
+            parent.winfo_rooty() + 100
+        ))
+        
+        self.setup_ui()
+        
+    def setup_ui(self):
+        main_frame = ttk.Frame(self, padding="20")
+        main_frame.pack(fill='both', expand=True)
+        
+        # Status label
+        self.status_label = ttk.Label(main_frame, text="Processing playlist videos...")
+        self.status_label.pack(pady=(0, 10))
+        
+        # Current video label
+        self.video_label = ttk.Label(main_frame, text="", font=("Arial", 10))
+        self.video_label.pack(pady=(0, 10))
+        
+        # Progress bar
+        self.progress_var = tk.DoubleVar()
+        self.progress_bar = ttk.Progressbar(main_frame, length=400, mode='determinate', 
+                                          variable=self.progress_var, maximum=self.total_videos)
+        self.progress_bar.pack(pady=(0, 10))
+        
+        # Progress text
+        self.progress_text = ttk.Label(main_frame, text=f"0 of {self.total_videos} videos processed")
+        self.progress_text.pack(pady=(0, 10))
+        
+        # Current step label
+        self.step_label = ttk.Label(main_frame, text="Starting...", font=("Arial", 9))
+        self.step_label.pack(pady=(0, 10))
+        
+        # Cancel button
+        ttk.Button(main_frame, text="Cancel", command=self.cancel).pack()
+        
+    def update_progress(self, current, video_title="", step=""):
+        """Update progress display"""
+        if self.cancelled:
+            return
+            
+        self.current_video = current
+        self.progress_var.set(current)
+        
+        if video_title:
+            display_title = video_title[:60] + "..." if len(video_title) > 60 else video_title
+            self.video_label.config(text=f"Current: {display_title}")
+        
+        self.progress_text.config(text=f"{current} of {self.total_videos} videos processed")
+        
+        if step:
+            self.step_label.config(text=step)
+        
+        self.update_idletasks()
+        
+    def cancel(self):
+        self.cancelled = True
+        self.destroy()
+
 class CreditsEditor(tk.Toplevel):
     def __init__(self, master, credits, on_save=None):
         super().__init__(master)
@@ -959,6 +1334,7 @@ class CreditsEditor(tk.Toplevel):
         self.on_save = on_save
         self.configure(bg="#f8f8f8")
         self.setup_ui()
+        master.enable_universal_scrolling(self)
 
     def setup_ui(self):
         # Use responsive scrollable frame
@@ -1323,6 +1699,43 @@ class DataJsonViewer(ttk.Frame):
         self.on_entry_update = on_entry_update
         self.tiles = []
         self.create_widgets()
+    
+    def enable_universal_scrolling(self, widget):
+        """Enable universal scrolling on any widget (for dialogs, etc.)"""
+        def universal_scroll_handler(event):
+            try:
+                # Find any canvas with a scrollbar in the widget hierarchy
+                def find_scrollable_canvas(w):
+                    if isinstance(w, tk.Canvas) and w.cget('yscrollcommand'):
+                        return w
+                    for child in w.winfo_children():
+                        result = find_scrollable_canvas(child)
+                        if result:
+                            return result
+                    return None
+                
+                target_canvas = find_scrollable_canvas(widget)
+                if target_canvas:
+                    if hasattr(event, 'delta'):
+                        delta = -1 * (event.delta / 120)
+                    else:
+                        delta = -1 if event.num == 4 else 1
+                    target_canvas.yview_scroll(int(delta), "units")
+                    return "break"
+            except:
+                pass
+        
+        def bind_recursive(w):
+            try:
+                w.bind("<MouseWheel>", universal_scroll_handler, add='+')
+                w.bind("<Button-4>", universal_scroll_handler, add='+')
+                w.bind("<Button-5>", universal_scroll_handler, add='+')
+                for child in w.winfo_children():
+                    bind_recursive(child)
+            except:
+                pass
+        
+        bind_recursive(widget)
 
     def create_widgets(self):
         # Use responsive scrollable frame
@@ -1576,50 +1989,38 @@ class ContentEntryApp(tk.Tk):
                 self.source_var.set(path)
 
     def fetch_info(self):
+        """FIXED: Main fetch_info method with corrected playlist handling"""
         mode = self.mode_var.get()
         src = self.source_var.get()
+        
+        debug_log(f"=== FETCH INFO CALLED ===")
+        debug_log(f"Mode: {mode}, Source: {src}")
+        
         if mode == "video":
-            embed_src = detect_and_embed_video(src)
-            self.fields['videoSrc'].set(embed_src)
-            thumbnail_url = ""
-            title = ""
-            date = ""
-            desc = ""
-            slug = ""
-
-            if src.startswith('http'):
-                info = get_video_info(src)
-                title = info.get('title', '')
-                date = info.get('date', '')
-                desc = info.get('description', '')
-                thumbnail_url = info.get('thumbnail', '')
-                
-                if not thumbnail_url:
-                    thumbnail_url = fetch_thumbnail_oembed(src)
-                
-                # Use the robust date parsing function
-                if date:
-                    date = parse_video_date(date, title, src)
-                    
-                slug = slugify(title) if title else ""
-            else:
-                filename = os.path.basename(src)
-                base, _ = os.path.splitext(filename)
-                title = base
-                slug = slugify(base)
-                date = datetime.now().strftime('%B %d, %Y')
-
-            # Only update imgSrc if it's still the template or empty
-            current_img = self.fields['imgSrc'].get()
-            if not current_img or current_img == VIDEO_THUMBNAIL_TEMPLATE:
-                self.fields['imgSrc'].set(thumbnail_url)
+            # CRITICAL FIX: Check individual video in playlist FIRST with youtu.be support
+            if self.is_individual_video_in_playlist_fixed(src):
+                debug_log("Individual video in playlist detected - extracting clean URL")
+                clean_url = self.extract_individual_video_url_fixed(src)
+                debug_log(f"Extracted clean URL: {clean_url}")
+                # Process as individual video with clean URL
+                self.process_single_video(clean_url)
+                return
             
-            self.fields['title'].set(title)
-            self.fields['slug'].set(slug)
-            self.fields['date'].set(date)
-            self.description_text.delete(1.0, tk.END)
-            self.description_text.insert(tk.END, desc)
+            # ONLY check for pure playlists if it's not an individual video
+            elif is_pure_playlist_url(src):
+                debug_log("Pure playlist detected - showing playlist dialog")
+                self.handle_pure_playlist(src)
+                return
+            
+            # Regular single video
+            else:
+                debug_log("Regular single video detected")
+                self.process_single_video(src)
+                return
+        
         else:
+            # PDF mode
+            debug_log("PDF mode processing")
             filename = os.path.basename(src)
             pdf_title = get_pdf_title(src)
             slug = slugify(pdf_title)
@@ -1633,6 +2034,468 @@ class ContentEntryApp(tk.Tk):
             if desc_text:
                 desc_snippet = re.sub(r'\s+', ' ', desc_text).strip()[:300]
                 self.description_text.insert(tk.END, desc_snippet)
+
+    def is_individual_video_in_playlist_fixed(self, url):
+        """FIXED: Detect individual video in playlist including youtu.be format"""
+        if not url:
+            return False
+        
+        debug_log(f"Checking if individual video in playlist: {url}")
+        
+        # YouTube video in playlist - has BOTH 'v' and 'list' parameters (youtube.com)
+        if 'youtube.com' in url:
+            parsed = parse_qs(urlparse(url).query)
+            is_individual = 'list' in parsed and 'v' in parsed
+            debug_log(f"YouTube individual check: list={('list' in parsed)}, v={('v' in parsed)}, individual={is_individual}")
+            return is_individual
+        
+        # FIXED: Handle youtu.be format with playlist
+        elif 'youtu.be' in url:
+            parsed_url = urlparse(url)
+            # youtu.be has video ID in path and playlist in query
+            has_video_id = bool(parsed_url.path.strip('/'))
+            query_params = parse_qs(parsed_url.query)
+            has_playlist = 'list' in query_params
+            is_individual = has_video_id and has_playlist
+            debug_log(f"youtu.be individual check: video_id={has_video_id}, list={has_playlist}, individual={is_individual}")
+            return is_individual
+        
+        debug_log("Not an individual video in playlist")
+        return False
+
+    def extract_individual_video_url_fixed(self, url):
+        """FIXED: Extract clean individual video URL including youtu.be format"""
+        debug_log(f"Extracting individual video URL from: {url}")
+        
+        if 'youtube.com' in url:
+            parsed = urlparse(url)
+            query_params = parse_qs(parsed.query)
+            if 'v' in query_params:
+                video_id = query_params['v'][0]
+                clean_url = f"https://www.youtube.com/watch?v={video_id}"
+                debug_log(f"Extracted clean YouTube URL: {clean_url}")
+                return clean_url
+        
+        # FIXED: Handle youtu.be format
+        elif 'youtu.be' in url:
+            parsed_url = urlparse(url)
+            video_id = parsed_url.path.strip('/')
+            if video_id:
+                clean_url = f"https://www.youtube.com/watch?v={video_id}"
+                debug_log(f"Extracted clean youtu.be URL: {clean_url}")
+                return clean_url
+        
+        debug_log(f"No extraction needed, returning original: {url}")
+        return url
+
+    def process_single_video(self, video_url):
+        """Process a single video URL and populate form fields"""
+        debug_log(f"Processing single video: {video_url}")
+        
+        embed_src = detect_and_embed_video(video_url)
+        self.fields['videoSrc'].set(embed_src)
+        
+        if video_url.startswith('http'):
+            info = get_video_info(video_url)
+            title = info.get('title', '')
+            date = info.get('date', '')
+            desc = info.get('description', '')
+            thumbnail_url = info.get('thumbnail', '')
+            
+            if not thumbnail_url:
+                thumbnail_url = fetch_thumbnail_oembed(video_url)
+            
+            if date:
+                date = parse_video_date(date, title, video_url)
+                
+            slug = slugify(title) if title else ""
+        else:
+            filename = os.path.basename(video_url)
+            base, _ = os.path.splitext(filename)
+            title = base
+            slug = slugify(base)
+            date = datetime.now().strftime('%B %d, %Y')
+            thumbnail_url = ""
+
+        # Only update imgSrc if it's still the template or empty
+        current_img = self.fields['imgSrc'].get()
+        if not current_img or current_img == VIDEO_THUMBNAIL_TEMPLATE:
+            self.fields['imgSrc'].set(thumbnail_url)
+        
+        self.fields['title'].set(title)
+        self.fields['slug'].set(slug)
+        self.fields['date'].set(date)
+        self.description_text.delete(1.0, tk.END)
+        self.description_text.insert(tk.END, desc)
+        
+        # Update source field with processed URL
+        self.source_var.set(video_url)
+        
+        debug_log(f"Single video processing complete: {title}")
+
+    def handle_pure_playlist(self, playlist_url):
+        """Handle pure playlist URLs by showing dialog"""
+        debug_log(f"Handling pure playlist: {playlist_url}")
+        
+        playlist_info = get_playlist_info(playlist_url)
+        if not playlist_info:
+            messagebox.showerror("Playlist Error", "Failed to retrieve playlist information.")
+            return
+        
+        debug_log(f"Playlist info retrieved: {playlist_info['title']} with {playlist_info['count']} videos")
+        
+        # Show playlist dialog with reference to this app instance
+        dialog = PlaylistDialog(self, playlist_info, playlist_url, self)
+        # Dialog will handle processing via self.process_playlist_videos()
+
+    def process_playlist_videos(self, playlist_info, selected_indices, original_url):
+        """FIXED: Use simple dialog approach like regular preview generation"""
+        debug_log(f"=== PROCESSING PLAYLIST VIDEOS ===")
+        debug_log(f"Selected indices: {selected_indices}")
+        
+        videos_to_process = [playlist_info['entries'][i] for i in selected_indices]
+        
+        if not videos_to_process:
+            debug_log("No videos to process")
+            return
+        
+        # Show simple generating dialog immediately (like regular preview)
+        self.playlist_generating_dialog = GeneratingDialog(self)
+        self.playlist_generating_dialog.message_label.config(text=f"Processing {len(videos_to_process)} playlist videos...")
+        
+        # Use the same global status approach as regular preview generation
+        global generation_status
+        generation_status['in_progress'] = True
+        generation_status['completed'] = False
+        generation_status['result_path'] = None
+        generation_status['error'] = None
+        
+        def process_videos_background():
+            """Background processing function"""
+            try:
+                processed_count = 0
+                skipped_count = 0
+                
+                for i, entry in enumerate(videos_to_process):
+                    video_title = entry.get('title', f'Video {i+1}')
+                    debug_log(f"Processing video {i+1}/{len(videos_to_process)}: {video_title}")
+                    
+                    try:
+                        # Construct video URL
+                        video_url = self.construct_video_url_from_entry(entry, original_url)
+                        debug_log(f"Constructed URL: {video_url}")
+                        
+                        if not video_url:
+                            debug_log("Failed to construct video URL")
+                            skipped_count += 1
+                            continue
+                        
+                        # Check for duplicates (on main thread)
+                        existing_slugs = [item.get('slug', '') for item in self.data]
+                        potential_slug = slugify(video_title)
+                        
+                        if potential_slug in existing_slugs:
+                            # Handle duplicate check on main thread
+                            duplicate_result = {'result': None}
+                            
+                            def ask_duplicate():
+                                duplicate_result['result'] = messagebox.askyesnocancel(
+                                    "Duplicate Found", 
+                                    f"Entry with slug '{potential_slug}' already exists.\n\n"
+                                    f"Yes: Update existing entry\n"
+                                    f"No: Skip this video\n"
+                                    f"Cancel: Stop processing"
+                                )
+                            
+                            # Run on main thread and wait for result
+                            self.after_idle(ask_duplicate)
+                            
+                            # Wait for user response
+                            while duplicate_result['result'] is None:
+                                time.sleep(0.1)
+                            
+                            if duplicate_result['result'] is None:  # Cancel
+                                debug_log("Processing cancelled due to duplicate")
+                                break
+                            elif duplicate_result['result'] is False:  # Skip
+                                debug_log(f"Skipping duplicate: {potential_slug}")
+                                skipped_count += 1
+                                continue
+                        
+                        # Get video info
+                        info = get_video_info(video_url)
+                        if not info:
+                            debug_log("Failed to get video info")
+                            skipped_count += 1
+                            continue
+                        
+                        # Create entry
+                        embed_src = detect_and_embed_video(video_url)
+                        thumbnail_url = info.get('thumbnail', '')
+                        if not thumbnail_url:
+                            thumbnail_url = fetch_thumbnail_oembed(video_url)
+                        
+                        title = info.get('title', video_title)
+                        date = info.get('date', '')
+                        if date:
+                            date = parse_video_date(date, title, video_url)
+                        else:
+                            date = datetime.now().strftime('%B %d, %Y')
+                        
+                        slug = slugify(title)
+                        desc = info.get('description', '')
+                        
+                        new_entry = {
+                            "imgSrc": ensure_leading_slash_if_local(thumbnail_url) if thumbnail_url else VIDEO_THUMBNAIL_TEMPLATE,
+                            "previewSrc": "",
+                            "videoSrc": ensure_leading_slash_if_local(embed_src),
+                            "PDFSrc": "",
+                            "slug": slug,
+                            "title": title,
+                            "date": date,
+                            "role": "",
+                            "description": desc,
+                            "credits": {},
+                            "type": "",
+                            "Screenplay": ""
+                        }
+                        
+                        debug_log(f"Created entry for: {title}")
+                        
+                        # Add or update entry
+                        updated = False
+                        for idx, existing_entry in enumerate(self.data):
+                            if existing_entry.get('slug') == slug:
+                                self.data[idx] = new_entry
+                                updated = True
+                                break
+                        
+                        if not updated:
+                            self.data.append(new_entry)
+                        
+                        # Generate preview
+                        try:
+                            preview_path = self.generate_preview_sync(video_url, slug)
+                            if preview_path:
+                                new_entry["previewSrc"] = ensure_leading_slash_if_local(preview_path)
+                                # Update the entry in data
+                                if updated:
+                                    for idx, existing_entry in enumerate(self.data):
+                                        if existing_entry.get('slug') == slug:
+                                            self.data[idx] = new_entry
+                                            break
+                                debug_log(f"Preview generated for: {title}")
+                            else:
+                                debug_log(f"Preview generation failed for: {title}")
+                        except Exception as e:
+                            debug_log(f"Preview generation error for {title}: {e}")
+                        
+                        processed_count += 1
+                        
+                    except Exception as e:
+                        debug_log(f"Error processing video {i+1}: {e}")
+                        skipped_count += 1
+                        continue
+                
+                # Set completion status (like regular preview generation)
+                generation_status['in_progress'] = False
+                generation_status['completed'] = True
+                generation_status['result_path'] = f"Processed {processed_count} videos"
+                if skipped_count > 0:
+                    generation_status['result_path'] += f", skipped {skipped_count}"
+                    
+            except Exception as e:
+                debug_log(f"Error in video processing thread: {e}")
+                generation_status['error'] = str(e)
+                generation_status['in_progress'] = False
+                generation_status['completed'] = True
+        
+        # Start background thread
+        debug_log("Starting background processing thread")
+        threading.Thread(target=process_videos_background, daemon=True).start()
+        
+        # Start checking for completion (same as regular preview)
+        self.check_playlist_generation_status()
+
+    def check_playlist_generation_status(self):
+        """Check playlist generation status (same pattern as regular preview)"""
+        global generation_status
+        
+        if generation_status['completed']:
+            # Close the generating dialog
+            if hasattr(self, 'playlist_generating_dialog') and self.playlist_generating_dialog:
+                self.playlist_generating_dialog.close_dialog()
+                self.playlist_generating_dialog = None
+            
+            if generation_status['error']:
+                messagebox.showerror("Playlist Processing Error", f"Failed to process playlist:\n{generation_status['error']}")
+            else:
+                # Save data and update UI
+                save_data(self.data)
+                self.data_tab.data = self.data
+                self.data_tab.populate_tiles()
+                
+                # Show success message
+                result_msg = f"Playlist processing complete!\n\n{generation_status['result_path']}\n\nEntries saved to {DATA_JSON_PATH}"
+                messagebox.showinfo("Processing Complete", result_msg)
+            
+            # Reset status
+            generation_status['completed'] = False
+            generation_status['in_progress'] = False
+            generation_status['result_path'] = None
+            generation_status['error'] = None
+            
+        elif generation_status['in_progress']:
+            # Still processing, check again in 500ms
+            self.after(500, self.check_playlist_generation_status)
+
+    def construct_video_url_from_entry(self, entry, original_url):
+        """Construct individual video URL from playlist entry"""
+        if 'url' in entry:
+            return entry['url']
+        elif 'webpage_url' in entry:
+            return entry['webpage_url']
+        elif 'id' in entry:
+            # Construct URL from ID based on platform
+            if 'youtube.com' in original_url:
+                return f"https://www.youtube.com/watch?v={entry['id']}"
+            elif 'vimeo.com' in original_url:
+                return f"https://vimeo.com/{entry['id']}"
+        return None
+
+    def generate_preview_sync(self, video_url, slug):
+        """Generate preview synchronously for playlist processing"""
+        debug_log(f"Generating preview for: {slug}")
+        
+        try:
+            output_dir = PREVIEW_DIR
+            os.makedirs(output_dir, exist_ok=True)
+            ext = PREVIEW_EXTENSION
+            output_name = f"{slug}-preview{ext}"
+            output_path = os.path.join(output_dir, output_name)
+            
+            # Get tools
+            ffmpeg_path, ffprobe_path = get_ffmpeg_tools()
+            
+            # Download video if it's a URL
+            temp_file = None
+            input_file = video_url
+            
+            if video_url.startswith('http'):
+                if not YoutubeDL:
+                    debug_log("YoutubeDL not available")
+                    return None
+                    
+                with tempfile.TemporaryDirectory() as dl_temp_dir:
+                    temp_file = os.path.join(dl_temp_dir, "downloaded_video.mp4")
+                    
+                    ydl_opts = {
+                        'quiet': True,
+                        'outtmpl': temp_file,
+                        'format': 'bestvideo[height<=1080][ext=mp4]/bestvideo[height<=1080]/best[height<=1080]',
+                        'noplaylist': True,
+                    }
+                    
+                    if ffmpeg_path != 'ffmpeg':
+                        ydl_opts['ffmpeg_location'] = os.path.dirname(ffmpeg_path)
+                    
+                    with YoutubeDL(ydl_opts) as ydl:
+                        ydl.download([video_url])
+                    
+                    if not os.path.exists(temp_file) or os.path.getsize(temp_file) < 1000:
+                        candidates = [f for f in os.listdir(dl_temp_dir) if f.endswith(('.mp4', '.webm', '.mkv'))]
+                        if candidates:
+                            temp_file = os.path.join(dl_temp_dir, candidates[0])
+                        else:
+                            debug_log("No video file downloaded")
+                            return None
+                    
+                    # Copy to persistent temp file
+                    with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as tmp:
+                        shutil.copyfile(temp_file, tmp.name)
+                        temp_file = tmp.name
+                    input_file = temp_file
+            
+            # Get duration
+            duration_cmd = [ffprobe_path, "-v", "error", "-show_entries", "format=duration", "-of",
+                           "default=noprint_wrappers=1:nokey=1", input_file]
+            result = subprocess.run(duration_cmd, capture_output=True, text=True, timeout=30)
+            
+            if result.returncode != 0:
+                debug_log(f"ffprobe failed: {result.stderr}")
+                return None
+            
+            duration = int(float(result.stdout.strip()))
+            debug_log(f"Video duration: {duration}s")
+            
+            # Quick preview generation (fewer clips for batch processing)
+            num_clips = PREVIEW_NUM_MINI_CLIPS
+            clip_length = PREVIEW_MINI_CLIP_LENGTH
+            start_trim = calculate_trim_seconds(PREVIEW_START_SECONDS, duration)
+            end_trim = calculate_trim_seconds(PREVIEW_END_SECONDS, duration)
+            working_duration = duration - start_trim - end_trim
+            
+            if working_duration < num_clips * clip_length:
+                debug_log("Video too short for preview")
+                return None
+            
+            # Generate clips
+            interval = int(working_duration / num_clips)
+            miniclips = []
+            tmp_dir = tempfile.mkdtemp()
+            
+            for i in range(num_clips):
+                start = start_trim + i * interval
+                mini_out = os.path.join(tmp_dir, f"mini_{i}{ext}")
+                
+                ffmpeg_cmd = [
+                    ffmpeg_path, "-y", "-ss", str(start), "-i", input_file, "-t", str(clip_length),
+                    "-c:v", "libvpx-vp9", "-crf", str(PREVIEW_CRF), "-b:v", PREVIEW_BITRATE, 
+                    "-preset", PREVIEW_PRESET, mini_out
+                ]
+
+                # Add audio and resolution based on settings
+                if not PREVIEW_INCLUDE_AUDIO:
+                    ffmpeg_cmd.insert(-1, "-an")
+                if PREVIEW_RESOLUTION:
+                    ffmpeg_cmd.insert(-1, "-vf")
+                    ffmpeg_cmd.insert(-1, f"scale={PREVIEW_RESOLUTION}:-2")
+                
+                result = subprocess.run(ffmpeg_cmd, capture_output=True, text=True, timeout=30)
+                if result.returncode == 0:
+                    miniclips.append(mini_out)
+            
+            if not miniclips:
+                debug_log("No clips generated")
+                return None
+            
+            # Concatenate clips
+            concat_file = os.path.join(tmp_dir, "concat.txt")
+            with open(concat_file, "w") as f:
+                for m in miniclips:
+                    f.write(f"file '{m}'\n")
+            
+            ffmpeg_concat_cmd = [
+                ffmpeg_path, "-y", "-f", "concat", "-safe", "0", "-i",
+                concat_file, "-c", "copy", output_path
+            ]
+            result = subprocess.run(ffmpeg_concat_cmd, capture_output=True, text=True, timeout=30)
+            
+            # Cleanup
+            shutil.rmtree(tmp_dir)
+            if temp_file and os.path.exists(temp_file):
+                os.remove(temp_file)
+            
+            if result.returncode == 0 and os.path.exists(output_path):
+                debug_log(f"Preview generated successfully: {output_path}")
+                return os.path.relpath(output_path)
+            else:
+                debug_log(f"Preview generation failed: {result.stderr}")
+            
+        except Exception as e:
+            debug_log(f"Sync preview generation error: {e}")
+            
+        return None
 
     def clear_fields(self):
         for key, var in self.fields.items():
