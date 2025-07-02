@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jonathan Thompson</title>
+    <title>Clocks | Jonathan Thompson</title>
     <link rel="icon" type="image/x-icon" href="/resources/images/favicon.png">
 
     <meta property="og:title" content="Jonathan Thompson" />
@@ -12,15 +12,19 @@
     <meta property="og:url" content="itsjonathanthompson.com" />
 
     <link rel="stylesheet" href="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.css">
-    
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+
     <link rel="stylesheet" href="/resources/css/global.css">
-    <link rel="stylesheet" href="/resources/css/index.css">
+    <link rel="stylesheet" href="/resources/css/project/main.css">  <link rel="stylesheet" href="/resources/css/project/video-viewer.css">
+
 
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
     <script src="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.js" defer></script>
-    
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+
     <script src="/resources/js/global.js" defer></script>
-    <script src="/resources/js/index.js" defer></script>
+    <script src="/resources/js/project/main.js" defer></script>  <script type="module" src="/resources/js/project/video-viewer.js" defer></script>
+
 </head>
 <body>
     <div class="effects">
@@ -76,107 +80,55 @@
     </header>
     <main>
         
-<div id="content">
-    
-    
-    
-        
-            
-        
-    
-        
-            
-        
-    
-        
-            
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-
-    
-        <div class="contentContainer pop-in"> 
-            <a class="frame" href="/explore/plumb-out-of-time">
-                <img class="thumbnail active" src="https://i.vimeocdn.com/video/2009367824-576864fad966f52ef222c543e2ec9b408dd9df177b563ad9e24a4a15a9990f6b-d" alt="">
-                <video class="thumbnail passive" src="/resources/videos/previews/plumb-out-of-time-preview.webm" muted loop></video>
-            </a>
-            <div class="info">
-                <a class="expand" href="/explore/plumb-out-of-time"></a>
-                <h2 class="contentTitle">Plumb Out Of Time!</h2>
-                <h3 class="date">April 26, 2025</h3>
+<div id="project-page">
+    <div id="content-box">
+        <section id="project">
+            <div id="frame">
                 
-                <div class="roles">
-                    <a class="role-tag" href="/explore/?roles=Production%20Assistant">Production Assistant</a><a class="role-tag" href="/explore/?roles=Actor">Actor</a>
+                
+                <div class="plyr__video-embed" id="player">
+                    <iframe
+                        src="https://player.vimeo.com/video/1079014140"
+                        allowfullscreen
+                        allowtransparency
+                        allow="autoplay"
+                    ></iframe>
+                </div>
+                
+                
+            </div>
+            <div id="info">
+                <div id="specs">
+                    <h1 id="contentTitle">Clocks</h1>
+                    <small id="date">April 26, 2025</small>
+                </div>
+                <div id="tags">
+                    
+                    <div class="roles">
+                        
+                        <a class="role-tag" href="/explore/?roles=Editor">Editor</a>
+                        
+                    </div>
+                    <span id="divider"> | </span>
+                    <a class="type-tag" href="/explore/?types=Short%20Film">Short Film</a>
                 </div>
             </div>
-        </div>
-    
-        <div class="contentContainer pop-in"> 
-            <a class="frame" href="/explore/clocks">
-                <img class="thumbnail active" src="https://i.vimeocdn.com/video/2009409295-6486bfa962769990f948226c8ea2ddb657959440db9a5cbc6846a0ef6f8aa801-d" alt="">
-                <video class="thumbnail passive" src="/resources/videos/previews/clocks-preview.webm" muted loop></video>
-            </a>
-            <div class="info">
-                <a class="expand" href="/explore/clocks"></a>
-                <h2 class="contentTitle">Clocks</h2>
-                <h3 class="date">April 26, 2025</h3>
+        </section>
+        <aside id="credits">
+            <h2>Credits</h2>
+            <ul>
                 
-                <div class="roles">
-                    <a class="role-tag" href="/explore/?roles=Editor">Editor</a>
-                </div>
-            </div>
-        </div>
-    
-        <div class="contentContainer pop-in"> 
-            <a class="frame" href="/explore/dear-black-umich">
-                <img class="thumbnail active" src="https://i.ytimg.com/vi/oFJd16_O2Kk/maxresdefault.jpg" alt="">
-                <video class="thumbnail passive" src="/resources/videos/previews/dear-black-umich-preview.webm" muted loop></video>
-            </a>
-            <div class="info">
-                <a class="expand" href="/explore/dear-black-umich"></a>
-                <h2 class="contentTitle">Dear Black Umich,</h2>
-                <h3 class="date">April 20, 2025</h3>
+                    <li><strong>Editor:</strong> Jonathan Thompson</li>
                 
-                <div class="roles">
-                    <a class="role-tag" href="/explore/?roles=Camera%20Operator">Camera Operator</a>
-                </div>
-            </div>
-        </div>
-    
-</div>
-<div id="loadMore">
-    <button type="button" class="button">Load More</button>
+            </ul>
+        </aside>
+    </div>
+    <div id="more">
+        
+        <section id="description">
+            <p>With her best friend's chess state championships on the line, a loyal friend with clouded judgment finds a watch in an antique store that is able to take her back in time. But when she causes a devastating paradox, she must learn that winning isn't everything before their futures are forever altered.<br><br>Producers: Chloe Pfeifer, Amy Douglas<br>Associate Producer: Jack Buchholz<br>Writer/Director: Leah Gouin<br>Starring: Isabella Vasari, Emily Haselschwert, Jason Liang, Mateo St. Remy<br>Assistant Director: Robin Wyllie-Scholz<br>DP: Analise Richiez<br>Editor: Jonathan Thompson <br>Gaffer: Sammi Smith<br>Art: Kas Brajkovic<br>Composer: Lorelei Moxon<br>Sound/Boom Op: Peyton Schumacher, Grace Wright<br>Production Assistants: Brock McIntyre, Kaylece Dorsey, Samantha Wheelis<br>Graphic Design: Brianna Anzures</p>
+        </section>
+    </div>
 </div>
     </main>
     <footer>
