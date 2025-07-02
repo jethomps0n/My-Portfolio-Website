@@ -11,6 +11,7 @@
 #content-box {
     display: flex;
     gap: 25px;
+    align-items: flex-start;
 }
 
 #project {
@@ -121,16 +122,24 @@
     backdrop-filter: blur(15px) brightness(0.7);
     background-color: hsla(201, 100%, 8%, 0.45);
     z-index: 5;
+    display: flex;
+    flex-direction: column;
+    /* Height will be set dynamically by JavaScript to match #project */
+    height: auto;
+    max-height: calc(100vh - 200px); /* Fallback constraint */
+    min-height: 0; /* Allows shrinking */
 }
 
 #credits #credits-container {
     padding: 0 20px 0 20px;
     overflow-y: auto;
-    height: 100%;
+    flex: 1; /* Takes up remaining space after header */
+    min-height: 0; /* Allows shrinking */
 }
 
 #credits-header {
     padding: 0 20px;
+    flex-shrink: 0; /* Prevents header from shrinking */
 }
 
 #credits h2 {
