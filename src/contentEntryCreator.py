@@ -1733,7 +1733,7 @@ class DataJsonViewer(ttk.Frame):
             self.populate_tiles()
         TileEditor(self, dict(self.data[idx]), on_save, on_delete)
 
-class ContentEntryApp(UniversalScrollMixin, tk.Tk):
+class ContentEntryCreatorApp(UniversalScrollMixin, tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Content Entry Creator")
@@ -2591,5 +2591,5 @@ class ContentEntryApp(UniversalScrollMixin, tk.Tk):
         save_data(self.data)
 
 if __name__ == '__main__':
-    app = ContentEntryApp()
+    app = ContentEntryCreatorApp()
     app.mainloop()
