@@ -338,5 +338,62 @@
     },
     "type": "Documentary",
     "Screenplay": ""
+  },
+  {
+    "imgSrc": "https://i.ytimg.com/vi/HfBsp4b6Z9s/hqdefault.jpg",
+    "previewSrc": "/resources/videos/previews/1899-s01e08---maura-inserts-the-key-scene-rescore-with-maniac-soundtrack-preview.webm",
+    "videoSrc": "https://www.youtube.com/embed/HfBsp4b6Z9s",
+    "PDFSrc": "",
+    "slug": "1899-s01e08---maura-inserts-the-key-scene-rescore-with-maniac-soundtrack",
+    "title": "1899 (S01E08) - Maura Inserts the Key Scene | RESCORE with Maniac Soundtrack",
+    "date": "November 30, 2023",
+    "role": "Editor",
+    "description": "Rescore track: Blind Spots · Dan Romer\nOriginal track: Dieses Mal Wird Sie Aufwachen · Ben Frost",
+    "credits": {
+      "Editor": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Rescore",
+    "Screenplay": ""
+  },
+  {
+    "imgSrc": "https://i.vimeocdn.com/video/2009367824-576864fad966f52ef222c543e2ec9b408dd9df177b563ad9e24a4a15a9990f6b-d",
+    "previewSrc": "/resources/videos/previews/plumb-out-of-time-preview.webm",
+    "videoSrc": "https://player.vimeo.com/video/1079014163",
+    "PDFSrc": "",
+    "slug": "plumb-out-of-time",
+    "title": "Plumb Out Of Time!",
+    "date": "April 26, 2025",
+    "role": "Production Assistant/Actor",
+    "description": "A University of Michigan student from 1925 is bewildered to find himself in the present day as he tries to figure out his way back home in this silent fish-out-of-water comedy.\n\nProducer: Jack Buchholz\nAssociate Producers: Analise Richiez, Brock McIntyre\nWriter/Director: Brock McIntyre\nStarring: Jason Liang, Isabella Garcia\nAssistant Director: Mark Skonieczny\nDP: Jack Buchholz\nCamera Assistant: Noah Avalos\nEditor/VFX: Zach Forman\nGaffer: Sammi Smith\nArt: Clara Squio De Cezaro\nComposer: Brynn Hilliker\nMusic Production: Josh Cheng\nBand: Brynn Hilliker, Kevin Payne, Milo Stout\nSound/Boom Op: Devin Hurd\nProduction Assistants: Gabe Sugarman, Jonathan Thompson, Sydney Cole, Elijah Iacovini\nGraphic Design: Brianna Anzures",
+    "credits": {
+      "Production Assistant": [
+        "Jonathan Thompson"
+      ],
+      "Actor": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Short Film",
+    "Screenplay": ""
+  },
+  {
+    "imgSrc": "https://i.vimeocdn.com/video/2009409295-6486bfa962769990f948226c8ea2ddb657959440db9a5cbc6846a0ef6f8aa801-d",
+    "previewSrc": "/resources/videos/previews/clocks-preview.webm",
+    "videoSrc": "https://player.vimeo.com/video/1079014140",
+    "PDFSrc": "",
+    "slug": "clocks",
+    "title": "Clocks",
+    "date": "April 26, 2025",
+    "role": "Editor",
+    "description": "With her best friend's chess state championships on the line, a loyal friend with clouded judgment finds a watch in an antique store that is able to take her back in time. But when she causes a devastating paradox, she must learn that winning isn't everything before their futures are forever altered.\n\nProducers: Chloe Pfeifer, Amy Douglas\nAssociate Producer: Jack Buchholz\nWriter/Director: Leah Gouin\nStarring: Isabella Vasari, Emily Haselschwert, Jason Liang, Mateo St. Remy\nAssistant Director: Robin Wyllie-Scholz\nDP: Analise Richiez\nEditor: Jonathan Thompson \nGaffer: Sammi Smith\nArt: Kas Brajkovic\nComposer: Lorelei Moxon\nSound/Boom Op: Peyton Schumacher, Grace Wright\nProduction Assistants: Brock McIntyre, Kaylece Dorsey, Samantha Wheelis\nGraphic Design: Brianna Anzures",
+    "credits": {
+      "Editor": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Short Film",
+    "Screenplay": ""
   }
 ]
