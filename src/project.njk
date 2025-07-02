@@ -133,12 +133,16 @@ eleventyComputed:
             </div>
         </section>
         <aside id="credits">
-            <h2>Credits</h2>
-            <ul>
-                {% for role, names in i.credits %}
-                    <li><strong>{{ role }}:</strong> {{ names | join(', ') }}</li>
-                {% endfor %}
-            </ul>
+            <div id="credits-header">
+                <h2>Credits</h2>
+            </div>
+            <div id="credits-container">
+                <ul>
+                    {% for role, names in i.credits %}
+                        <li><strong>{{ role }}:</strong> {{ names | join(', ') }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
         </aside>
     </div>
     <div id="more">
