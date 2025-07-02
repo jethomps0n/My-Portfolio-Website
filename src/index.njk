@@ -6,8 +6,9 @@ pagejs: <script src="/resources/js/index.js" defer></script>
 ---
 
 <div id="content">
+    {% set sortedData = data | sortByDate %}
     {% set firstThree = [] %}
-    {% for i in data %}
+    {% for i in sortedData %}
         {% if i.Screenplay != "Sole" and firstThree.length < 3 %}
             {% set firstThree = firstThree.concat([i]) %}
         {% endif %}

@@ -46,7 +46,14 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json()) 
         .then(data => {
             console.log("Fetched Data:", data); // Debugging: Log fetched data
-            contentData = data; // Store data
+            // Sort data by date (newest first) to match Eleventy template
+            contentData = data
+                .filter(item => item.Screenplay !== "Sole") // Filter out "Sole" items to match Eleventy
+                .sort((a, b) => {
+                    const dateA = new Date(a.date);
+                    const dateB = new Date(b.date);
+                    return dateB - dateA; // Newest first (descending order)
+                });
             // load(); // Load first 3 items
         })
         .catch(error => console.error("Error loading data.json:", error));

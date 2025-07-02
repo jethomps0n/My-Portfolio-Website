@@ -165,6 +165,43 @@ module.exports = function (eleventyConfig) {
         }
     });
 
+    // Add sortByDate filter to sort data by date (newest first)
+    eleventyConfig.addFilter("sortByDate", function(array) {
+        if (!array || !Array.isArray(array)) return [];
+        
+        return [...array].sort((a, b) => {
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            return dateB - dateA; // Newest first (descending order)
+        });
+    });
+
+    // Add filter to process newlines in descriptions
+    eleventyConfig.addFilter("processNewlines", function(text) {
+        if (!text) return '';
+        return text.replace(/\n/g, '<br>');
+    });
+
+    // Add filter to process URLs and newlines in descriptions (for project pages)
+    eleventyConfig.addFilter("processDescriptionLinks", function(text) {
+        if (!text) return '';
+        
+        // First, process newlines
+        let processed = text.replace(/\n/g, '<br>');
+        
+        // Then, detect and wrap URLs in <a> tags
+        // This regex detects URLs starting with http, https, or www
+        const urlRegex = /(https?:\/\/[^\s<>"{}|\\^`[\]]+|www\.[^\s<>"{}|\\^`[\]]+)/gi;
+        
+        processed = processed.replace(urlRegex, function(url) {
+            // Add protocol if missing
+            const href = url.startsWith('http') ? url : `https://${url}`;
+            return `<a href="${href}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+        });
+        
+        return processed;
+    });
+
     return {
       templateFormats: ["njk", "html", "md"],
       markdownTemplateEngine: "njk",

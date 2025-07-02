@@ -385,7 +385,19 @@ function renderResults(){
         small.appendChild(document.createTextNode(item.date));
         info.appendChild(small);
         const p=document.createElement('p');
-        p.textContent=item.description||'';
+        // Handle newlines in description
+        const description = item.description || '';
+        if (description.includes('\n')) {
+            const lines = description.split('\n');
+            lines.forEach((line, index) => {
+                if (index > 0) {
+                    p.appendChild(document.createElement('br'));
+                }
+                p.appendChild(document.createTextNode(line));
+            });
+        } else {
+            p.textContent = description;
+        }
         info.appendChild(p);
         a.appendChild(info);
 

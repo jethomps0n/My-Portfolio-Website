@@ -1,1 +1,56 @@
-[]
+[
+  {
+    "imgSrc": "https://i.ytimg.com/vi/Sb8woC9sE3E/maxresdefault.jpg",
+    "previewSrc": "/resources/videos/previews/stranger-things-4-soundtrack---s04e07-vecnas-origin-theme-mix-v2-fixed-preview.webm",
+    "videoSrc": "https://www.youtube.com/embed/Sb8woC9sE3E",
+    "PDFSrc": "",
+    "slug": "stranger-things-4-soundtrack---s04e07-vecnas-origin-theme-mix-v2-fixed",
+    "title": "Stranger Things 4 Soundtrack - (S04E07) Vecna's Origin Theme Mix v2 (FIXED)",
+    "date": "June 05, 2022",
+    "role": "Editor",
+    "description": "I have redone my original Vecna Origin Theme video and cleaned up the audio a little bit. Now there shouldn't be any noticeable audio interferences.\n\nEnjoy!\n\nYou can find the tracks used in  @forsakeneremith3770's video description here: https://youtu.be/qkLPUuvq3k8",
+    "credits": {
+      "Editor": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Audio Mix",
+    "Screenplay": ""
+  },
+  {
+    "imgSrc": "https://i.ytimg.com/vi_webp/5igzYXf3xRU/maxresdefault.webp",
+    "previewSrc": "/resources/videos/previews/westworld-s01e10---final-scene-rescore-with-top-boy-soundtrack-preview.webm",
+    "videoSrc": "https://www.youtube.com/embed/5igzYXf3xRU",
+    "PDFSrc": "",
+    "slug": "westworld-s01e10---final-scene-rescore-with-top-boy-soundtrack",
+    "title": "Westworld (S01E10) - Final Scene | RESCORE with Top Boy Soundtrack",
+    "date": "July 30, 2023",
+    "role": "Editor",
+    "description": "Rescore track: Sweet Love For Planet Earth · Fuck Buttons\nOriginal tracks: Exit Music (For a Film) · Ramin Djawadi; Reverie · Ramin Djawadi\n\nWasn't able to post the full scene due to copyright, and it would constantly get blocked no matter what I did. It's not perfect, but here's the link as a workaround: https://drive.google.com/file/d/126l_SL0ixZ7oMNN5wyExAxxqOoPyeCH2/view?usp=sharing",
+    "credits": {
+      "Editor": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Rescore",
+    "Screenplay": ""
+  },
+  {
+    "imgSrc": "https://i.ytimg.com/vi_webp/kxoTd6c8eZc/maxresdefault.webp",
+    "previewSrc": "/resources/videos/previews/stranger-things-4-soundtrack---s04e07-vecnas-origin-theme-mix-slowed-reverb-preview.webm",
+    "videoSrc": "https://www.youtube.com/embed/kxoTd6c8eZc",
+    "PDFSrc": "",
+    "slug": "stranger-things-4-soundtrack---s04e07-vecnas-origin-theme-mix-slowed-reverb",
+    "title": "Stranger Things 4 Soundtrack - (S04E07) Vecna's Origin Theme Mix (Slowed & Reverb)",
+    "date": "August 03, 2022",
+    "role": "Editor",
+    "description": "I've SLOWED the Vecna Origin Theme to 80% of it's original speed and added REVERB.\n\nEnjoy!\n\nYou can find the tracks used in  @forsakeneremith3770's video description here: https://youtu.be/qkLPUuvq3k8",
+    "credits": {
+      "Editor": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Rescore",
+    "Screenplay": ""
+  }
+]

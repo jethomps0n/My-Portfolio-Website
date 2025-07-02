@@ -149,7 +149,7 @@ eleventyComputed:
         </a>
         {% endif %}
         <section id="description">
-            <p>{{ i.description }}</p>
+            <p>{{ i.description | processDescriptionLinks | safe }}</p>
         </section>
     </div>
 </div>
