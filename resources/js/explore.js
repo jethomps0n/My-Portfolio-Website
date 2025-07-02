@@ -434,8 +434,8 @@ function renderPagination(total){
         }
     });
     pag.appendChild(prev);
-    const start=Math.max(1,currentPage-1);
-    const end=Math.min(totalPages,start+2);
+    const start=Math.max(1,currentPage-2);
+    const end=Math.min(totalPages,start+4);
     for(let i=start;i<=end;i++){
         const b=document.createElement('button');
         b.textContent=i;

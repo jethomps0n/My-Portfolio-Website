@@ -3,6 +3,7 @@
     display: block;
     margin-left: auto;
     margin-right: auto;
+    /* background: hsla(201, 100%, 10%, 1); */
 }
 
 #pdf-viewer {

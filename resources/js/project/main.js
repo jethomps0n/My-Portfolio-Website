@@ -11,7 +11,33 @@ document.addEventListener('DOMContentLoaded', () => {
     setupHoverEffects();
     setupSmoothScroll();
     setupScrollAnimations();
+    
+    // Setup credits height matching
+    matchCreditsHeight();
+    
+    // Update credits height on window resize
+    window.addEventListener('resize', () => {
+        matchCreditsHeight();
+    });
 });
+
+function matchCreditsHeight() {
+    const project = document.getElementById('project');
+    const credits = document.getElementById('credits');
+    
+    if (project && credits) {
+        // Get the actual height of the project section
+        const projectHeight = project.offsetHeight;
+        
+        // Set the credits height to match, but respect the max-height constraints
+        const maxHeight = Math.min(
+            projectHeight,
+            window.innerHeight - 200 // Same as the CSS max-height calculation
+        );
+        
+        credits.style.height = `${maxHeight}px`;
+    }
+}
 
 function animatePageElements() {
     // Apply pop-in to main sections (matching your explore page timing)

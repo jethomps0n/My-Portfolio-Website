@@ -143,22 +143,22 @@ function createRefinedCursor() {
         requestAnimationFrame(animateCursor);
     }
 
-    // Mouse move handler with youtube-lite detection
+    // Mouse move handler with player element detection
     document.addEventListener('mousemove', (e) => {
         globalMouseX = e.clientX;
         globalMouseY = e.clientY;
 
-        // Check if we're hovering over a lite-youtube element
+        // Check if we're hovering over an element with id "player"
         const elementUnderCursor = document.elementFromPoint(e.clientX, e.clientY);
-        const isOverYoutubeLite = elementUnderCursor && (
-            elementUnderCursor.tagName === 'LITE-YOUTUBE' ||
-            elementUnderCursor.closest('lite-youtube')
+        const isOverPlayer = elementUnderCursor && (
+            elementUnderCursor.id === 'player' ||
+            elementUnderCursor.closest('#player')
         );
 
-        if (isOverYoutubeLite) {
+        if (isOverPlayer) {
             cursorEl.classList.add('hidden');
         } else {
-            // Show cursor if hidden and not over youtube-lite
+            // Show cursor if hidden and not over player
             if (cursorEl.classList.contains('hidden')) {
                 cursorEl.classList.remove('hidden');
             }
@@ -246,8 +246,8 @@ function setupRefinedInteractions(cursorEl) {
     document.addEventListener('mouseover', (e) => {
         const target = e.target;
         
-        // Check for lite-youtube first - always hide cursor
-        if (target.matches('lite-youtube') || target.closest('lite-youtube')) {
+        // Check for player element first - always hide cursor
+        if (target.id === 'player' || target.closest('#player')) {
             cursorEl.className = 'refined-cursor hidden';
             cursorEl.style.background = '';
             currentHoverTarget = null;
@@ -330,13 +330,13 @@ function setupRefinedInteractions(cursorEl) {
             }
         }
         
-        // Special handling for lite-youtube
-        if (target.matches('lite-youtube') || target.closest('lite-youtube')) {
-            // Check if we're still over a lite-youtube element
+        // Special handling for player element
+        if (target.id === 'player' || target.closest('#player')) {
+            // Check if we're still over a player element
             setTimeout(() => {
                 const elementUnderCursor = document.elementFromPoint(globalMouseX, globalMouseY);
                 if (!elementUnderCursor || 
-                    (!elementUnderCursor.closest('lite-youtube') && elementUnderCursor.tagName !== 'LITE-YOUTUBE')) {
+                    (elementUnderCursor.id !== 'player' && !elementUnderCursor.closest('#player'))) {
                     cursorEl.classList.remove('hidden');
                     currentHoverTarget = null;
                 }
@@ -356,7 +356,7 @@ function setupRefinedInteractions(cursorEl) {
     // Mouse down/up for active state
     document.addEventListener('mousedown', (e) => {
         const target = e.target;
-        if (!target.closest('lite-youtube') && target.tagName !== 'LITE-YOUTUBE') {
+        if (target.id !== 'player' && !target.closest('#player')) {
             cursorEl.classList.add('active');
         }
     });
