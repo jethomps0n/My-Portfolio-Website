@@ -218,6 +218,16 @@
     transition: all 300ms ease;
 }
 
+#description a {
+    color: hsla(228, 48%, 60%, 1);
+    transition: all 300ms ease;
+}
+
+#description a:hover {
+    color: hsla(228, 48%, 70%, 1);
+    text-decoration: none;
+}
+
 /* Using your exact explore page animations */
 @keyframes popIn {
     from { opacity: 0; transform: scale(0.9); }
