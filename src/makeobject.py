@@ -62,10 +62,19 @@ generation_status = {
     'error': None
 }
 
+# Global flag to track if this is the first debug log call
+_first_debug_log = True
+
 def debug_log(message):
     """Log debug messages to a file for Automator troubleshooting"""
+    global _first_debug_log
     try:
-        with open("debug.log", "a") as f:
+        # Use write mode for first call to overwrite, then append mode
+        mode = "w" if _first_debug_log else "a"
+        with open("debug.log", mode) as f:
+            if _first_debug_log:
+                f.write(f"=== NEW SESSION STARTED: {datetime.now()} ===\n")
+                _first_debug_log = False
             f.write(f"{datetime.now()}: {message}\n")
         print(f"DEBUG: {message}")
     except:
@@ -517,9 +526,45 @@ def clean_name(name):
     
     return ""
 
+class UniversalScrollMixin:
+    """Mixin to add universal scroll wheel support to any tkinter window"""
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.scrollable_widgets = []
+        
+    def register_scrollable(self, canvas):
+        """Register a canvas as scrollable"""
+        self.scrollable_widgets.append(canvas)
+        
+    def setup_universal_scroll(self):
+        """Set up universal scrolling for the entire window"""
+        def on_mousewheel(event):
+            # Find the canvas that should be scrolled based on focus or mouse position
+            if self.scrollable_widgets:
+                # Use the first (main) scrollable widget
+                canvas = self.scrollable_widgets[0]
+                
+                # Calculate scroll amount
+                if hasattr(event, 'delta') and event.delta:
+                    delta = -1 * (event.delta / 120)
+                else:
+                    delta = -1 if event.num == 4 else 1
+                
+                # Scroll the canvas
+                try:
+                    canvas.yview_scroll(int(delta), "units")
+                except:
+                    pass
+        
+        # Bind to the entire window
+        self.bind_all("<MouseWheel>", on_mousewheel)
+        self.bind_all("<Button-4>", on_mousewheel)
+        self.bind_all("<Button-5>", on_mousewheel)
+
 def setup_responsive_scrollable_frame(parent):
     """
-    Create a responsive scrollable frame with universal scroll wheel support
+    Create a responsive scrollable frame with ACTUALLY WORKING universal scroll wheel support
     """
     # Main container
     container = ttk.Frame(parent)
@@ -536,7 +581,7 @@ def setup_responsive_scrollable_frame(parent):
     # Create window in canvas
     canvas_window = canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
     
-    # KEY: Bind canvas width to window width changes
+    # Responsive width handling
     def configure_canvas_width(event=None):
         canvas_width = canvas.winfo_width()
         if canvas_width > 1:
@@ -545,99 +590,37 @@ def setup_responsive_scrollable_frame(parent):
     def configure_scroll_region(event=None):
         canvas.configure(scrollregion=canvas.bbox("all"))
     
-    # Bind events for responsive behavior
     canvas.bind('<Configure>', configure_canvas_width)
     scrollable_frame.bind('<Configure>', configure_scroll_region)
     
-    # ENHANCED UNIVERSAL SCROLL WHEEL FUNCTIONALITY
-    def find_scrollable_canvas_under_cursor(widget, x_root, y_root):
-        """Find the scrollable canvas that should handle the scroll event"""
-        try:
-            # Convert root coordinates to widget coordinates
-            x_widget = widget.winfo_pointerx() - widget.winfo_rootx()
-            y_widget = widget.winfo_pointery() - widget.winfo_rooty()
-            
-            # Check if cursor is within this widget's bounds
-            if (0 <= x_widget <= widget.winfo_width() and 
-                0 <= y_widget <= widget.winfo_height()):
-                
-                # If this is a scrollable canvas, return it
-                if isinstance(widget, tk.Canvas) and widget.cget('yscrollcommand'):
-                    return widget
-                
-                # Recursively check children
-                for child in widget.winfo_children():
-                    result = find_scrollable_canvas_under_cursor(child, x_root, y_root)
-                    if result:
-                        return result
-            
-            return None
-        except tk.TclError:
-            return None
-    
-    def universal_scroll_handler(event):
-        """Handle scroll wheel events universally"""
-        try:
-            # Get cursor position
-            x_root = event.x_root
-            y_root = event.y_root
-            
-            # Find the appropriate scrollable canvas
-            target_canvas = find_scrollable_canvas_under_cursor(container, x_root, y_root)
-            
-            # If we found a target canvas, scroll it
-            if target_canvas:
-                # Calculate scroll amount
-                if hasattr(event, 'delta'):
-                    # Windows/Mac
-                    delta = -1 * (event.delta / 120)
-                else:
-                    # Linux
-                    delta = -1 if event.num == 4 else 1
-                
-                # Perform the scroll
-                target_canvas.yview_scroll(int(delta), "units")
-                return "break"  # Prevent further event propagation
-            
-        except Exception as e:
-            debug_log(f"Scroll handler error: {e}")
+    # WORKING UNIVERSAL SCROLL - Based on proven tkinter solutions
+    def on_mousewheel(event):
+        # Calculate scroll amount
+        if event.delta:
+            delta = -1 * (event.delta / 120)
+        else:
+            delta = -1 if event.num == 4 else 1
         
-        return None
+        # Scroll the canvas
+        canvas.yview_scroll(int(delta), "units")
     
-    def bind_universal_scroll(widget):
-        """Recursively bind scroll events to all widgets"""
-        try:
-            # Bind scroll events
-            widget.bind("<MouseWheel>", universal_scroll_handler, add='+')
-            widget.bind("<Button-4>", universal_scroll_handler, add='+')
-            widget.bind("<Button-5>", universal_scroll_handler, add='+')
-            
-            # Recursively bind to children
-            for child in widget.winfo_children():
-                bind_universal_scroll(child)
-                
-        except tk.TclError:
-            pass
+    def bind_to_mousewheel(event):
+        canvas.bind_all("<MouseWheel>", on_mousewheel)
+        canvas.bind_all("<Button-4>", on_mousewheel)
+        canvas.bind_all("<Button-5>", on_mousewheel)
     
-    # Apply universal scrolling to the entire container
-    bind_universal_scroll(container)
+    def unbind_from_mousewheel(event):
+        canvas.unbind_all("<MouseWheel>")
+        canvas.unbind_all("<Button-4>")
+        canvas.unbind_all("<Button-5>")
     
-    # Also bind to the parent window to catch any missed events
-    def bind_to_parent():
-        try:
-            parent_window = parent
-            while parent_window and not isinstance(parent_window, tk.Tk):
-                parent_window = parent_window.master
-            
-            if parent_window:
-                parent_window.bind("<MouseWheel>", universal_scroll_handler, add='+')
-                parent_window.bind("<Button-4>", universal_scroll_handler, add='+')
-                parent_window.bind("<Button-5>", universal_scroll_handler, add='+')
-        except:
-            pass
+    # Bind when mouse enters the container area
+    container.bind('<Enter>', bind_to_mousewheel)
+    container.bind('<Leave>', unbind_from_mousewheel)
     
-    # Bind to parent after a short delay to ensure window is ready
-    container.after(100, bind_to_parent)
+    # Also bind when the canvas gets focus
+    canvas.bind('<Enter>', bind_to_mousewheel)
+    canvas.bind('<Leave>', unbind_from_mousewheel)
     
     # Pack components
     canvas.pack(side="left", fill="both", expand=True)
@@ -1334,11 +1317,17 @@ class CreditsEditor(tk.Toplevel):
         self.on_save = on_save
         self.configure(bg="#f8f8f8")
         self.setup_ui()
-        master.enable_universal_scrolling(self)
 
     def setup_ui(self):
         # Use responsive scrollable frame
         main_container, self.scrollable_frame = setup_responsive_scrollable_frame(self)
+        
+        # Register the canvas for universal scrolling
+        if hasattr(self.master, 'register_scrollable'):
+            for widget in main_container.winfo_children():
+                if isinstance(widget, tk.Canvas):
+                    self.master.register_scrollable(widget)
+                    break
         
         # Smart add section
         smart_frame = ttk.LabelFrame(self.scrollable_frame, text="Smart Add Credits")
@@ -1445,7 +1434,7 @@ class CreditsEditor(tk.Toplevel):
             self.credits_text.delete("1.0", tk.END)
             
             messagebox.showinfo("Parse Successful", 
-                              f"Successfully parsed {len(parsed_credits)} roles with {sum(len(names) for names in parsed_credits.values())} names total.")
+                f"Successfully parsed {len(parsed_credits)} roles with {sum(len(names) for names in parsed_credits.values())} names total.")
         
         except Exception as e:
             messagebox.showerror("Parse Error", f"Error parsing credits: {str(e)}")
@@ -1546,6 +1535,13 @@ class TileEditor(tk.Toplevel):
     def create_widgets(self):
         # Use responsive scrollable frame
         main_container, self.scrollable_frame = setup_responsive_scrollable_frame(self)
+        
+        # Register the canvas for universal scrolling
+        if hasattr(self.master, 'register_scrollable'):
+            for widget in main_container.winfo_children():
+                if isinstance(widget, tk.Canvas):
+                    self.master.register_scrollable(widget)
+                    break
         
         # Content frame with responsive grid layout
         content_frame = ttk.Frame(self.scrollable_frame)
@@ -1699,43 +1695,6 @@ class DataJsonViewer(ttk.Frame):
         self.on_entry_update = on_entry_update
         self.tiles = []
         self.create_widgets()
-    
-    def enable_universal_scrolling(self, widget):
-        """Enable universal scrolling on any widget (for dialogs, etc.)"""
-        def universal_scroll_handler(event):
-            try:
-                # Find any canvas with a scrollbar in the widget hierarchy
-                def find_scrollable_canvas(w):
-                    if isinstance(w, tk.Canvas) and w.cget('yscrollcommand'):
-                        return w
-                    for child in w.winfo_children():
-                        result = find_scrollable_canvas(child)
-                        if result:
-                            return result
-                    return None
-                
-                target_canvas = find_scrollable_canvas(widget)
-                if target_canvas:
-                    if hasattr(event, 'delta'):
-                        delta = -1 * (event.delta / 120)
-                    else:
-                        delta = -1 if event.num == 4 else 1
-                    target_canvas.yview_scroll(int(delta), "units")
-                    return "break"
-            except:
-                pass
-        
-        def bind_recursive(w):
-            try:
-                w.bind("<MouseWheel>", universal_scroll_handler, add='+')
-                w.bind("<Button-4>", universal_scroll_handler, add='+')
-                w.bind("<Button-5>", universal_scroll_handler, add='+')
-                for child in w.winfo_children():
-                    bind_recursive(child)
-            except:
-                pass
-        
-        bind_recursive(widget)
 
     def create_widgets(self):
         # Use responsive scrollable frame
@@ -1774,7 +1733,7 @@ class DataJsonViewer(ttk.Frame):
             self.populate_tiles()
         TileEditor(self, dict(self.data[idx]), on_save, on_delete)
 
-class ContentEntryApp(tk.Tk):
+class ContentEntryApp(UniversalScrollMixin, tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Content Entry Creator")
@@ -1788,6 +1747,9 @@ class ContentEntryApp(tk.Tk):
         self.editing_idx = None
         self.generating_dialog = None
         self.create_widgets()
+        
+        # Set up universal scrolling after widgets are created
+        self.after_idle(self.setup_universal_scroll)
 
     def create_widgets(self):
         self.tabs = ttk.Notebook(self)
@@ -1803,6 +1765,12 @@ class ContentEntryApp(tk.Tk):
     def _setup_entry_tab(self, parent):
         # Use responsive scrollable frame
         main_container, self.scrollable_frame = setup_responsive_scrollable_frame(parent)
+        
+        # Register the canvas for universal scrolling
+        for widget in main_container.winfo_children():
+            if isinstance(widget, tk.Canvas):
+                self.register_scrollable(widget)
+                break
         
         # Mode selection at top
         self.mode_var = tk.StringVar(value="video")
@@ -2428,7 +2396,7 @@ class ContentEntryApp(tk.Tk):
             duration = int(float(result.stdout.strip()))
             debug_log(f"Video duration: {duration}s")
             
-            # Quick preview generation (fewer clips for batch processing)
+            # Use configured settings for preview generation
             num_clips = PREVIEW_NUM_MINI_CLIPS
             clip_length = PREVIEW_MINI_CLIP_LENGTH
             start_trim = calculate_trim_seconds(PREVIEW_START_SECONDS, duration)
