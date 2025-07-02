@@ -29,8 +29,19 @@ PDF_AUTOFILL_PREFIX = "https://files.itsjonathanthompson.com/screenplays/"
 VIDEO_THUMBNAIL_TEMPLATE = "/resources/images/[file-name.webp]"
 
 # ===== WINDOW SIZE VARIABLE =====
-DEFAULT_WINDOW_WIDTH = 1000
-DEFAULT_WINDOW_HEIGHT = 800
+DEFAULT_WINDOW_WIDTH = 1200  # Made wider for multi-column layout
+DEFAULT_WINDOW_HEIGHT = 940
+
+# ===== PREVIEW GENERATION SETTINGS =====
+PREVIEW_START_SECONDS = 30
+PREVIEW_END_SECONDS = "third"
+PREVIEW_NUM_MINI_CLIPS = 5
+PREVIEW_MINI_CLIP_LENGTH = 2
+PREVIEW_CRF = 30
+PREVIEW_BITRATE = "5M"
+PREVIEW_PRESET = "fast"
+PREVIEW_INCLUDE_AUDIO = False
+PREVIEW_RESOLUTION = None
 
 ENTRY_TYPES = [
     "Short Film", "Rescore", "Advertisement", "Documentary",
@@ -43,19 +54,16 @@ ENTRY_ROLES = [
 
 os.makedirs(PREVIEW_DIR, exist_ok=True)
 
+# Global variable to track generation status
+generation_status = {
+    'in_progress': False,
+    'completed': False,
+    'result_path': None,
+    'error': None
+}
+
 def debug_log(message):
     """Log debug messages to a file for Automator troubleshooting"""
-    try:
-        # Override the log file each time (write mode instead of append)
-        with open("debug.log", "w") as f:
-            f.write(f"{datetime.now()}: === NEW DEBUG SESSION ===\n")
-            f.write(f"{datetime.now()}: {message}\n")
-        print(f"DEBUG: {message}")
-    except:
-        print(f"DEBUG: {message}")
-
-def debug_log_append(message):
-    """Append to debug log (for subsequent messages)"""
     try:
         with open("debug.log", "a") as f:
             f.write(f"{datetime.now()}: {message}\n")
@@ -65,7 +73,7 @@ def debug_log_append(message):
 
 def find_executable(name):
     """Find executable in common paths, especially for macOS installations"""
-    debug_log_append(f"Looking for {name}")
+    debug_log(f"Looking for {name}")
     
     # Common paths where tools might be installed
     common_paths = [
@@ -78,78 +86,70 @@ def find_executable(name):
     
     # First try the system PATH
     try:
-        debug_log_append(f"Trying 'which {name}'")
+        debug_log(f"Trying 'which {name}'")
         result = subprocess.run(['which', name], capture_output=True, text=True, timeout=5)
         if result.returncode == 0 and result.stdout.strip():
             path = result.stdout.strip()
-            debug_log_append(f"Found {name} via 'which': {path}")
+            debug_log(f"Found {name} via 'which': {path}")
             return path
         else:
-            debug_log_append(f"'which {name}' failed: returncode={result.returncode}, stderr={result.stderr}")
+            debug_log(f"'which {name}' failed: returncode={result.returncode}, stderr={result.stderr}")
     except Exception as e:
-        debug_log_append(f"'which {name}' exception: {e}")
+        debug_log(f"'which {name}' exception: {e}")
     
     # Then try common paths
     for path in common_paths:
         full_path = os.path.join(path, name)
-        debug_log_append(f"Checking {full_path}")
+        debug_log(f"Checking {full_path}")
         if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
-            debug_log_append(f"Found {name} at: {full_path}")
+            debug_log(f"Found {name} at: {full_path}")
             return full_path
         else:
-            debug_log_append(f"Not found or not executable: {full_path}")
+            debug_log(f"Not found or not executable: {full_path}")
     
-    debug_log_append(f"Could not find {name} anywhere")
+    debug_log(f"Could not find {name} anywhere")
     return None
 
 def get_ffmpeg_tools():
     """Get paths to ffmpeg and ffprobe, with fallback to system PATH"""
-    debug_log_append("Getting ffmpeg tools")
+    debug_log("Getting ffmpeg tools")
     
     ffmpeg_path = find_executable('ffmpeg')
     ffprobe_path = find_executable('ffprobe')
     
     if not ffmpeg_path:
-        debug_log_append("ffmpeg not found, using fallback")
+        debug_log("ffmpeg not found, using fallback")
         ffmpeg_path = 'ffmpeg'  # Fallback to PATH
     if not ffprobe_path:
-        debug_log_append("ffprobe not found, using fallback")
+        debug_log("ffprobe not found, using fallback")
         ffprobe_path = 'ffprobe'  # Fallback to PATH
         
-    debug_log_append(f"Final paths - ffmpeg: {ffmpeg_path}, ffprobe: {ffprobe_path}")
+    debug_log(f"Final paths - ffmpeg: {ffmpeg_path}, ffprobe: {ffprobe_path}")
     return ffmpeg_path, ffprobe_path
 
 def test_tool(tool_path, tool_name):
     """Test if a tool is working"""
-    debug_log_append(f"Testing {tool_name} at {tool_path}")
+    debug_log(f"Testing {tool_name} at {tool_path}")
     try:
         result = subprocess.run([tool_path, '-version'], 
                               capture_output=True, text=True, timeout=10)
         if result.returncode == 0:
-            debug_log_append(f"{tool_name} test successful")
-            debug_log_append(f"{tool_name} version output: {result.stdout[:100]}...")
+            debug_log(f"{tool_name} test successful")
+            debug_log(f"{tool_name} version output: {result.stdout[:100]}...")
             return True
         else:
-            debug_log_append(f"{tool_name} test failed: returncode={result.returncode}")
-            debug_log_append(f"{tool_name} stderr: {result.stderr}")
+            debug_log(f"{tool_name} test failed: returncode={result.returncode}")
+            debug_log(f"{tool_name} stderr: {result.stderr}")
             return False
     except subprocess.TimeoutExpired:
-        debug_log_append(f"{tool_name} test timed out")
+        debug_log(f"{tool_name} test timed out")
         return False
     except FileNotFoundError:
-        debug_log_append(f"{tool_name} not found at {tool_path}")
+        debug_log(f"{tool_name} not found at {tool_path}")
         return False
     except Exception as e:
-        debug_log_append(f"{tool_name} test exception: {e}")
+        debug_log(f"{tool_name} test exception: {e}")
         return False
-
-# Global variable to track generation status
-generation_status = {
-    'in_progress': False,
-    'completed': False,
-    'result_path': None,
-    'error': None
-}
 
 def slugify(value):
     value = re.sub(r'[^\w\s-]', '', value).strip().lower()
@@ -229,18 +229,8 @@ def get_video_info(url):
             return {}
 
 def parse_video_date(date_str, video_title="", url=""):
-    """
-    Robust date parsing with extensive debugging for YouTube videos
-    """
-    debug_log_append(f"=== DATE PARSING DEBUG ===")
-    debug_log_append(f"Video URL: {url}")
-    debug_log_append(f"Video Title: {video_title}")
-    debug_log_append(f"Raw date string: '{date_str}'")
-    debug_log_append(f"Date string type: {type(date_str)}")
-    debug_log_append(f"Date string length: {len(str(date_str)) if date_str else 0}")
-    
+    """Robust date parsing for YouTube videos"""
     if not date_str:
-        debug_log_append("No date provided, returning empty string")
         return ""
     
     # Convert to string in case it's not already
@@ -248,58 +238,215 @@ def parse_video_date(date_str, video_title="", url=""):
     
     # Check for YYYYMMDD format (most common from yt-dlp)
     if re.match(r'^\d{8}$', date_str):
-        debug_log_append(f"Date matches YYYYMMDD format: {date_str}")
         try:
-            # Parse as YYYYMMDD
             date_obj = datetime.strptime(date_str, '%Y%m%d')
-            debug_log_append(f"Parsed datetime object: {date_obj}")
-            debug_log_append(f"Year: {date_obj.year}, Month: {date_obj.month}, Day: {date_obj.day}")
-            
-            # Format to readable string
-            formatted_date = date_obj.strftime('%B %d, %Y')
-            debug_log_append(f"Formatted date: {formatted_date}")
-            
-            return formatted_date
-            
-        except ValueError as e:
-            debug_log_append(f"Error parsing YYYYMMDD date '{date_str}': {e}")
+            return date_obj.strftime('%B %d, %Y')
+        except ValueError:
+            pass
     
     # Check for other common formats
     elif re.match(r'^\d{4}-\d{2}-\d{2}$', date_str):
-        debug_log_append(f"Date matches YYYY-MM-DD format: {date_str}")
         try:
             date_obj = datetime.strptime(date_str, '%Y-%m-%d')
-            formatted_date = date_obj.strftime('%B %d, %Y')
-            debug_log_append(f"Formatted date: {formatted_date}")
-            return formatted_date
-        except ValueError as e:
-            debug_log_append(f"Error parsing YYYY-MM-DD date '{date_str}': {e}")
+            return date_obj.strftime('%B %d, %Y')
+        except ValueError:
+            pass
     
-    # If it's already in a readable format, try to parse and reformat
-    else:
-        debug_log_append(f"Date in unknown/readable format: {date_str}")
-        # Try common readable formats
-        formats_to_try = [
-            '%B %d, %Y',     # January 01, 2023
-            '%b %d, %Y',     # Jan 01, 2023  
-            '%Y-%m-%d',      # 2023-01-01
-            '%m/%d/%Y',      # 01/01/2023
-            '%d/%m/%Y',      # 01/01/2023 (European)
-        ]
-        
-        for fmt in formats_to_try:
-            try:
-                date_obj = datetime.strptime(date_str, fmt)
-                formatted_date = date_obj.strftime('%B %d, %Y')
-                debug_log_append(f"Successfully parsed with format '{fmt}': {formatted_date}")
-                return formatted_date
-            except ValueError:
-                continue
-        
-        debug_log_append(f"Could not parse date format: {date_str}")
-    
-    debug_log_append(f"Returning original date string: {date_str}")
     return date_str
+
+def calculate_trim_seconds(keyword, total_duration):
+    """Calculate actual seconds from keywords like 'half', 'third', etc."""
+    if isinstance(keyword, (int, float)):
+        return int(keyword)
+    
+    keyword = str(keyword).lower()
+    if keyword == "half":
+        return total_duration // 2
+    elif keyword == "third":
+        return total_duration // 3
+    elif keyword == "fourth":
+        return total_duration // 4
+    elif keyword == "fifth":
+        return total_duration // 5
+    elif keyword == "sixth":
+        return total_duration // 6
+    else:
+        # Try to convert to number
+        try:
+            return int(float(keyword))
+        except (ValueError, TypeError):
+            return 0
+
+def parse_credits_text(credits_text):
+    """Enhanced smart parse credits text into role: [names] dictionary"""
+    credits = {}
+    current_role = None
+    lines = credits_text.strip().split('\n')
+    
+    # Clean and normalize the text first
+    normalized_lines = []
+    for line in lines:
+        line = line.strip()
+        if line:
+            normalized_lines.append(line)
+    
+    for line in normalized_lines:
+        # Skip empty lines
+        if not line:
+            continue
+        
+        # Check for various role header patterns
+        role_header_found = False
+        
+        # Pattern 1: "Role:" format (most common)
+        if ':' in line:
+            parts = line.split(':', 1)
+            if len(parts) == 2:
+                potential_role = parts[0].strip()
+                remaining_text = parts[1].strip()
+                
+                # Check if this looks like a role
+                role_indicators = [
+                    'producer', 'director', 'writer', 'editor', 'dp', 'cinematographer',
+                    'gaffer', 'sound', 'boom', 'art', 'composer', 'music', 'actor',
+                    'starring', 'cast', 'assistant', 'associate', 'executive', 'camera',
+                    'operator', 'recordist', 'engineer', 'lead', 'department', 'graphic',
+                    'design', 'vfx', 'effects', 'researcher', 'band', 'production'
+                ]
+                
+                # Check if the potential role contains any role indicators
+                potential_role_lower = potential_role.lower()
+                is_likely_role = any(indicator in potential_role_lower for indicator in role_indicators)
+                
+                # Also check if it's a short phrase (roles are usually 1-4 words)
+                word_count = len(potential_role.split())
+                is_reasonable_length = 1 <= word_count <= 6
+                
+                # Check if remaining text looks like names
+                has_names_after = bool(remaining_text and not remaining_text.lower().startswith('http'))
+                
+                if is_likely_role and is_reasonable_length:
+                    current_role = potential_role
+                    role_header_found = True
+                    
+                    if current_role not in credits:
+                        credits[current_role] = []
+                    
+                    # Process names that come after the colon on the same line
+                    if has_names_after:
+                        names = parse_names_from_text(remaining_text)
+                        credits[current_role].extend(names)
+        
+        # Pattern 2: Lines that end with "by:" or "by"
+        if not role_header_found:
+            by_patterns = [
+                r'^(.+?)\s+by:?\s*$',  # "Written and Directed by:" or "Written and Directed by"
+                r'^(.+?):\s*$',        # Just ending with colon
+            ]
+            
+            for pattern in by_patterns:
+                match = re.match(pattern, line, re.IGNORECASE)
+                if match:
+                    current_role = match.group(1).strip()
+                    role_header_found = True
+                    
+                    if current_role not in credits:
+                        credits[current_role] = []
+                    break
+        
+        # If this line is not a role header, treat it as names for the current role
+        if not role_header_found and current_role:
+            names = parse_names_from_text(line)
+            if names:
+                credits[current_role].extend(names)
+        
+        # Handle case where there's no current role but line looks like names
+        elif not role_header_found and not current_role and line:
+            # This might be names without a clear role - add to a generic "Credits" role
+            if ':' not in line:  # Make sure it's not a malformed role line
+                if "Credits" not in credits:
+                    credits["Credits"] = []
+                names = parse_names_from_text(line)
+                if names:
+                    credits["Credits"].extend(names)
+    
+    # Clean up credits - remove duplicates and empty roles
+    final_credits = {}
+    for role, names in credits.items():
+        if names:  # Only keep roles that have names
+            # Remove duplicates while preserving order
+            unique_names = []
+            seen = set()
+            for name in names:
+                if name and name not in seen:
+                    unique_names.append(name)
+                    seen.add(name)
+            if unique_names:
+                final_credits[role] = unique_names
+    
+    return final_credits
+
+def parse_names_from_text(text):
+    """Extract and clean names from a text string"""
+    if not text:
+        return []
+    
+    names = []
+    
+    # Handle different separators
+    # Replace " and " with "," for consistent splitting
+    text = re.sub(r'\s+and\s+', ', ', text, flags=re.IGNORECASE)
+    
+    # Split by commas
+    parts = [part.strip() for part in text.split(',')]
+    
+    for part in parts:
+        if not part:
+            continue
+            
+        # Handle "Name as Character" format
+        if ' as ' in part.lower():
+            name_parts = part.split(' as ', 1)
+            name = name_parts[0].strip()
+        else:
+            name = part.strip()
+        
+        # Clean up the name
+        name = clean_name(name)
+        
+        if name and len(name) > 1:  # Make sure it's a reasonable name
+            names.append(name)
+    
+    return names
+
+def clean_name(name):
+    """Clean and normalize a person's name"""
+    if not name:
+        return ""
+    
+    # Remove social media handles and extra info
+    name = re.sub(r'\s*[@#]\w+.*$', '', name)  # Remove @handles
+    name = re.sub(r'\s*\([^)]*\).*$', '', name)  # Remove (parentheses)
+    name = re.sub(r'\s*‪.*$', '', name)  # Remove special characters
+    name = re.sub(r'\s*-\s*@.*$', '', name)  # Remove "- @handle" format
+    name = re.sub(r'\s*https?://.*$', '', name)  # Remove URLs
+    
+    # Remove extra whitespace
+    name = re.sub(r'\s+', ' ', name).strip()
+    
+    # Remove common prefixes that aren't part of names
+    prefixes_to_remove = ['and', 'with', 'featuring', 'ft.', 'feat.']
+    name_lower = name.lower()
+    for prefix in prefixes_to_remove:
+        if name_lower.startswith(prefix + ' '):
+            name = name[len(prefix):].strip()
+            break
+    
+    # Make sure it looks like a name (contains letters, reasonable length)
+    if re.search(r'[a-zA-Z]', name) and 2 <= len(name) <= 50:
+        return name
+    
+    return ""
 
 def fetch_pdf_and_get_local_path(pdf_url):
     try:
@@ -407,23 +554,23 @@ def generate_preview_background(input_path_or_url, slug="preview", output_dir=PR
     generation_status['error'] = None
     
     debug_log("=== STARTING PREVIEW GENERATION ===")
-    debug_log_append(f"Input: {input_path_or_url}")
-    debug_log_append(f"Slug: {slug}")
-    debug_log_append(f"Output dir: {output_dir}")
-    debug_log_append(f"Current working directory: {os.getcwd()}")
-    debug_log_append(f"Environment PATH: {os.environ.get('PATH', 'NOT SET')}")
+    debug_log(f"Input: {input_path_or_url}")
+    debug_log(f"Slug: {slug}")
+    debug_log(f"Output dir: {output_dir}")
+    debug_log(f"Current working directory: {os.getcwd()}")
+    debug_log(f"Environment PATH: {os.environ.get('PATH', 'NOT SET')}")
     
     try:
         # Get the tools with proper path resolution
         ffmpeg_path, ffprobe_path = get_ffmpeg_tools()
-        debug_log_append(f"Tool paths - ffmpeg: {ffmpeg_path}, ffprobe: {ffprobe_path}")
+        debug_log(f"Tool paths - ffmpeg: {ffmpeg_path}, ffprobe: {ffprobe_path}")
         
         # Test if tools are available
         if not test_tool(ffprobe_path, "ffprobe"):
             error_msg = (f"ffprobe not working at {ffprobe_path}. "
                         f"Please install ffmpeg via Homebrew:\nbrew install ffmpeg\n\n"
                         f"Check debug.log for more details.")
-            debug_log_append(f"ERROR: {error_msg}")
+            debug_log(f"ERROR: {error_msg}")
             generation_status['error'] = error_msg
             generation_status['in_progress'] = False
             generation_status['completed'] = True
@@ -433,70 +580,70 @@ def generate_preview_background(input_path_or_url, slug="preview", output_dir=PR
             error_msg = (f"ffmpeg not working at {ffmpeg_path}. "
                         f"Please install ffmpeg via Homebrew:\nbrew install ffmpeg\n\n"
                         f"Check debug.log for more details.")
-            debug_log_append(f"ERROR: {error_msg}")
+            debug_log(f"ERROR: {error_msg}")
             generation_status['error'] = error_msg
             generation_status['in_progress'] = False
             generation_status['completed'] = True
             return
 
-        debug_log_append("Both tools tested successfully")
+        debug_log("Both tools tested successfully")
 
         os.makedirs(output_dir, exist_ok=True)
         ext = PREVIEW_EXTENSION
         output_name = f"{slug}-preview{ext}"
         output_path = os.path.join(output_dir, output_name)
-        debug_log_append(f"Output path: {output_path}")
+        debug_log(f"Output path: {output_path}")
 
-        startseconds = 20
-        numminiclips = 5
-        minicliplength = 2
-        crf = 23
-        bitrate = "5M"
-        preset = "fast"
-        audiotoggle = False
-        resolution = None
+        # Use the configurable settings
+        numminiclips = PREVIEW_NUM_MINI_CLIPS
+        minicliplength = PREVIEW_MINI_CLIP_LENGTH
+        crf = PREVIEW_CRF
+        bitrate = PREVIEW_BITRATE
+        preset = PREVIEW_PRESET
+        audiotoggle = PREVIEW_INCLUDE_AUDIO
+        resolution = PREVIEW_RESOLUTION
 
         is_url = re.match(r'^https?://', input_path_or_url)
-        debug_log_append(f"Is URL: {is_url is not None}")
+        debug_log(f"Is URL: {is_url is not None}")
         temp_file = None
         input_file = input_path_or_url
         
         if is_url:
-            debug_log_append("Processing URL input")
+            debug_log("Processing URL input")
             
             if not YoutubeDL:
                 raise Exception("yt-dlp not installed, cannot download video URLs")
             with tempfile.TemporaryDirectory() as dl_temp_dir:
                 temp_file = os.path.join(dl_temp_dir, "downloaded_video.mp4")
-                debug_log_append(f"Downloading to: {temp_file}")
+                debug_log(f"Downloading to: {temp_file}")
                 
+                # Updated yt-dlp options for no audio and max 1080p
                 ydl_opts = {
                     'quiet': True,
                     'outtmpl': temp_file,
-                    'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4',
-                    'merge_output_format': 'mp4',
+                    'format': 'bestvideo[height<=1080][ext=mp4]/bestvideo[height<=1080]/best[height<=1080]',
                     'noplaylist': True,
                 }
                 
                 # Add ffmpeg location for yt-dlp
                 if ffmpeg_path != 'ffmpeg':  # If we found an absolute path
                     ydl_opts['ffmpeg_location'] = os.path.dirname(ffmpeg_path)
-                    debug_log_append(f"Setting yt-dlp ffmpeg_location to: {os.path.dirname(ffmpeg_path)}")
+                    debug_log(f"Setting yt-dlp ffmpeg_location to: {os.path.dirname(ffmpeg_path)}")
                 
-                debug_log_append(f"yt-dlp options: {ydl_opts}")
+                debug_log(f"yt-dlp options: {ydl_opts}")
                 
                 with YoutubeDL(ydl_opts) as ydl:
                     ydl.download([input_path_or_url])
                     
                 if not os.path.exists(temp_file) or os.path.getsize(temp_file) < 1000:
-                    candidates = [f for f in os.listdir(dl_temp_dir) if f.endswith('.mp4')]
-                    debug_log_append(f"Downloaded file not found, candidates: {candidates}")
+                    candidates = [f for f in os.listdir(dl_temp_dir) if f.endswith(('.mp4', '.webm', '.mkv'))]
+                    debug_log(f"Downloaded file not found, candidates: {candidates}")
                     if candidates:
                         temp_file = os.path.join(dl_temp_dir, candidates[0])
-                        debug_log_append(f"Using candidate file: {temp_file}")
+                        debug_log(f"Using candidate file: {temp_file}")
                         
                 if not os.path.exists(temp_file) or os.path.getsize(temp_file) < 1000:
-                    debug_log_append("yt-dlp did not download the video correctly.")
+                    debug_log("yt-dlp did not download the video correctly.")
                     generation_status['error'] = "Failed to download video"
                     generation_status['in_progress'] = False
                     generation_status['completed'] = True
@@ -506,59 +653,70 @@ def generate_preview_background(input_path_or_url, slug="preview", output_dir=PR
                     shutil.copyfile(temp_file, tmp.name)
                     temp_file = tmp.name
                 input_file = temp_file
-                debug_log_append(f"Downloaded file: {input_file}, size: {os.path.getsize(input_file)} bytes")
+                debug_log(f"Downloaded file: {input_file}, size: {os.path.getsize(input_file)} bytes")
 
-        debug_log_append(f"Processing input file: {input_file}")
+        debug_log(f"Processing input file: {input_file}")
         if not os.path.exists(input_file) or os.path.getsize(input_file) < 1000:
-            debug_log_append("Input file not found or too small.")
+            debug_log("Input file not found or too small.")
             generation_status['error'] = "Input file not found or too small"
             generation_status['in_progress'] = False
             generation_status['completed'] = True
             return
 
-        debug_log_append("Getting video duration...")
+        debug_log("Getting video duration...")
         try:
             duration_cmd = [ffprobe_path, "-v", "error", "-show_entries", "format=duration", "-of",
                            "default=noprint_wrappers=1:nokey=1", input_file]
-            debug_log_append(f"Duration command: {' '.join(duration_cmd)}")
+            debug_log(f"Duration command: {' '.join(duration_cmd)}")
             result = subprocess.run(duration_cmd, capture_output=True, text=True, timeout=30)
-            debug_log_append(f"Duration result: returncode={result.returncode}")
-            debug_log_append(f"Duration stdout: {result.stdout}")
-            debug_log_append(f"Duration stderr: {result.stderr}")
+            debug_log(f"Duration result: returncode={result.returncode}")
+            debug_log(f"Duration stdout: {result.stdout}")
+            debug_log(f"Duration stderr: {result.stderr}")
             
             if result.returncode != 0:
-                debug_log_append(f"ffprobe failed with return code {result.returncode}")
+                debug_log(f"ffprobe failed with return code {result.returncode}")
                 generation_status['error'] = f"Failed to analyze video: {result.stderr}"
                 generation_status['in_progress'] = False
                 generation_status['completed'] = True
                 return
                 
             duration = int(float(result.stdout.strip()))
-            debug_log_append(f"Video duration: {duration} seconds")
+            debug_log(f"Video duration: {duration} seconds")
         except Exception as e:
-            debug_log_append(f"Failed to retrieve video duration: {e}")
+            debug_log(f"Failed to retrieve video duration: {e}")
             generation_status['error'] = f"Failed to get video duration: {str(e)}"
             generation_status['in_progress'] = False
             generation_status['completed'] = True
             return
-            
-        if duration < (startseconds + minicliplength * numminiclips):
-            debug_log_append("Video too short for preview.")
-            generation_status['error'] = "Video too short for preview"
+        
+        # Calculate start and end seconds from keywords or use as-is
+        startseconds = calculate_trim_seconds(PREVIEW_START_SECONDS, duration)
+        endseconds = calculate_trim_seconds(PREVIEW_END_SECONDS, duration)
+        debug_log(f"Calculated start seconds to trim: {startseconds}")
+        debug_log(f"Calculated end seconds to trim: {endseconds}")
+        
+        # Calculate working duration
+        working_duration = duration - startseconds - endseconds
+        debug_log(f"Working duration: {working_duration} seconds")
+        
+        minlength = minicliplength * numminiclips
+        if working_duration < minlength:
+            debug_log(f"Video too short for preview. Need {minlength}s, have {working_duration}s")
+            generation_status['error'] = f"Video too short for preview. Need {minlength} seconds after trimming, have {working_duration} seconds."
             generation_status['in_progress'] = False
             generation_status['completed'] = True
             return
 
-        debug_log_append("Creating mini clips...")
-        interval = int((duration - startseconds) / numminiclips)
+        debug_log("Creating mini clips...")
+        interval = int(working_duration / numminiclips)
         miniclips = []
         tmp_dir = tempfile.mkdtemp()
-        debug_log_append(f"Temp directory: {tmp_dir}")
+        debug_log(f"Temp directory: {tmp_dir}")
         
         for i in range(numminiclips):
             start = startseconds + i * interval
             mini_out = os.path.join(tmp_dir, f"mini_{i}{ext}")
-            debug_log_append(f"Creating clip {i} starting at {start}s -> {mini_out}")
+            debug_log(f"Creating clip {i} starting at {start}s -> {mini_out}")
             
             if ext == ".webm":
                 ffmpeg_cmd = [
@@ -588,34 +746,34 @@ def generate_preview_background(input_path_or_url, slug="preview", output_dir=PR
                 ffmpeg_cmd += ["-vf", f"scale={resolution}:-2"]
             ffmpeg_cmd.append(mini_out)
             
-            debug_log_append(f"ffmpeg command: {' '.join(ffmpeg_cmd)}")
+            debug_log(f"ffmpeg command: {' '.join(ffmpeg_cmd)}")
             result = subprocess.run(ffmpeg_cmd, capture_output=True, text=True, timeout=60)
-            debug_log_append(f"ffmpeg clip {i} result: returncode={result.returncode}")
+            debug_log(f"ffmpeg clip {i} result: returncode={result.returncode}")
             if result.returncode != 0:
-                debug_log_append(f"ffmpeg error for clip {i}: {result.stderr}")
+                debug_log(f"ffmpeg error for clip {i}: {result.stderr}")
             else:
-                debug_log_append(f"ffmpeg clip {i} success: {result.stdout}")
+                debug_log(f"ffmpeg clip {i} success: {result.stdout}")
             miniclips.append(mini_out)
 
-        debug_log_append("Concatenating clips...")
+        debug_log("Concatenating clips...")
         concat_file = os.path.join(tmp_dir, "concat.txt")
         with open(concat_file, "w") as f:
             for m in miniclips:
                 f.write(f"file '{m}'\n")
-        debug_log_append(f"Concat file created: {concat_file}")
+        debug_log(f"Concat file created: {concat_file}")
         
         ffmpeg_concat_cmd = [
             ffmpeg_path, "-y", "-f", "concat", "-safe", "0", "-i",
             concat_file, "-c", "copy", output_path
         ]
-        debug_log_append(f"Concat command: {' '.join(ffmpeg_concat_cmd)}")
+        debug_log(f"Concat command: {' '.join(ffmpeg_concat_cmd)}")
         result = subprocess.run(ffmpeg_concat_cmd, capture_output=True, text=True, timeout=60)
-        debug_log_append(f"Concat result: returncode={result.returncode}")
-        debug_log_append(f"Concat stdout: {result.stdout}")
-        debug_log_append(f"Concat stderr: {result.stderr}")
+        debug_log(f"Concat result: returncode={result.returncode}")
+        debug_log(f"Concat stdout: {result.stdout}")
+        debug_log(f"Concat stderr: {result.stderr}")
         
         if result.returncode != 0:
-            debug_log_append(f"ffmpeg concat error: {result.stderr}")
+            debug_log(f"ffmpeg concat error: {result.stderr}")
             shutil.rmtree(tmp_dir)
             if temp_file and os.path.exists(temp_file):
                 os.remove(temp_file)
@@ -624,18 +782,18 @@ def generate_preview_background(input_path_or_url, slug="preview", output_dir=PR
             generation_status['completed'] = True
             return
 
-        debug_log_append("Cleaning up...")
+        debug_log("Cleaning up...")
         shutil.rmtree(tmp_dir)
         if temp_file and os.path.exists(temp_file):
             os.remove(temp_file)
             
-        debug_log_append(f"Preview generation successful: {output_path}")
+        debug_log(f"Preview generation successful: {output_path}")
         generation_status['result_path'] = os.path.relpath(output_path)
         generation_status['in_progress'] = False
         generation_status['completed'] = True
         
     except Exception as e:
-        debug_log_append(f"Error generating preview: {e}")
+        debug_log(f"Error generating preview: {e}")
         generation_status['error'] = str(e)
         generation_status['in_progress'] = False
         generation_status['completed'] = True
@@ -722,7 +880,7 @@ class CreditsEditor(tk.Toplevel):
     def __init__(self, master, credits, on_save=None):
         super().__init__(master)
         self.title("Edit Credits")
-        self.geometry("400x400")
+        self.resizable(True, True)  # Made resizable like v5
         self.credits = credits.copy()
         self.role_vars = []
         self.name_vars = []
@@ -732,41 +890,145 @@ class CreditsEditor(tk.Toplevel):
         self.setup_ui()
 
     def setup_ui(self):
-        self.frame = ttk.Frame(self)
-        self.frame.pack(fill='both', expand=True, padx=10, pady=10)
-        header = ttk.Frame(self.frame)
-        header.pack(fill='x')
-        ttk.Label(header, text="Role", width=15, foreground="black").pack(side='left')
-        ttk.Label(header, text="Names (comma separated)", foreground="black").pack(side='left')
-        ttk.Label(header, text="Move", width=15, foreground="black").pack(side='left')
+        # Main container (simple approach like v5)
+        main_container = ttk.Frame(self)
+        main_container.pack(fill='both', expand=True, padx=10, pady=10)
+        
+        # Smart add section
+        smart_frame = ttk.LabelFrame(main_container, text="Smart Add Credits")
+        smart_frame.pack(fill='both', expand=True, pady=(0, 10))
+        
+        # Instructions
+        instructions = ttk.Label(smart_frame, text="Paste credits text below and click 'Parse' to automatically add them:", 
+                                foreground="black")
+        instructions.pack(anchor='w', padx=5, pady=2)
+        
+        # Text area for pasting credits
+        text_container = ttk.Frame(smart_frame)
+        text_container.pack(fill='both', expand=True, padx=5, pady=5)
+        
+        self.credits_text = tk.Text(text_container, wrap="word", fg="black", bg="white", 
+                                   insertbackground='black', font=("Arial", 10))
+        self.credits_text.pack(side='left', fill='both', expand=True)
+        
+        # Scrollbar for text area
+        text_scroll = ttk.Scrollbar(text_container, orient="vertical", command=self.credits_text.yview)
+        text_scroll.pack(side="right", fill="y")
+        self.credits_text.configure(yscrollcommand=text_scroll.set)
+        
+        # Parse button
+        parse_btn = ttk.Button(smart_frame, text="Parse Credits", command=self.parse_credits)
+        parse_btn.pack(pady=5)
+        
+        # Separator
+        ttk.Separator(main_container, orient='horizontal').pack(fill='x', pady=10)
+        
+        # Manual edit section (simple approach like v5)
+        manual_frame = ttk.LabelFrame(main_container, text="Manual Edit")
+        manual_frame.pack(fill='both', expand=True)
+        
+        # Simple frame for rows (no canvas complications)
+        self.rows_frame = ttk.Frame(manual_frame)
+        self.rows_frame.pack(fill='both', expand=True, padx=5, pady=5)
+        
+        # Header
+        header = ttk.Frame(self.rows_frame)
+        header.pack(fill='x', pady=(0, 10))
+        ttk.Label(header, text="Role", foreground="black").pack(side='left', padx=(0, 10))
+        ttk.Label(header, text="Names (comma separated)", foreground="black").pack(side='left', expand=True)
+        ttk.Label(header, text="Actions", foreground="black").pack(side='right', padx=(10, 0))
+        
+        # Add existing credits
         for role, names in list(self.credits.items()):
             self.add_row(role, ", ".join(names))
-        add_btn = ttk.Button(self.frame, text="Add Role", command=lambda: self.add_row("", ""))
+        
+        # Add role button
+        add_btn = ttk.Button(self.rows_frame, text="Add Role", command=lambda: self.add_row("", ""))
         add_btn.pack(pady=10)
-        btns = ttk.Frame(self.frame)
+        
+        # Bottom buttons
+        btns = ttk.Frame(main_container)
         btns.pack(side='bottom', fill='x', pady=10)
         ttk.Button(btns, text="Save", command=self.save).pack(side='right', padx=5)
         ttk.Button(btns, text="Cancel", command=self.cancel).pack(side='right')
 
+    def parse_credits(self):
+        """Parse the credits text and add to the current credits"""
+        text = self.credits_text.get("1.0", tk.END).strip()
+        if not text:
+            messagebox.showwarning("No Text", "Please paste some credits text first.")
+            return
+        
+        try:
+            parsed_credits = parse_credits_text(text)
+            
+            if not parsed_credits:
+                messagebox.showwarning("Parse Failed", "Could not parse any credits from the text.")
+                return
+            
+            # Add parsed credits to current credits
+            for role, names in parsed_credits.items():
+                if role in self.credits:
+                    # Merge with existing role
+                    existing_names = set(self.credits[role])
+                    new_names = [name for name in names if name not in existing_names]
+                    if new_names:
+                        self.credits[role].extend(new_names)
+                else:
+                    # New role
+                    self.credits[role] = names
+            
+            # Refresh the UI
+            self.refresh_rows()
+            
+            # Clear the text area
+            self.credits_text.delete("1.0", tk.END)
+            
+            messagebox.showinfo("Parse Successful", 
+                              f"Successfully parsed {len(parsed_credits)} roles with {sum(len(names) for names in parsed_credits.values())} names total.")
+        
+        except Exception as e:
+            messagebox.showerror("Parse Error", f"Error parsing credits: {str(e)}")
+
+    def refresh_rows(self):
+        """Refresh all the credit rows"""
+        # Clear existing rows
+        for row in self.rows:
+            row.destroy()
+        self.role_vars.clear()
+        self.name_vars.clear()
+        self.rows.clear()
+        
+        # Add all credits as rows
+        for role, names in self.credits.items():
+            self.add_row(role, ", ".join(names))
+
     def add_row(self, role, names):
-        row = ttk.Frame(self.frame)
+        row = ttk.Frame(self.rows_frame)
         row.pack(fill='x', pady=2)
         role_var = tk.StringVar(value=role)
         name_var = tk.StringVar(value=names)
         self.role_vars.append(role_var)
         self.name_vars.append(name_var)
         self.rows.append(row)
-        e1 = tk.Entry(row, textvariable=role_var, width=15, insertbackground='black', fg="black", bg="#f8f8f8")
-        e2 = tk.Entry(row, textvariable=name_var, insertbackground='black', fg="black", bg="#f8f8f8")
-        e1.pack(side='left')
-        e2.pack(side='left', fill='x', expand=True)
-        move_frame = tk.Frame(row, bg="#f8f8f8")
-        move_frame.pack(side='left', padx=10)
-        btn_up = ttk.Button(move_frame, text="↑", width=2, command=lambda r=row: self.move_row(r, -1))
-        btn_down = ttk.Button(move_frame, text="↓", width=2, command=lambda r=row: self.move_row(r, 1))
-        btn_up.pack(side='left')
-        btn_down.pack(side='left')
-        ttk.Button(row, text="Remove", command=lambda: self.remove_row(row, role_var, name_var)).pack(side='left')
+        
+        # NO FIXED WIDTHS - let them expand naturally
+        e1 = tk.Entry(row, textvariable=role_var, insertbackground='black', fg="black", bg="white")
+        e2 = tk.Entry(row, textvariable=name_var, insertbackground='black', fg="black", bg="white")
+        e1.pack(side='left', padx=(0, 5))
+        e2.pack(side='left', fill='x', expand=True, padx=(0, 5))
+        
+        # Action buttons
+        action_frame = tk.Frame(row, bg="#f8f8f8")
+        action_frame.pack(side='left', padx=5)
+        
+        btn_up = ttk.Button(action_frame, text="↑", width=3, command=lambda r=row: self.move_row(r, -1))
+        btn_down = ttk.Button(action_frame, text="↓", width=3, command=lambda r=row: self.move_row(r, 1))
+        btn_remove = ttk.Button(action_frame, text="×", width=3, command=lambda: self.remove_row(row, role_var, name_var))
+        
+        btn_up.pack(side='left', padx=1)
+        btn_down.pack(side='left', padx=1)
+        btn_remove.pack(side='left', padx=1)
 
     def move_row(self, row, direction):
         idx = self.rows.index(row)
@@ -806,7 +1068,7 @@ class TileEditor(tk.Toplevel):
     def __init__(self, master, entry, on_save, on_delete):
         super().__init__(master)
         self.title("Edit Entry")
-        self.resizable(True, True)
+        self.resizable(True, True)  # Made resizable like v5
         self.entry = entry
         self.on_save = on_save
         self.on_delete = on_delete
@@ -818,68 +1080,122 @@ class TileEditor(tk.Toplevel):
         self.create_widgets()
 
     def create_widgets(self):
-        frame = tk.Frame(self)
-        frame.pack(fill='both', expand=True, padx=10, pady=10)
-        label_opts = {"fg": "black", "bg": "#f8f8f8"}
-        width = 28
-
+        # Simple container like v5 (no complex canvas setup)
+        container = tk.Frame(self, bg="#f8f8f8")
+        container.pack(fill='both', expand=True, padx=10, pady=10)
+        
+        # Create main content frame
+        main_frame = tk.Frame(container, bg="#f8f8f8")
+        main_frame.pack(fill='both', expand=True)
+        
+        # Two-column responsive grid layout
+        # Configure grid weights for responsive design
+        main_frame.columnconfigure(0, weight=0)  # Left labels
+        main_frame.columnconfigure(1, weight=1)  # Left inputs
+        main_frame.columnconfigure(2, weight=0)  # Spacing
+        main_frame.columnconfigure(3, weight=0)  # Right labels
+        main_frame.columnconfigure(4, weight=1)  # Right inputs
+        
         gridrow = 0
-        for key in ["imgSrc", "previewSrc", "videoSrc", "PDFSrc", "slug", "title", "date"]:
-            tk.Label(frame, text=key, width=10, anchor='w', **label_opts).grid(row=gridrow, column=0, sticky='w')
-            var = tk.StringVar(value=str(self.entry.get(key, "")))
-            ent = tk.Entry(frame, textvariable=var, width=width, fg="black", bg="#f8f8f8", insertbackground='black')
-            ent.grid(row=gridrow, column=1, sticky='ew')
-            self.vars[key] = var
+        label_opts = {"fg": "black", "bg": "#f8f8f8"}
+        
+        # Two-column layout for basic fields
+        left_fields = ["imgSrc", "videoSrc", "slug", "date"]
+        right_fields = ["previewSrc", "PDFSrc", "title", ""]
+        
+        for left_key, right_key in zip(left_fields, right_fields):
+            # Left column
+            if left_key:
+                tk.Label(main_frame, text=left_key + ":", anchor='w', **label_opts).grid(
+                    row=gridrow, column=0, sticky='w', pady=2, padx=(0, 5))
+                var = tk.StringVar(value=str(self.entry.get(left_key, "")))
+                # NO FIXED WIDTH - let it expand
+                ent = tk.Entry(main_frame, textvariable=var, fg="black", bg="white", insertbackground='black')
+                ent.grid(row=gridrow, column=1, sticky='ew', pady=2, padx=(0, 10))
+                self.vars[left_key] = var
+            
+            # Right column
+            if right_key:
+                tk.Label(main_frame, text=right_key + ":", anchor='w', **label_opts).grid(
+                    row=gridrow, column=3, sticky='w', pady=2, padx=(10, 5))
+                var = tk.StringVar(value=str(self.entry.get(right_key, "")))
+                # NO FIXED WIDTH - let it expand
+                ent = tk.Entry(main_frame, textvariable=var, fg="black", bg="white", insertbackground='black')
+                ent.grid(row=gridrow, column=4, sticky='ew', pady=2)
+                self.vars[right_key] = var
+            
             gridrow += 1
 
-        tk.Label(frame, text="role", width=10, anchor='w', **label_opts).grid(row=gridrow, column=0, sticky='w')
-        role_frame = tk.Frame(frame, bg="#f8f8f8")
-        role_frame.grid(row=gridrow, column=1, sticky='w')
+        # Description (full width, NO FIXED HEIGHT)
+        tk.Label(main_frame, text="description:", anchor='w', **label_opts).grid(
+            row=gridrow, column=0, sticky='nw', pady=(10, 2))
+        desc_frame = tk.Frame(main_frame, bg="#f8f8f8")
+        desc_frame.grid(row=gridrow, column=1, columnspan=4, sticky='ew', pady=(10, 2))
+        
+        # NO FIXED HEIGHT - let it expand naturally
+        desc_text = tk.Text(desc_frame, fg="black", bg="white", wrap="word", insertbackground='black')
+        desc_val = self.entry.get("description", "")
+        desc_text.insert("1.0", desc_val)
+        desc_text.pack(side='left', fill='both', expand=True)
+        
+        # Add scrollbar to description
+        desc_scroll = ttk.Scrollbar(desc_frame, orient="vertical", command=desc_text.yview)
+        desc_scroll.pack(side="right", fill="y")
+        desc_text.configure(yscrollcommand=desc_scroll.set)
+        
+        self.vars["description"] = desc_text
+        gridrow += 1
+
+        # Credits button
+        credits_btn = ttk.Button(main_frame, text="Edit Credits", command=self.open_credits_editor)
+        credits_btn.grid(row=gridrow, column=0, columnspan=5, sticky='w', pady=10)
+        gridrow += 1
+
+        # Role and Type (side by side)
+        tk.Label(main_frame, text="role:", anchor='w', **label_opts).grid(
+            row=gridrow, column=0, sticky='nw', pady=2, padx=(0, 5))
+        role_frame = tk.Frame(main_frame, bg="#f8f8f8")
+        role_frame.grid(row=gridrow, column=1, sticky='ew', pady=2, padx=(0, 10))
+        
+        tk.Label(main_frame, text="type:", anchor='w', **label_opts).grid(
+            row=gridrow, column=3, sticky='nw', pady=2, padx=(10, 5))
+        type_frame = tk.Frame(main_frame, bg="#f8f8f8")
+        type_frame.grid(row=gridrow, column=4, sticky='ew', pady=2)
+        
+        # Role checkboxes
         current_roles = (self.entry.get('role') or "").split("/")
         self.role_vars = []
-        for role in ENTRY_ROLES:
+        for i, role in enumerate(ENTRY_ROLES):
             var = tk.BooleanVar()
             if role in current_roles:
                 var.set(True)
             cb = tk.Checkbutton(role_frame, text=role, variable=var, fg="black", bg="#f8f8f8")
-            cb.pack(side='left')
+            cb.grid(row=i//3, column=i%3, sticky='w', padx=2)
             self.role_vars.append((role, var))
-        gridrow += 1
-
-        tk.Label(frame, text="description", width=10, anchor='w', **label_opts).grid(row=gridrow, column=0, sticky='nw')
-        desc_text = tk.Text(frame, height=4, width=width, fg="black", bg="#f8f8f8", wrap="word", insertbackground='black')
-        desc_val = self.entry.get("description", "")
-        desc_text.insert("1.0", desc_val)
-        desc_text.grid(row=gridrow, column=1, sticky='ew')
-        self.vars["description"] = desc_text
-        gridrow += 1
-
-        credits_btn = ttk.Button(frame, text="Edit Credits", command=self.open_credits_editor)
-        credits_btn.grid(row=gridrow, column=0, columnspan=2, sticky='w', pady=5)
-        gridrow += 1
-
-        tk.Label(frame, text="type", width=10, anchor='w', **label_opts).grid(row=gridrow, column=0, sticky='w')
-        type_frame = tk.Frame(frame, bg="#f8f8f8")
-        type_frame.grid(row=gridrow, column=1, sticky='w')
+        
+        # Type radio buttons
         current_type = self.entry.get("type", "")
         self.type_var.set(current_type)
-        for t in ENTRY_TYPES:
+        for i, t in enumerate(ENTRY_TYPES):
             rb = tk.Radiobutton(type_frame, text=t, variable=self.type_var, value=t, fg="black", bg="#f8f8f8")
-            rb.pack(side="left")
+            rb.grid(row=i//3, column=i%3, sticky='w', padx=2)
         gridrow += 1
 
-        tk.Label(frame, text="Screenplay", width=10, anchor='w', **label_opts).grid(row=gridrow, column=0, sticky='w')
-        screenplay_frame = tk.Frame(frame, bg="#f8f8f8")
-        screenplay_frame.grid(row=gridrow, column=1, sticky='w')
+        # Screenplay (full width)
+        tk.Label(main_frame, text="Screenplay:", anchor='w', **label_opts).grid(
+            row=gridrow, column=0, sticky='w', pady=2, padx=(0, 5))
+        screenplay_frame = tk.Frame(main_frame, bg="#f8f8f8")
+        screenplay_frame.grid(row=gridrow, column=1, columnspan=4, sticky='w', pady=2)
         current_screenplay = self.entry.get("Screenplay", "")
         self.screenplay_var.set(current_screenplay)
-        for label, val in [("None", ""), ("Yes", "Yes"), ("Sole", "Sole")]:
+        for i, (label, val) in enumerate([("None", ""), ("Yes", "Yes"), ("Sole", "Sole")]):
             rb = tk.Radiobutton(screenplay_frame, text=label, variable=self.screenplay_var, value=val, fg="black", bg="#f8f8f8")
-            rb.pack(side="left")
+            rb.pack(side="left", padx=10)
         gridrow += 1
 
-        btns = tk.Frame(self)
-        btns.pack(fill='x', pady=5)
+        # Bottom buttons
+        btns = tk.Frame(container, bg="#f8f8f8")
+        btns.pack(side='bottom', fill='x', pady=(10, 0))
         ttk.Button(btns, text="Delete", command=self.confirm_delete).pack(side='left', padx=5)
         ttk.Button(btns, text="Save", command=self.save).pack(side='right', padx=5)
         ttk.Button(btns, text="Cancel", command=self.destroy).pack(side='right')
@@ -887,18 +1203,18 @@ class TileEditor(tk.Toplevel):
     def open_credits_editor(self):
         def credits_callback(new_credits):
             self.credits = new_credits
-        CreditsEditor(self, self.credits, on_save=credits_callback).grab_set()
+        CreditsEditor(self, self.credits, on_save=credits_callback)
 
     def confirm_delete(self):
         if messagebox.askyesno("Delete", "Are you sure you want to delete this entry?"):
-            # Delete associated local files before removing the entry
             delete_local_files_from_entry(self.entry)
             self.on_delete(self.entry)
             self.destroy()
 
     def save(self):
         for key in ["imgSrc", "previewSrc", "videoSrc", "PDFSrc", "slug", "title", "date"]:
-            self.entry[key] = self.vars[key].get()
+            if key in self.vars:
+                self.entry[key] = self.vars[key].get()
         roles_selected = [role for role, var in self.role_vars if var.get()]
         self.entry["role"] = "/".join(roles_selected)
         self.entry["description"] = self.vars["description"].get("1.0", "end-1c")
@@ -917,14 +1233,26 @@ class DataJsonViewer(ttk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
-        self.canvas = tk.Canvas(self, borderwidth=0, background="#f8f8f8")
-        self.frame = tk.Frame(self.canvas, background="#f8f8f8")
-        self.scroll = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
-        self.canvas.configure(yscrollcommand=self.scroll.set)
-        self.scroll.pack(side="right", fill="y")
+        # Simple approach like v5 - no complex canvas setup
+        main_frame = tk.Frame(self, background="#f8f8f8")
+        main_frame.pack(fill='both', expand=True)
+        
+        # Add scrollbar
+        scrollbar = ttk.Scrollbar(main_frame, orient="vertical")
+        scrollbar.pack(side="right", fill="y")
+        
+        # Create canvas for scrolling
+        self.canvas = tk.Canvas(main_frame, yscrollcommand=scrollbar.set, borderwidth=0, background="#f8f8f8")
         self.canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.config(command=self.canvas.yview)
+        
+        # Frame inside canvas
+        self.frame = tk.Frame(self.canvas, background="#f8f8f8")
         self.canvas.create_window((0, 0), window=self.frame, anchor='nw')
+        
+        # Configure scrolling
         self.frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+        
         self.populate_tiles()
 
     def populate_tiles(self):
@@ -957,14 +1285,14 @@ class DataJsonViewer(ttk.Frame):
             del self.data[idx]
             self.on_entry_update(self.data)
             self.populate_tiles()
-        TileEditor(self, dict(self.data[idx]), on_save, on_delete).grab_set()
+        TileEditor(self, dict(self.data[idx]), on_save, on_delete)
 
 class ContentEntryApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Content Entry Creator")
         self.geometry(f"{DEFAULT_WINDOW_WIDTH}x{DEFAULT_WINDOW_HEIGHT}")
-        self.minsize(600, 600)
+        self.minsize(800, 600)
         self.configure(bg="#f8f8f8")
         self.style = ttk.Style(self)
         self.style.theme_use("clam")
@@ -986,92 +1314,157 @@ class ContentEntryApp(tk.Tk):
         self.tabs.add(self.data_tab, text="View/Edit data.json")
 
     def _setup_entry_tab(self, parent):
+        # Simple approach like v5 - no complex canvas setup
+        # Use direct pack layout for better compatibility with clipboard managers
+        
+        # Main form container
+        main_container = tk.Frame(parent, bg="#f8f8f8")
+        main_container.pack(fill='both', expand=True, padx=10, pady=10)
+        
+        # Mode selection at top
         self.mode_var = tk.StringVar(value="video")
-        mode_frame = ttk.LabelFrame(parent, text="Start from")
-        mode_frame.pack(fill='x', padx=10, pady=5)
+        mode_frame = ttk.LabelFrame(main_container, text="Start from")
+        mode_frame.pack(fill='x', pady=(0, 10))
         ttk.Radiobutton(mode_frame, text="Video", variable=self.mode_var, value="video", command=self.switch_mode).pack(side='left', padx=10)
         ttk.Radiobutton(mode_frame, text="PDF", variable=self.mode_var, value="pdf", command=self.switch_mode).pack(side='left', padx=10)
 
-        self.fields = {}
-        form = tk.Frame(parent, bg="#f8f8f8")
-        form.pack(fill='both', expand=True, padx=10, pady=5)
-
-        def add_field(label, var_type=tk.StringVar, **kwargs):
-            row = tk.Frame(form, bg="#f8f8f8")
-            row.pack(fill='x', pady=3)
-            tk.Label(row, text=label, width=10, anchor='w', fg="black", bg="#f8f8f8").pack(side='left')
-            var = var_type()
-            entry = tk.Entry(row, textvariable=var, insertbackground='black', fg="black", bg="#f8f8f8", width=28, **kwargs)
-            entry.pack(side='left', fill='x', expand=True)
-            self.fields[label] = var
-            return entry
-
-        self.source_label = tk.Label(form, text="Video Source:", fg="black", bg="#f8f8f8")
+        # Source section
+        source_frame = tk.Frame(main_container, bg="#f8f8f8")
+        source_frame.pack(fill='x', pady=(0, 10))
+        
+        self.source_label = tk.Label(source_frame, text="Video Source:", anchor='w', fg="black", bg="#f8f8f8")
         self.source_label.pack(anchor='w')
+        
         self.source_var = tk.StringVar()
-        src_row = tk.Frame(form, bg="#f8f8f8")
+        src_row = tk.Frame(source_frame, bg="#f8f8f8")
         src_row.pack(fill='x', pady=3)
-        self.src_entry = tk.Entry(src_row, textvariable=self.source_var, insertbackground='black', fg="black", bg="#f8f8f8", width=28)
-        self.src_entry.pack(side='left', fill='x', expand=True)
-        ttk.Button(src_row, text="Browse...", command=self.browse_source).pack(side='left', padx=3)
-        ttk.Button(src_row, text="Fetch Info", command=self.fetch_info).pack(side='left', padx=3)
-        ttk.Button(src_row, text="Generate Preview", command=self.generate_preview_for_current).pack(side='left', padx=3)
+        
+        # NO FIXED WIDTH - let entry expand
+        self.src_entry = tk.Entry(src_row, textvariable=self.source_var, insertbackground='black', fg="black", bg="white")
+        self.src_entry.pack(side='left', fill='x', expand=True, padx=(0, 5))
+        
+        ttk.Button(src_row, text="Browse...", command=self.browse_source).pack(side='left', padx=2)
+        ttk.Button(src_row, text="Fetch Info", command=self.fetch_info).pack(side='left', padx=2)
+        ttk.Button(src_row, text="Generate Preview", command=self.generate_preview_for_current).pack(side='left', padx=2)
 
-        self.img_entry = add_field("imgSrc")
-        self.preview_entry = add_field("previewSrc")
-        self.video_entry = add_field("videoSrc")
-        self.pdf_entry = add_field("PDFSrc")
-        self.slug_entry = add_field("slug")
-        self.title_entry = add_field("title")
-        self.date_entry = add_field("date")
+        # Main form area with two-column layout
+        form_container = tk.Frame(main_container, bg="#f8f8f8")
+        form_container.pack(fill='both', expand=True)
+        
+        # Configure grid for responsive design
+        form_container.columnconfigure(0, weight=0)  # Left labels
+        form_container.columnconfigure(1, weight=1)  # Left inputs
+        form_container.columnconfigure(2, weight=0)  # Spacing
+        form_container.columnconfigure(3, weight=0)  # Right labels
+        form_container.columnconfigure(4, weight=1)  # Right inputs
+        
+        self.fields = {}
+        gridrow = 0
+        
+        # Two-column layout for form fields
+        left_fields = [
+            ("imgSrc", "Image Source"),
+            ("videoSrc", "Video Source"),
+            ("slug", "Slug"),
+            ("date", "Date")
+        ]
+        
+        right_fields = [
+            ("previewSrc", "Preview Source"),
+            ("PDFSrc", "PDF Source"),
+            ("title", "Title"),
+            ("", "")  # Empty for alignment
+        ]
 
-        roles_frame = tk.Frame(form, bg="#f8f8f8")
-        roles_frame.pack(fill='x', pady=3)
-        tk.Label(roles_frame, text="role", width=10, anchor='w', fg="black", bg="#f8f8f8").pack(side='left')
-        self.role_vars = []
-        for role in ENTRY_ROLES:
-            var = tk.BooleanVar()
-            cb = tk.Checkbutton(roles_frame, text=role, variable=var, fg="black", bg="#f8f8f8")
-            cb.pack(side='left')
-            self.role_vars.append((role, var))
-        self.fields['role'] = tk.StringVar()
+        for (left_key, left_label), (right_key, right_label) in zip(left_fields, right_fields):
+            # Left column
+            if left_key:
+                tk.Label(form_container, text=left_label + ":", anchor='w', fg="black", bg="#f8f8f8").grid(
+                    row=gridrow, column=0, sticky='w', pady=2, padx=(0, 5))
+                var = tk.StringVar()
+                # NO FIXED WIDTH - let it expand
+                ent = tk.Entry(form_container, textvariable=var, insertbackground='black', fg="black", bg="white")
+                ent.grid(row=gridrow, column=1, sticky='ew', pady=2, padx=(0, 10))
+                self.fields[left_key] = var
+            
+            # Right column
+            if right_key:
+                tk.Label(form_container, text=right_label + ":", anchor='w', fg="black", bg="#f8f8f8").grid(
+                    row=gridrow, column=3, sticky='w', pady=2, padx=(10, 5))
+                var = tk.StringVar()
+                # NO FIXED WIDTH - let it expand
+                ent = tk.Entry(form_container, textvariable=var, insertbackground='black', fg="black", bg="white")
+                ent.grid(row=gridrow, column=4, sticky='ew', pady=2)
+                self.fields[right_key] = var
+            
+            gridrow += 1
 
-        row = tk.Frame(form, bg="#f8f8f8")
-        row.pack(fill='both', pady=3, expand=True)
-        tk.Label(row, text="description", width=10, anchor='nw', fg="black", bg="#f8f8f8").pack(side='left', anchor='n')
-        self.description_text = tk.Text(row, height=6, wrap="word", fg="black", bg="#f8f8f8", width=28, insertbackground='black')
+        # Description (full width, NO FIXED HEIGHT)
+        tk.Label(form_container, text="Description:", anchor='w', fg="black", bg="#f8f8f8").grid(
+            row=gridrow, column=0, sticky='nw', pady=(10, 2), padx=(0, 5))
+        
+        desc_frame = tk.Frame(form_container, bg="#f8f8f8")
+        desc_frame.grid(row=gridrow, column=1, columnspan=4, sticky='ew', pady=(10, 2))
+        
+        # NO FIXED HEIGHT - let it expand naturally
+        self.description_text = tk.Text(desc_frame, wrap="word", fg="black", bg="white", insertbackground='black')
         self.description_text.pack(side='left', fill='both', expand=True)
         self.fields['description'] = self.description_text
-        desc_scroll = ttk.Scrollbar(row, orient="vertical", command=self.description_text.yview)
+        
+        desc_scroll = ttk.Scrollbar(desc_frame, orient="vertical", command=self.description_text.yview)
         desc_scroll.pack(side="right", fill="y")
         self.description_text.configure(yscrollcommand=desc_scroll.set)
+        gridrow += 1
 
-        type_frame = tk.Frame(form, bg="#f8f8f8")
-        type_frame.pack(fill='x', pady=3)
-        tk.Label(type_frame, text="type", width=10, anchor='w', fg="black", bg="#f8f8f8").pack(side='left')
+        # Role and Type sections (side by side)
+        # Roles (left side)
+        tk.Label(form_container, text="Roles:", anchor='w', fg="black", bg="#f8f8f8").grid(
+            row=gridrow, column=0, sticky='nw', pady=(10, 2), padx=(0, 5))
+        role_container = tk.Frame(form_container, bg="#f8f8f8")
+        role_container.grid(row=gridrow, column=1, sticky='ew', pady=(10, 2), padx=(0, 10))
+        
+        self.role_vars = []
+        for i, role in enumerate(ENTRY_ROLES):
+            var = tk.BooleanVar()
+            cb = tk.Checkbutton(role_container, text=role, variable=var, fg="black", bg="#f8f8f8")
+            cb.grid(row=i//3, column=i%3, sticky='w', padx=2)
+            self.role_vars.append((role, var))
+        
+        # Type (right side)
+        tk.Label(form_container, text="Type:", anchor='w', fg="black", bg="#f8f8f8").grid(
+            row=gridrow, column=3, sticky='nw', pady=(10, 2), padx=(10, 5))
+        type_container = tk.Frame(form_container, bg="#f8f8f8")
+        type_container.grid(row=gridrow, column=4, sticky='ew', pady=(10, 2))
+        
         self.type_var = tk.StringVar()
-        for t in ENTRY_TYPES:
-            rb = tk.Radiobutton(type_frame, text=t, variable=self.type_var, value=t, fg="black", bg="#f8f8f8")
-            rb.pack(side='left')
-        self.fields['type'] = self.type_var
+        for i, t in enumerate(ENTRY_TYPES):
+            rb = tk.Radiobutton(type_container, text=t, variable=self.type_var, value=t, fg="black", bg="#f8f8f8")
+            rb.grid(row=i//3, column=i%3, sticky='w', padx=2)
+        gridrow += 1
 
-        screenplay_frame = tk.Frame(form, bg="#f8f8f8")
-        screenplay_frame.pack(fill='x', pady=3)
-        tk.Label(screenplay_frame, text="Screenplay", width=10, anchor='w', fg="black", bg="#f8f8f8").pack(side='left')
+        # Screenplay section (full width)
+        tk.Label(form_container, text="Screenplay:", anchor='w', fg="black", bg="#f8f8f8").grid(
+            row=gridrow, column=0, sticky='w', pady=(10, 2), padx=(0, 5))
+        screenplay_container = tk.Frame(form_container, bg="#f8f8f8")
+        screenplay_container.grid(row=gridrow, column=1, columnspan=4, sticky='w', pady=(10, 2))
+        
         self.screenplay_var = tk.StringVar(value="")
-        for label, val in [("None", ""), ("Yes", "Yes"), ("Sole", "Sole")]:
-            rb = tk.Radiobutton(screenplay_frame, text=label, variable=self.screenplay_var, value=val, fg="black", bg="#f8f8f8")
-            rb.pack(side="left")
-        self.fields['Screenplay'] = self.screenplay_var
+        for i, (label, val) in enumerate([("None", ""), ("Yes", "Yes"), ("Sole", "Sole")]):
+            rb = tk.Radiobutton(screenplay_container, text=label, variable=self.screenplay_var, value=val, fg="black", bg="#f8f8f8")
+            rb.pack(side="left", padx=15)
+        gridrow += 1
 
-        credits_frame = ttk.LabelFrame(form, text="Credits")
-        credits_frame.pack(fill='x', pady=5)
+        # Credits section (full width)
+        credits_frame = ttk.LabelFrame(form_container, text="Credits")
+        credits_frame.grid(row=gridrow, column=0, columnspan=5, sticky='ew', pady=10)
         self.credits_label = ttk.Label(credits_frame, text="(No credits yet)", foreground="black")
-        self.credits_label.pack(anchor='w')
-        ttk.Button(credits_frame, text="Edit Credits", command=self.edit_credits).pack(anchor='w', pady=2)
+        self.credits_label.pack(anchor='w', padx=5, pady=2)
+        ttk.Button(credits_frame, text="Edit Credits", command=self.edit_credits).pack(anchor='w', padx=5, pady=2)
+        gridrow += 1
 
-        btns = ttk.Frame(parent)
-        btns.pack(fill='x', pady=5)
+        # Buttons (full width)
+        btns = tk.Frame(form_container, bg="#f8f8f8")
+        btns.grid(row=gridrow, column=0, columnspan=5, sticky='ew', pady=20)
         ttk.Button(btns, text="Save Entry", command=self.save_entry).pack(side='right', padx=10)
         ttk.Button(btns, text="Clear", command=self.clear_fields).pack(side='right')
 
@@ -1124,18 +1517,6 @@ class ContentEntryApp(tk.Tk):
                 date = info.get('date', '')
                 desc = info.get('description', '')
                 thumbnail_url = info.get('thumbnail', '')
-                
-                # Debug: log all date-related fields from yt-dlp
-                debug_log_append(f"=== VIDEO INFO DEBUG ===")
-                debug_log_append(f"Video URL: {src}")
-                debug_log_append(f"Video Title: {title}")
-                debug_log_append(f"All date fields from yt-dlp:")
-                debug_log_append(f"  upload_date: {info.get('date', 'None')}")
-                debug_log_append(f"  timestamp: {info.get('timestamp', 'None')}")
-                debug_log_append(f"  release_timestamp: {info.get('release_timestamp', 'None')}")
-                debug_log_append(f"  modified_timestamp: {info.get('modified_timestamp', 'None')}")
-                debug_log_append(f"  release_date: {info.get('release_date', 'None')}")
-                debug_log_append(f"  modified_date: {info.get('modified_date', 'None')}")
                 
                 if not thumbnail_url:
                     thumbnail_url = fetch_thumbnail_oembed(src)
