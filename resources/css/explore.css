@@ -143,6 +143,7 @@ button:disabled {
 /* Filters */
 #filter-section {
     width: 350px;
+    flex-shrink: 0; /* Prevent flex shrinking */
     align-self: flex-start;
     background-color: hsla(201, 100%, 8%, 0.45);
     border: 2px solid hsla(248, 9%, 45%, 0.2);
@@ -151,6 +152,14 @@ button:disabled {
     backdrop-filter: blur(15px) brightness(0.7);
     padding: 50px 30px;
     box-sizing: border-box;
+    transform: scale(1) !important; /* Ensure consistent size and override animations */
+    animation-fill-mode: forwards;
+}
+
+/* Ensure filter section maintains scale after any animations */
+#filter-section:not(.pop-in) {
+    transform: scale(1) !important;
+    width: 350px !important; /* Ensure width is always maintained */
 }
 
 .filter-header {
@@ -347,6 +356,7 @@ button.show-more:hover {
 /* Results */
 #results-section {
     flex: 1;
+    min-width: 0; /* Allow proper shrinking if needed */
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -633,9 +643,13 @@ button.show-more:hover {
 }
 
 #search-container.pop-in,
-#filter-section.pop-in,
 #results-section.pop-in,
 .result-item.pop-in {
+    animation: popIn 0.4s ease-out;
+    transform-origin: top center;
+}
+
+#filter-section.pop-in {
     animation: popIn 0.4s ease-out;
     transform-origin: top center;
 }
