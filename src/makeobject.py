@@ -29,8 +29,8 @@ PDF_AUTOFILL_PREFIX = "https://files.itsjonathanthompson.com/screenplays/"
 VIDEO_THUMBNAIL_TEMPLATE = "/resources/images/[file-name.webp]"
 
 # ===== WINDOW SIZE VARIABLE =====
-DEFAULT_WINDOW_WIDTH = 1200  # Made wider for multi-column layout
-DEFAULT_WINDOW_HEIGHT = 940
+DEFAULT_WINDOW_WIDTH = 1200
+DEFAULT_WINDOW_HEIGHT = 800
 
 # ===== PREVIEW GENERATION SETTINGS =====
 PREVIEW_START_SECONDS = 30
@@ -447,6 +447,75 @@ def clean_name(name):
         return name
     
     return ""
+
+def setup_responsive_scrollable_frame(parent):
+    """
+    Create a responsive scrollable frame that:
+    1. Expands with window width (dynamic resizing)
+    2. Adds vertical scrolling when content exceeds height
+    3. Maintains proper clipboard/focus behavior
+    """
+    # Main container
+    container = ttk.Frame(parent)
+    container.pack(fill='both', expand=True)
+    
+    # Create canvas for scrolling - Fixed the bg parameter issue
+    canvas = tk.Canvas(container, highlightthickness=0, bg='#f8f8f8')
+    scrollbar = ttk.Scrollbar(container, orient="vertical", command=canvas.yview)
+    scrollable_frame = ttk.Frame(canvas)
+    
+    # Configure canvas scrolling
+    canvas.configure(yscrollcommand=scrollbar.set)
+    
+    # Create window in canvas
+    canvas_window = canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+    
+    # KEY: Bind canvas width to window width changes
+    def configure_canvas_width(event=None):
+        # Make canvas window width match canvas width
+        canvas_width = canvas.winfo_width()
+        if canvas_width > 1:  # Only if canvas is actually rendered
+            canvas.itemconfig(canvas_window, width=canvas_width)
+    
+    def configure_scroll_region(event=None):
+        # Update scroll region when content changes
+        canvas.configure(scrollregion=canvas.bbox("all"))
+    
+    # Bind events for responsive behavior
+    canvas.bind('<Configure>', configure_canvas_width)
+    scrollable_frame.bind('<Configure>', configure_scroll_region)
+    
+    # Universal mouse wheel scrolling
+    def on_mousewheel(event):
+        try:
+            canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        except:
+            pass
+    
+    def on_mousewheel_linux(event):
+        try:
+            if event.num == 4:
+                canvas.yview_scroll(-1, "units")
+            elif event.num == 5:
+                canvas.yview_scroll(1, "units")
+        except:
+            pass
+    
+    def bind_mousewheel_recursive(widget):
+        widget.bind("<MouseWheel>", on_mousewheel, add='+')
+        widget.bind("<Button-4>", on_mousewheel_linux, add='+')
+        widget.bind("<Button-5>", on_mousewheel_linux, add='+')
+        for child in widget.winfo_children():
+            bind_mousewheel_recursive(child)
+    
+    # Apply scrolling to all widgets
+    bind_mousewheel_recursive(container)
+    
+    # Pack components
+    canvas.pack(side="left", fill="both", expand=True)
+    scrollbar.pack(side="right", fill="y")
+    
+    return container, scrollable_frame
 
 def fetch_pdf_and_get_local_path(pdf_url):
     try:
@@ -880,8 +949,10 @@ class CreditsEditor(tk.Toplevel):
     def __init__(self, master, credits, on_save=None):
         super().__init__(master)
         self.title("Edit Credits")
-        self.resizable(True, True)  # Made resizable like v5
-        self.credits = credits.copy()
+        self.geometry("900x750")
+        self.resizable(True, True)
+        self.original_credits = credits.copy()  # Store original for cancel functionality
+        self.credits = credits.copy()  # Working copy
         self.role_vars = []
         self.name_vars = []
         self.rows = []
@@ -890,13 +961,12 @@ class CreditsEditor(tk.Toplevel):
         self.setup_ui()
 
     def setup_ui(self):
-        # Main container (simple approach like v5)
-        main_container = ttk.Frame(self)
-        main_container.pack(fill='both', expand=True, padx=10, pady=10)
+        # Use responsive scrollable frame
+        main_container, self.scrollable_frame = setup_responsive_scrollable_frame(self)
         
         # Smart add section
-        smart_frame = ttk.LabelFrame(main_container, text="Smart Add Credits")
-        smart_frame.pack(fill='both', expand=True, pady=(0, 10))
+        smart_frame = ttk.LabelFrame(self.scrollable_frame, text="Smart Add Credits")
+        smart_frame.pack(fill='x', pady=(10, 10), padx=10)
         
         # Instructions
         instructions = ttk.Label(smart_frame, text="Paste credits text below and click 'Parse' to automatically add them:", 
@@ -905,31 +975,33 @@ class CreditsEditor(tk.Toplevel):
         
         # Text area for pasting credits
         text_container = ttk.Frame(smart_frame)
-        text_container.pack(fill='both', expand=True, padx=5, pady=5)
+        text_container.pack(fill='x', padx=5, pady=5)
         
-        self.credits_text = tk.Text(text_container, wrap="word", fg="black", bg="white", 
+        self.credits_text = tk.Text(text_container, height=10, wrap="word", fg="black", bg="white", 
                                    insertbackground='black', font=("Arial", 10))
-        self.credits_text.pack(side='left', fill='both', expand=True)
+        self.credits_text.pack(side='left', fill='x', expand=True)
         
         # Scrollbar for text area
         text_scroll = ttk.Scrollbar(text_container, orient="vertical", command=self.credits_text.yview)
         text_scroll.pack(side="right", fill="y")
         self.credits_text.configure(yscrollcommand=text_scroll.set)
         
-        # Parse button
-        parse_btn = ttk.Button(smart_frame, text="Parse Credits", command=self.parse_credits)
-        parse_btn.pack(pady=5)
+        # Button container for smart add
+        smart_btn_frame = ttk.Frame(smart_frame)
+        smart_btn_frame.pack(fill='x', padx=5, pady=5)
+        ttk.Button(smart_btn_frame, text="Parse Credits", command=self.parse_credits).pack(side='left', padx=(0, 5))
+        ttk.Button(smart_btn_frame, text="Clear All", command=self.clear_all_credits).pack(side='left')
         
         # Separator
-        ttk.Separator(main_container, orient='horizontal').pack(fill='x', pady=10)
+        ttk.Separator(self.scrollable_frame, orient='horizontal').pack(fill='x', pady=10, padx=10)
         
-        # Manual edit section (simple approach like v5)
-        manual_frame = ttk.LabelFrame(main_container, text="Manual Edit")
-        manual_frame.pack(fill='both', expand=True)
+        # Manual edit section
+        manual_frame = ttk.LabelFrame(self.scrollable_frame, text="Manual Edit")
+        manual_frame.pack(fill='x', padx=10, pady=(0, 100))  # Extra bottom padding for button bar
         
-        # Simple frame for rows (no canvas complications)
+        # Simple frame for rows
         self.rows_frame = ttk.Frame(manual_frame)
-        self.rows_frame.pack(fill='both', expand=True, padx=5, pady=5)
+        self.rows_frame.pack(fill='x', padx=5, pady=5)
         
         # Header
         header = ttk.Frame(self.rows_frame)
@@ -946,11 +1018,23 @@ class CreditsEditor(tk.Toplevel):
         add_btn = ttk.Button(self.rows_frame, text="Add Role", command=lambda: self.add_row("", ""))
         add_btn.pack(pady=10)
         
-        # Bottom buttons
-        btns = ttk.Frame(main_container)
-        btns.pack(side='bottom', fill='x', pady=10)
+        # FIXED BUTTON BAR AT BOTTOM
+        button_bar = ttk.Frame(self)
+        button_bar.pack(side='bottom', fill='x', pady=10, padx=10)
+        
+        # Button bar with separator line
+        ttk.Separator(button_bar, orient='horizontal').pack(fill='x', pady=(0, 10))
+        
+        btns = ttk.Frame(button_bar)
+        btns.pack(fill='x')
         ttk.Button(btns, text="Save", command=self.save).pack(side='right', padx=5)
         ttk.Button(btns, text="Cancel", command=self.cancel).pack(side='right')
+
+    def clear_all_credits(self):
+        """Clear all credits after confirmation"""
+        if messagebox.askyesno("Clear All Credits", "Are you sure you want to clear all credits? This cannot be undone."):
+            self.credits.clear()
+            self.refresh_rows()
 
     def parse_credits(self):
         """Parse the credits text and add to the current credits"""
@@ -1012,7 +1096,7 @@ class CreditsEditor(tk.Toplevel):
         self.name_vars.append(name_var)
         self.rows.append(row)
         
-        # NO FIXED WIDTHS - let them expand naturally
+        # NO FIXED WIDTHS - responsive design
         e1 = tk.Entry(row, textvariable=role_var, insertbackground='black', fg="black", bg="white")
         e2 = tk.Entry(row, textvariable=name_var, insertbackground='black', fg="black", bg="white")
         e1.pack(side='left', padx=(0, 5))
@@ -1050,6 +1134,7 @@ class CreditsEditor(tk.Toplevel):
         del self.rows[idx]
 
     def save(self):
+        """Save changes and close"""
         new_credits = {}
         for r, n in zip(self.role_vars, self.name_vars):
             role = r.get().strip()
@@ -1062,13 +1147,16 @@ class CreditsEditor(tk.Toplevel):
         self.destroy()
 
     def cancel(self):
+        """Cancel changes and revert to original"""
+        # No callback - just close without saving
         self.destroy()
 
 class TileEditor(tk.Toplevel):
     def __init__(self, master, entry, on_save, on_delete):
         super().__init__(master)
         self.title("Edit Entry")
-        self.resizable(True, True)  # Made resizable like v5
+        self.geometry("1000x900")
+        self.resizable(True, True)
         self.entry = entry
         self.on_save = on_save
         self.on_delete = on_delete
@@ -1080,21 +1168,19 @@ class TileEditor(tk.Toplevel):
         self.create_widgets()
 
     def create_widgets(self):
-        # Simple container like v5 (no complex canvas setup)
-        container = tk.Frame(self, bg="#f8f8f8")
-        container.pack(fill='both', expand=True, padx=10, pady=10)
+        # Use responsive scrollable frame
+        main_container, self.scrollable_frame = setup_responsive_scrollable_frame(self)
         
-        # Create main content frame
-        main_frame = tk.Frame(container, bg="#f8f8f8")
-        main_frame.pack(fill='both', expand=True)
+        # Content frame with responsive grid layout
+        content_frame = ttk.Frame(self.scrollable_frame)
+        content_frame.pack(fill='x', padx=10, pady=(10, 100))  # Extra bottom padding for button bar
         
-        # Two-column responsive grid layout
         # Configure grid weights for responsive design
-        main_frame.columnconfigure(0, weight=0)  # Left labels
-        main_frame.columnconfigure(1, weight=1)  # Left inputs
-        main_frame.columnconfigure(2, weight=0)  # Spacing
-        main_frame.columnconfigure(3, weight=0)  # Right labels
-        main_frame.columnconfigure(4, weight=1)  # Right inputs
+        content_frame.columnconfigure(0, weight=0)  # Left labels
+        content_frame.columnconfigure(1, weight=1)  # Left inputs
+        content_frame.columnconfigure(2, weight=0)  # Spacing
+        content_frame.columnconfigure(3, weight=0)  # Right labels
+        content_frame.columnconfigure(4, weight=1)  # Right inputs
         
         gridrow = 0
         label_opts = {"fg": "black", "bg": "#f8f8f8"}
@@ -1106,33 +1192,33 @@ class TileEditor(tk.Toplevel):
         for left_key, right_key in zip(left_fields, right_fields):
             # Left column
             if left_key:
-                tk.Label(main_frame, text=left_key + ":", anchor='w', **label_opts).grid(
+                tk.Label(content_frame, text=left_key + ":", anchor='w', **label_opts).grid(
                     row=gridrow, column=0, sticky='w', pady=2, padx=(0, 5))
                 var = tk.StringVar(value=str(self.entry.get(left_key, "")))
-                # NO FIXED WIDTH - let it expand
-                ent = tk.Entry(main_frame, textvariable=var, fg="black", bg="white", insertbackground='black')
+                # NO FIXED WIDTH - responsive
+                ent = tk.Entry(content_frame, textvariable=var, fg="black", bg="white", insertbackground='black')
                 ent.grid(row=gridrow, column=1, sticky='ew', pady=2, padx=(0, 10))
                 self.vars[left_key] = var
             
             # Right column
             if right_key:
-                tk.Label(main_frame, text=right_key + ":", anchor='w', **label_opts).grid(
+                tk.Label(content_frame, text=right_key + ":", anchor='w', **label_opts).grid(
                     row=gridrow, column=3, sticky='w', pady=2, padx=(10, 5))
                 var = tk.StringVar(value=str(self.entry.get(right_key, "")))
-                # NO FIXED WIDTH - let it expand
-                ent = tk.Entry(main_frame, textvariable=var, fg="black", bg="white", insertbackground='black')
+                # NO FIXED WIDTH - responsive
+                ent = tk.Entry(content_frame, textvariable=var, fg="black", bg="white", insertbackground='black')
                 ent.grid(row=gridrow, column=4, sticky='ew', pady=2)
                 self.vars[right_key] = var
             
             gridrow += 1
 
         # Description (full width, NO FIXED HEIGHT)
-        tk.Label(main_frame, text="description:", anchor='w', **label_opts).grid(
+        tk.Label(content_frame, text="description:", anchor='w', **label_opts).grid(
             row=gridrow, column=0, sticky='nw', pady=(10, 2))
-        desc_frame = tk.Frame(main_frame, bg="#f8f8f8")
+        desc_frame = tk.Frame(content_frame, bg="#f8f8f8")
         desc_frame.grid(row=gridrow, column=1, columnspan=4, sticky='ew', pady=(10, 2))
         
-        # NO FIXED HEIGHT - let it expand naturally
+        # NO FIXED HEIGHT - responsive
         desc_text = tk.Text(desc_frame, fg="black", bg="white", wrap="word", insertbackground='black')
         desc_val = self.entry.get("description", "")
         desc_text.insert("1.0", desc_val)
@@ -1147,19 +1233,19 @@ class TileEditor(tk.Toplevel):
         gridrow += 1
 
         # Credits button
-        credits_btn = ttk.Button(main_frame, text="Edit Credits", command=self.open_credits_editor)
+        credits_btn = ttk.Button(content_frame, text="Edit Credits", command=self.open_credits_editor)
         credits_btn.grid(row=gridrow, column=0, columnspan=5, sticky='w', pady=10)
         gridrow += 1
 
         # Role and Type (side by side)
-        tk.Label(main_frame, text="role:", anchor='w', **label_opts).grid(
+        tk.Label(content_frame, text="role:", anchor='w', **label_opts).grid(
             row=gridrow, column=0, sticky='nw', pady=2, padx=(0, 5))
-        role_frame = tk.Frame(main_frame, bg="#f8f8f8")
+        role_frame = tk.Frame(content_frame, bg="#f8f8f8")
         role_frame.grid(row=gridrow, column=1, sticky='ew', pady=2, padx=(0, 10))
         
-        tk.Label(main_frame, text="type:", anchor='w', **label_opts).grid(
+        tk.Label(content_frame, text="type:", anchor='w', **label_opts).grid(
             row=gridrow, column=3, sticky='nw', pady=2, padx=(10, 5))
-        type_frame = tk.Frame(main_frame, bg="#f8f8f8")
+        type_frame = tk.Frame(content_frame, bg="#f8f8f8")
         type_frame.grid(row=gridrow, column=4, sticky='ew', pady=2)
         
         # Role checkboxes
@@ -1182,9 +1268,9 @@ class TileEditor(tk.Toplevel):
         gridrow += 1
 
         # Screenplay (full width)
-        tk.Label(main_frame, text="Screenplay:", anchor='w', **label_opts).grid(
+        tk.Label(content_frame, text="Screenplay:", anchor='w', **label_opts).grid(
             row=gridrow, column=0, sticky='w', pady=2, padx=(0, 5))
-        screenplay_frame = tk.Frame(main_frame, bg="#f8f8f8")
+        screenplay_frame = tk.Frame(content_frame, bg="#f8f8f8")
         screenplay_frame.grid(row=gridrow, column=1, columnspan=4, sticky='w', pady=2)
         current_screenplay = self.entry.get("Screenplay", "")
         self.screenplay_var.set(current_screenplay)
@@ -1193,9 +1279,15 @@ class TileEditor(tk.Toplevel):
             rb.pack(side="left", padx=10)
         gridrow += 1
 
-        # Bottom buttons
-        btns = tk.Frame(container, bg="#f8f8f8")
-        btns.pack(side='bottom', fill='x', pady=(10, 0))
+        # FIXED BUTTON BAR AT BOTTOM
+        button_bar = ttk.Frame(self)
+        button_bar.pack(side='bottom', fill='x', pady=10, padx=10)
+        
+        # Button bar with separator line
+        ttk.Separator(button_bar, orient='horizontal').pack(fill='x', pady=(0, 10))
+        
+        btns = ttk.Frame(button_bar)
+        btns.pack(fill='x')
         ttk.Button(btns, text="Delete", command=self.confirm_delete).pack(side='left', padx=5)
         ttk.Button(btns, text="Save", command=self.save).pack(side='right', padx=5)
         ttk.Button(btns, text="Cancel", command=self.destroy).pack(side='right')
@@ -1233,34 +1325,17 @@ class DataJsonViewer(ttk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
-        # Simple approach like v5 - no complex canvas setup
-        main_frame = tk.Frame(self, background="#f8f8f8")
-        main_frame.pack(fill='both', expand=True)
-        
-        # Add scrollbar
-        scrollbar = ttk.Scrollbar(main_frame, orient="vertical")
-        scrollbar.pack(side="right", fill="y")
-        
-        # Create canvas for scrolling
-        self.canvas = tk.Canvas(main_frame, yscrollcommand=scrollbar.set, borderwidth=0, background="#f8f8f8")
-        self.canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.config(command=self.canvas.yview)
-        
-        # Frame inside canvas
-        self.frame = tk.Frame(self.canvas, background="#f8f8f8")
-        self.canvas.create_window((0, 0), window=self.frame, anchor='nw')
-        
-        # Configure scrolling
-        self.frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+        # Use responsive scrollable frame
+        main_container, self.scrollable_frame = setup_responsive_scrollable_frame(self)
         
         self.populate_tiles()
 
     def populate_tiles(self):
-        for widget in self.frame.winfo_children():
+        for widget in self.scrollable_frame.winfo_children():
             widget.destroy()
         self.tiles.clear()
         for idx, entry in enumerate(self.data):
-            tile = tk.Frame(self.frame, relief="groove", borderwidth=2, bg="#f4f4f4")
+            tile = tk.Frame(self.scrollable_frame, relief="groove", borderwidth=2, bg="#f4f4f4")
             tile.pack(fill='x', padx=6, pady=5)
             header = f"{entry.get('title', '(untitled)')} | {entry.get('slug', '')} | {entry.get('date', '')}"
             tk.Label(tile, text=header, font=("Arial", 12, "bold"), anchor='w', bg="#f4f4f4", fg="black").pack(anchor='w', padx=5)
@@ -1274,7 +1349,6 @@ class DataJsonViewer(ttk.Frame):
             btns = tk.Frame(tile, bg="#f4f4f4")
             btns.pack(anchor='sw', side='bottom', padx=8, pady=2, fill='x')
             ttk.Button(btns, text="Edit", command=lambda idx=idx: self.edit_entry(idx)).pack(side='left')
-        self.frame.update_idletasks()
 
     def edit_entry(self, idx):
         def on_save(updated_entry):
@@ -1314,23 +1388,19 @@ class ContentEntryApp(tk.Tk):
         self.tabs.add(self.data_tab, text="View/Edit data.json")
 
     def _setup_entry_tab(self, parent):
-        # Simple approach like v5 - no complex canvas setup
-        # Use direct pack layout for better compatibility with clipboard managers
-        
-        # Main form container
-        main_container = tk.Frame(parent, bg="#f8f8f8")
-        main_container.pack(fill='both', expand=True, padx=10, pady=10)
+        # Use responsive scrollable frame
+        main_container, self.scrollable_frame = setup_responsive_scrollable_frame(parent)
         
         # Mode selection at top
         self.mode_var = tk.StringVar(value="video")
-        mode_frame = ttk.LabelFrame(main_container, text="Start from")
-        mode_frame.pack(fill='x', pady=(0, 10))
+        mode_frame = ttk.LabelFrame(self.scrollable_frame, text="Start from")
+        mode_frame.pack(fill='x', pady=(10, 10), padx=10)
         ttk.Radiobutton(mode_frame, text="Video", variable=self.mode_var, value="video", command=self.switch_mode).pack(side='left', padx=10)
         ttk.Radiobutton(mode_frame, text="PDF", variable=self.mode_var, value="pdf", command=self.switch_mode).pack(side='left', padx=10)
 
         # Source section
-        source_frame = tk.Frame(main_container, bg="#f8f8f8")
-        source_frame.pack(fill='x', pady=(0, 10))
+        source_frame = tk.Frame(self.scrollable_frame, bg="#f8f8f8")
+        source_frame.pack(fill='x', pady=(0, 10), padx=10)
         
         self.source_label = tk.Label(source_frame, text="Video Source:", anchor='w', fg="black", bg="#f8f8f8")
         self.source_label.pack(anchor='w')
@@ -1339,7 +1409,7 @@ class ContentEntryApp(tk.Tk):
         src_row = tk.Frame(source_frame, bg="#f8f8f8")
         src_row.pack(fill='x', pady=3)
         
-        # NO FIXED WIDTH - let entry expand
+        # NO FIXED WIDTH - responsive
         self.src_entry = tk.Entry(src_row, textvariable=self.source_var, insertbackground='black', fg="black", bg="white")
         self.src_entry.pack(side='left', fill='x', expand=True, padx=(0, 5))
         
@@ -1348,8 +1418,8 @@ class ContentEntryApp(tk.Tk):
         ttk.Button(src_row, text="Generate Preview", command=self.generate_preview_for_current).pack(side='left', padx=2)
 
         # Main form area with two-column layout
-        form_container = tk.Frame(main_container, bg="#f8f8f8")
-        form_container.pack(fill='both', expand=True)
+        form_container = tk.Frame(self.scrollable_frame, bg="#f8f8f8")
+        form_container.pack(fill='x', padx=10, pady=(0, 100))  # Extra bottom padding for button bar
         
         # Configure grid for responsive design
         form_container.columnconfigure(0, weight=0)  # Left labels
@@ -1382,7 +1452,7 @@ class ContentEntryApp(tk.Tk):
                 tk.Label(form_container, text=left_label + ":", anchor='w', fg="black", bg="#f8f8f8").grid(
                     row=gridrow, column=0, sticky='w', pady=2, padx=(0, 5))
                 var = tk.StringVar()
-                # NO FIXED WIDTH - let it expand
+                # NO FIXED WIDTH - responsive
                 ent = tk.Entry(form_container, textvariable=var, insertbackground='black', fg="black", bg="white")
                 ent.grid(row=gridrow, column=1, sticky='ew', pady=2, padx=(0, 10))
                 self.fields[left_key] = var
@@ -1392,7 +1462,7 @@ class ContentEntryApp(tk.Tk):
                 tk.Label(form_container, text=right_label + ":", anchor='w', fg="black", bg="#f8f8f8").grid(
                     row=gridrow, column=3, sticky='w', pady=2, padx=(10, 5))
                 var = tk.StringVar()
-                # NO FIXED WIDTH - let it expand
+                # NO FIXED WIDTH - responsive
                 ent = tk.Entry(form_container, textvariable=var, insertbackground='black', fg="black", bg="white")
                 ent.grid(row=gridrow, column=4, sticky='ew', pady=2)
                 self.fields[right_key] = var
@@ -1406,7 +1476,7 @@ class ContentEntryApp(tk.Tk):
         desc_frame = tk.Frame(form_container, bg="#f8f8f8")
         desc_frame.grid(row=gridrow, column=1, columnspan=4, sticky='ew', pady=(10, 2))
         
-        # NO FIXED HEIGHT - let it expand naturally
+        # NO FIXED HEIGHT - responsive
         self.description_text = tk.Text(desc_frame, wrap="word", fg="black", bg="white", insertbackground='black')
         self.description_text.pack(side='left', fill='both', expand=True)
         self.fields['description'] = self.description_text
@@ -1462,9 +1532,15 @@ class ContentEntryApp(tk.Tk):
         ttk.Button(credits_frame, text="Edit Credits", command=self.edit_credits).pack(anchor='w', padx=5, pady=2)
         gridrow += 1
 
-        # Buttons (full width)
-        btns = tk.Frame(form_container, bg="#f8f8f8")
-        btns.grid(row=gridrow, column=0, columnspan=5, sticky='ew', pady=20)
+        # FIXED BUTTON BAR AT BOTTOM
+        button_bar = ttk.Frame(parent)
+        button_bar.pack(side='bottom', fill='x', pady=10, padx=10)
+        
+        # Button bar with separator line
+        ttk.Separator(button_bar, orient='horizontal').pack(fill='x', pady=(0, 10))
+        
+        btns = ttk.Frame(button_bar)
+        btns.pack(fill='x')
         ttk.Button(btns, text="Save Entry", command=self.save_entry).pack(side='right', padx=10)
         ttk.Button(btns, text="Clear", command=self.clear_fields).pack(side='right')
 
