@@ -151,7 +151,7 @@ function bindEvents(){
                 btn.querySelector('.text').textContent='Show More';
             }
             requestAnimationFrame(()=>{
-                opts.style.maxHeight='300px';
+                opts.style.maxHeight='450px';
             });
         });
     }
