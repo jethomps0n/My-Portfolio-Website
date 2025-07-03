@@ -31,9 +31,10 @@ function processCharacterRoles() {
     creditNames.forEach(nameElement => {
         const text = nameElement.textContent;
         
-        // Pattern to match " as [character name]" - must start with " as " and be followed by characters
-        // This avoids matching names that end with "as" like "Matthias"
-        const characterPattern = /(\s+as\s+[^,]+(?:\s*\([^)]+\))?)/gi;
+        // Pattern to match " as [character name]" or " on [instrument/role]"
+        // Must start with " as " or " on " and be followed by characters
+        // This avoids matching names that end with "as" like "Matthias" or "on" like "Mason"
+        const characterPattern = /(\s+(?:as|on)\s+[^,]+(?:\s*\([^)]+\))?)/gi;
         
         const matches = text.match(characterPattern);
         
