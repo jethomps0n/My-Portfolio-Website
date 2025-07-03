@@ -259,7 +259,7 @@ button:disabled {
 }
 
 .filter-group .options.expanded {
-    max-height: 300px;
+    max-height: 450px;
     opacity: 1;
     margin-top: 8px;
 }
@@ -286,7 +286,7 @@ button:disabled {
 }
 
 .filter-group .more.expanded {
-    max-height: 300px;
+    max-height: 450px;
 }
 
 .custom-range input {

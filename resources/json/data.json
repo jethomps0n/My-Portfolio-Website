@@ -179,7 +179,7 @@
     "title": "The Orb",
     "date": "November 08, 2024",
     "role": "Writer/Editor/Director/Actor",
-    "description": "This short film was made in my Intro to Production class using the bedroom and kitchen set we had access to. We were all given a short treatment, and we all worked on a script based on that treatment as a class. Once we finished the script, all we had to do was film it. I directed all of the scenes in the kitchen. Once filming wrapped, everyone in the class worked on their own individual edits - this is mine.",
+    "description": "CK stumbles upon a mysterious glowing orb in the fridge. He learns about the immense power it possesses.\n\nThis short film was made in my Intro to Production class using the bedroom and kitchen set we had access to. We were all given a short treatment, and we all worked on a script based on that treatment as a class. Once we finished the script, all we had to do was film it. I directed all of the scenes in the kitchen. Once filming wrapped, everyone in the class worked on their own individual edits - this is mine.",
     "credits": {
       "Directed by": [
         "Jonathan Thompson",
@@ -312,9 +312,12 @@
     "slug": "a-classic-man-a-video-on-music-in-moonlight",
     "title": "a classic man | a video on MUSIC in MOONLIGHT",
     "date": "April 13, 2024",
-    "role": "Editor",
+    "role": "Writer/Editor",
     "description": "My third and final audio-visual essay for my intro to film, television, and media course. Here I talk about how music presents itself as more than just the soundtrack in Barry Jenkins' Moonlight (2016).\n\n0:00 Intro\n1:05 Act 1: Little\n1:57 Act 2: Chiron\n3:06 Act 3: Black\n4:28 Closing\n\nTracks:\n- Classic Man [Chopped and Screwed] (Official Moonlight Remix) · Jidenna\n- Puccini: Turandot / Act 2 - Tre enigmi m'hai proposto · Luciano Pavarotti · Peter Pears · John Alldis Choir · London Philharmonic Orchestra · Zubin Mehta\n- Little's Theme · Nicholas Britell · Not Documented\n- Interlude · Nicholas Britell · Not Documented\n- Chiron's Theme Chopped & Screwed (Knock Down Stay Down) · Nicholas Britell · Not Documented\n- Sweet Dreams · Nicholas Britell · Not Documented\n- Black's Theme · Nicholas Britell · Not Documented\n- The Middle of the World · Nicholas Britell · Not Documented",
     "credits": {
+      "Written by": [
+        "Jonathan Thompson"
+      ],
       "Editor": [
         "Jonathan Thompson"
       ]
@@ -463,7 +466,7 @@
         "Jonathan Thompson"
       ]
     },
-    "type": "Rescore",
+    "type": "Advertisement",
     "Screenplay": ""
   },
   {
@@ -641,7 +644,7 @@
     "title": "Love at First Sight",
     "date": "December 04, 2024",
     "role": "Writer/Editor/DP/Camera Operator",
-    "description": "",
+    "description": "Blair finally goes on a date with Landon, the boy of her dreams. However, the evening quickly spirals into disaster.",
     "credits": {
       "Directed by": [
         "Maryjane Francis"
@@ -680,7 +683,7 @@
     "title": "The Final Draft",
     "date": "December 04, 2024",
     "role": "Actor/Gaffer",
-    "description": "",
+    "description": "Maive discovers a mysterious book, seemingly left behind in her study lounge. As she scours its pages, she realizes that reality can be anything she wants.",
     "credits": {
       "Directed by": [
         "Sohpia Swope"
