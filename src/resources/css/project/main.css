@@ -252,6 +252,23 @@
     transition: color 400ms ease;
 }
 
+/* Style the "as Character" parts in actor credits */
+.credit-name .character-role {
+    font-size: 0.65rem;
+    color: hsla(228,48%,65%,0.8);
+    font-style: italic;
+    font-weight: 400;
+    transition: color 400ms ease;
+}
+
+#credits ul:hover .credit-name .character-role {
+    color: hsla(228,48%,45%,0.6);
+}
+
+#credits ul:hover li:hover .credit-name .character-role {
+    color: hsla(228,48%,75%,0.9);
+}
+
 #credits ul:hover li strong {
     color: hsla(228,48%,45%,1);
 }

@@ -98,7 +98,7 @@
     "title": "Dear Black Umich,",
     "date": "April 20, 2025",
     "role": "Camera Operator",
-    "description": "A community documentary highlighting the intersectionalities of the Black experience at the University of Michigan, divided into 6 sections: Black Beauty, Black Love, Black Arts, Black Academia, Black Struggle & Perseverance, and Black Joy.\n\nCast (in order of appearance):\n\"Beauty\" Poem (voice): Angelique Taylor Dickson\n\"Love\" Poem (voice): Chazia Siskowski\n\"Arts\" Poem (voice): Bethany Carter\n\"Academia\" Poem (voice): Hailey Love\n\"Joy\" Poem (voice): Emnet Kahsai\nEnd Credits Poem (voice): Sam Todd\n\nNon-credited music provided by Epidemic Sound.\n\n© 2025 Black Film Society\nAll rights reserved.",
+    "description": "A community documentary highlighting the intersectionalities of the Black experience at the University of Michigan, divided into 6 sections: Black Beauty, Black Love, Black Arts, Black Academia, Black Struggle & Perseverance, and Black Joy.\n\nNon-credited music provided by Epidemic Sound.\n\n© 2025 Black Film Society\nAll rights reserved.",
     "credits": {
       "Directed by": [
         "Lauren Freeman & Lauren Horne"
@@ -117,12 +117,12 @@
         "Brett Sherwood"
       ],
       "Lead Cast": [
-        "Angelique Taylor Dickson",
-        "Chazia Siskowski",
-        "Bethany Carter",
-        "Hailey Love",
-        "Emnet Kahsai",
-        "Sam Todd"
+        "Angelique Taylor Dickson as \"Beauty\" Poem (voice)",
+        "Chazia Siskowski as \"Love\" Poem (voice)",
+        "Bethany Carter as \"Arts\" Poem (voice)",
+        "Hailey Love as \"Academia\" Poem (voice)",
+        "Emnet Kahsai as \"Joy\" Poem (voice)",
+        "Sam Todd as End Credits Poem (voice)"
       ],
       "Director of Photography": [
         "Tyree Christian"
@@ -174,7 +174,7 @@
     "previewSrc": "/resources/videos/previews/the-orb-in-class-short-ftvm-290-preview.webm",
     "videoSrc": "https://www.youtube.com/embed/_GwuCubOxpc",
     "PDFSrc": "",
-    "slug": "the-orb-in-class-short-ftvm-290",
+    "slug": "the-orb",
     "title": "The Orb",
     "date": "November 08, 2024",
     "role": "Writer/Editor/Director/Actor",
@@ -232,10 +232,14 @@
     "slug": "life-is-strange-episode-2---final-scene-rescore-with-the-walking-dead-soundtrack",
     "title": "Life is Strange: Episode 2 - Final Scene | RESCORE with The Walking Dead Soundtrack",
     "date": "August 10, 2024",
-    "role": "",
+    "role": "Editor",
     "description": "Rescore track: All My Dreaming · Emma Russack\nOriginal track: Mt. Washington · Local Natives",
-    "credits": {},
-    "type": "",
+    "credits": {
+      "Editor": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Rescore",
     "Screenplay": ""
   },
   {
@@ -243,13 +247,60 @@
     "previewSrc": "/resources/videos/previews/that-one-romcom-from-2003-a-short-film-by-m-agination-preview.webm",
     "videoSrc": "https://www.youtube.com/embed/gqDbi48J-JU",
     "PDFSrc": "",
-    "slug": "that-one-romcom-from-2003-a-short-film-by-m-agination",
-    "title": "THAT ONE ROMCOM FROM 2003 | A Short Film by M-AGINATION",
+    "slug": "that-one-romcom-from-2003",
+    "title": "That One Romcom From 2003",
     "date": "April 20, 2024",
-    "role": "",
-    "description": "There's nothing more cliché than the popular high school jock falling for the stereotypical nerd. That's why we've upgraded to college...\n\nEdited by yours truly. Hope you enjoy!\n------------------------------------------------------------------------------\nWritten and Directed by:\nRebecca Glicksman\n\nStarring:\nWill Chehab as Mark\nTara Lemon as Jennifer\nArjun Manyam as Sam\n\nExtras/Cliques:\nKatie Bartlett\nAdina Farca\nAna Ferrera\nLeila Idrissi\nChloe Valentino\nBrayden Lichty\nMadeleine Miller\n\nProduced by:\nRebecca Glicksman\nJack Buchholz - @JackBuchholzFilms \nKiana Pandit\n\nDirector of Photography:\nLeah Gouin\n\nAssistant Director:\nMadison Slater\n\nEditor:\nJonathan Thompson\n\nSound:\nBrock McIntyre\nPeter Gottschalk\n\nProduction Designer:\nAsia Adams\n\nCostume Designer:\nMadeleine Miller\n\nProduction Assistants:\nElise Kubvaruno\nSammi Smith\nJonathan Thompson",
-    "credits": {},
-    "type": "",
+    "role": "Editor/Production Assistant",
+    "description": "There's nothing more cliché than the popular high school jock falling for the stereotypical nerd. That's why we've upgraded to college.\n\nEdited by yours truly. Hope you enjoy!",
+    "credits": {
+      "Written and Directed by": [
+        "Rebecca Glicksman"
+      ],
+      "Produced by": [
+        "Rebecca Glicksman",
+        "Jack Buchholz",
+        "Kiana Pandit"
+      ],
+      "Lead Cast": [
+        "Will Chehab as Mark",
+        "Tara Lemon as Jennifer",
+        "Arjun Manyam as Sam"
+      ],
+      "Supporting Cast": [
+        "Katie Bartlett",
+        "Adina Farca",
+        "Ana Ferrera",
+        "Leila Idrissi",
+        "Chloe Valentino",
+        "Brayden Lichty",
+        "Madeleine Miller"
+      ],
+      "Director of Photography": [
+        "Leah Gouin"
+      ],
+      "Production Designer": [
+        "Asia Adams"
+      ],
+      "Editor": [
+        "Jonathan Thompson"
+      ],
+      "Assistant Director": [
+        "Madison Slater"
+      ],
+      "Costume Designer": [
+        "Madeleine Miller"
+      ],
+      "Sound Recordists": [
+        "Brock McIntyre",
+        "Peter Gottschalk"
+      ],
+      "Production Assistants": [
+        "Elise Kubvaruno",
+        "Sammi Smith",
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Short Film",
     "Screenplay": ""
   },
   {
@@ -260,10 +311,14 @@
     "slug": "a-classic-man-a-video-on-music-in-moonlight",
     "title": "a classic man | a video on MUSIC in MOONLIGHT",
     "date": "April 13, 2024",
-    "role": "",
+    "role": "Editor",
     "description": "My third and final audio-visual essay for my intro to film, television, and media course. Here I talk about how music presents itself as more than just the soundtrack in Barry Jenkins' Moonlight (2016).\n\n0:00 Intro\n1:05 Act 1: Little\n1:57 Act 2: Chiron\n3:06 Act 3: Black\n4:28 Closing\n\nTracks:\n- Classic Man [Chopped and Screwed] (Official Moonlight Remix) · Jidenna\n- Puccini: Turandot / Act 2 - Tre enigmi m'hai proposto · Luciano Pavarotti · Peter Pears · John Alldis Choir · London Philharmonic Orchestra · Zubin Mehta\n- Little's Theme · Nicholas Britell · Not Documented\n- Interlude · Nicholas Britell · Not Documented\n- Chiron's Theme Chopped & Screwed (Knock Down Stay Down) · Nicholas Britell · Not Documented\n- Sweet Dreams · Nicholas Britell · Not Documented\n- Black's Theme · Nicholas Britell · Not Documented\n- The Middle of the World · Nicholas Britell · Not Documented",
-    "credits": {},
-    "type": "",
+    "credits": {
+      "Editor": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Video Essay",
     "Screenplay": ""
   },
   {
@@ -274,10 +329,14 @@
     "slug": "1899-s01e08---maura-inserts-the-key-scene-rescore-with-maniac-soundtrack",
     "title": "1899 (S01E08) - Maura Inserts the Key Scene | RESCORE with Maniac Soundtrack",
     "date": "November 30, 2023",
-    "role": "",
+    "role": "Editor",
     "description": "Rescore track: Blind Spots · Dan Romer\nOriginal track: Dieses Mal Wird Sie Aufwachen · Ben Frost",
-    "credits": {},
-    "type": "",
+    "credits": {
+      "Editor": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Rescore",
     "Screenplay": ""
   },
   {
@@ -288,10 +347,14 @@
     "slug": "palm-springs---looking-for-sarah-scene-rescore-with-the-walking-dead-game-soundtrack",
     "title": "Palm Springs - Looking for Sarah Scene | RESCORE with The Walking Dead Game Soundtrack",
     "date": "September 21, 2023",
-    "role": "",
+    "role": "Editor",
     "description": "Rescore track: Training Clementine · Jared Emerson-Johnson\nOriginal track: Life Without Sarah · Cornbread Compton",
-    "credits": {},
-    "type": "",
+    "credits": {
+      "Editor": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Rescore",
     "Screenplay": ""
   },
   {
@@ -302,10 +365,14 @@
     "slug": "scott-pilgrim-vs-the-world---date-scene-rescore-with-the-secret-life-of-walter-mitty-soundtrack",
     "title": "Scott Pilgrim vs. the World - Date Scene | RESCORE with The Secret Life of Walter Mitty Soundtrack",
     "date": "September 18, 2023",
-    "role": "",
+    "role": "Editor",
     "description": "Rescore track: Wake Up · Arcade Fire\nOriginal track: By Your Side · Beachwood Sparks",
-    "credits": {},
-    "type": "",
+    "credits": {
+      "Editor": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Rescore",
     "Screenplay": ""
   },
   {
@@ -316,10 +383,14 @@
     "slug": "the-walking-dead-game-a-new-frontier-s03e03---opening-credits-scene-rescore-ft-john-paesano",
     "title": "The Walking Dead Game: A New Frontier (S03E03) - Opening Credits Scene | RESCORE ft. John Paesano",
     "date": "September 04, 2023",
-    "role": "",
+    "role": "Editor",
     "description": "Rescore 1 track: This Is The End - Markus · John Paesano\nRescore 2 track: Finale · John Paesano · Pete Anthony · American Federation of Musicians\nOriginal track: Above the Law Opening Titles · Jared Emerson-Johnson\n\nWith Rescore 1 I wanted to enhance that feeling of reminiscence the characters feel when they grab their belongings throughout the house, taking only what they need and leaving their valued items and their past behind. With Rescore 2 I wanted to amp the mood up a bit, and give it a feel of \"gearing up\" and \"preparing for what's to come,\" which is kind of what the original had, while still leaving a bit of reflection as each character leaves their home.. I just now realized that both of these tracks are composed by John Paesano.\n\n0:00 Timestamps\n0:05 Rescore 1\n2:22 Rescore 2",
-    "credits": {},
-    "type": "",
+    "credits": {
+      "Editor": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Rescore",
     "Screenplay": ""
   },
   {
@@ -330,10 +401,14 @@
     "slug": "looper---opening-scene-rescore-with-extraction-soundtrack",
     "title": "Looper - Opening Scene | RESCORE with Extraction Soundtrack",
     "date": "August 15, 2023",
-    "role": "",
+    "role": "Editor",
     "description": "Rescore track: Prelude · Henry Jackman · Alex Belcher\nOriginal track: A Body That Technically Does Not Exist · Nathan Johnson\n\nWanted to give that feeling of familiarity even though that this is a new world.",
-    "credits": {},
-    "type": "",
+    "credits": {
+      "Editor": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Rescore",
     "Screenplay": ""
   }
 ]
