@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setupSmoothScroll();
     setupScrollAnimations();
     
+    // Process character roles in credits
+    processCharacterRoles();
+    
     // Setup credits height matching
     matchCreditsHeight();
     
@@ -20,6 +23,34 @@ document.addEventListener('DOMContentLoaded', () => {
         matchCreditsHeight();
     });
 });
+
+function processCharacterRoles() {
+    // Find all credit name elements
+    const creditNames = document.querySelectorAll('.credit-name');
+    
+    creditNames.forEach(nameElement => {
+        const text = nameElement.textContent;
+        
+        // Pattern to match " as [character name]" - must start with " as " and be followed by characters
+        // This avoids matching names that end with "as" like "Matthias"
+        const characterPattern = /(\s+as\s+[^,]+(?:\s*\([^)]+\))?)/gi;
+        
+        const matches = text.match(characterPattern);
+        
+        if (matches) {
+            let newHtml = text;
+            
+            // Replace each match with a styled span
+            matches.forEach(match => {
+                const trimmedMatch = match.trim(); // Remove extra whitespace
+                const styledMatch = ` <span class="character-role">${trimmedMatch}</span>`;
+                newHtml = newHtml.replace(match, styledMatch);
+            });
+            
+            nameElement.innerHTML = newHtml;
+        }
+    });
+}
 
 function matchCreditsHeight() {
     const project = document.getElementById('project');

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jonathan Thompson</title>
+    <title>That One Romcom From 2003 | Jonathan Thompson</title>
     <link rel="icon" type="image/x-icon" href="/resources/images/favicon.png">
 
     <meta property="og:title" content="Jonathan Thompson" />
@@ -12,15 +12,19 @@
     <meta property="og:url" content="itsjonathanthompson.com" />
 
     <link rel="stylesheet" href="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.css">
-    
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+
     <link rel="stylesheet" href="/resources/css/global.css">
-    <link rel="stylesheet" href="/resources/css/index.css">
+    <link rel="stylesheet" href="/resources/css/project/main.css">  <link rel="stylesheet" href="/resources/css/project/video-viewer.css">
+
 
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
     <script src="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.js" defer></script>
-    
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+
     <script src="/resources/js/global.js" defer></script>
-    <script src="/resources/js/index.js" defer></script>
+    <script src="/resources/js/project/main.js" defer></script>  <script type="module" src="/resources/js/project/video-viewer.js" defer></script>
+
 </head>
 <body>
     <div class="effects">
@@ -76,99 +80,184 @@
     </header>
     <main>
         
-<div id="content">
-    
-    
-    
-        
-            
-        
-    
-        
-            
-        
-    
-        
-            
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-
-    
-        <div class="contentContainer pop-in"> 
-            <a class="frame" href="/explore/dear-black-umich">
-                <img class="thumbnail active" src="https://i.ytimg.com/vi/oFJd16_O2Kk/maxresdefault.jpg" alt="">
-                <video class="thumbnail passive" src="/resources/videos/previews/dear-black-umich-preview.webm" muted loop></video>
-            </a>
-            <div class="info">
-                <a class="expand" href="/explore/dear-black-umich"></a>
-                <h2 class="contentTitle">Dear Black Umich,</h2>
-                <h3 class="date">April 20, 2025</h3>
+<div id="project-page">
+    <div id="content-box">
+        <section id="project">
+            <div id="frame">
                 
-                <div class="roles">
-                    <a class="role-tag" href="/explore/?roles=Camera%20Operator">Camera Operator</a>
+                
+                <div class="plyr__video-embed" id="player">
+                    <iframe
+                        src="https://www.youtube.com/embed/gqDbi48J-JU"
+                        allowfullscreen
+                        allowtransparency
+                        allow="autoplay"
+                    ></iframe>
+                </div>
+                
+                
+            </div>
+            <div id="info">
+                <div id="specs">
+                    <h1 id="contentTitle">That One Romcom From 2003</h1>
+                    <small id="date">April 20, 2024</small>
+                </div>
+                <div id="tags">
+                    
+                    <div class="roles">
+                        
+                        <a class="role-tag" href="/explore/?roles=Editor">Editor</a>
+                        
+                        <a class="role-tag" href="/explore/?roles=Production%20Assistant">Production Assistant</a>
+                        
+                    </div>
+                    <span id="divider"> | </span>
+                    <a class="type-tag" href="/explore/?types=Short%20Film">Short Film</a>
                 </div>
             </div>
-        </div>
-    
-        <div class="contentContainer pop-in"> 
-            <a class="frame" href="/explore/the-orb">
-                <img class="thumbnail active" src="https://i.ytimg.com/vi_webp/_GwuCubOxpc/maxresdefault.webp" alt="">
-                <video class="thumbnail passive" src="/resources/videos/previews/the-orb-in-class-short-ftvm-290-preview.webm" muted loop></video>
-            </a>
-            <div class="info">
-                <a class="expand" href="/explore/the-orb"></a>
-                <h2 class="contentTitle">The Orb</h2>
-                <h3 class="date">November 08, 2024</h3>
-                
-                <div class="roles">
-                    <a class="role-tag" href="/explore/?roles=Writer">Writer</a><a class="role-tag" href="/explore/?roles=Editor">Editor</a><a class="role-tag" href="/explore/?roles=Director">Director</a><a class="role-tag" href="/explore/?roles=Actor">Actor</a>
-                </div>
+        </section>
+        <aside id="credits">
+            <div id="credits-header">
+                <h2>Credits</h2>
             </div>
-        </div>
-    
-        <div class="contentContainer pop-in"> 
-            <a class="frame" href="/explore/life-is-strange-episode-2---final-scene-rescore-with-the-walking-dead-soundtrack">
-                <img class="thumbnail active" src="https://i.ytimg.com/vi_webp/YfiAqp8hnoE/maxresdefault.webp" alt="">
-                <video class="thumbnail passive" src="/resources/videos/previews/life-is-strange-episode-2---final-scene-rescore-with-the-walking-dead-soundtrack-preview.webm" muted loop></video>
-            </a>
-            <div class="info">
-                <a class="expand" href="/explore/life-is-strange-episode-2---final-scene-rescore-with-the-walking-dead-soundtrack"></a>
-                <h2 class="contentTitle">Life is Strange: Episode 2 - Final Scene | RESCORE with The Walking Dead Soundtrack</h2>
-                <h3 class="date">August 10, 2024</h3>
-                
-                <div class="roles">
-                    <a class="role-tag" href="/explore/?roles=Editor">Editor</a>
-                </div>
+            <div id="credits-container">
+                <ul>
+                    
+                        <li>
+                            <strong>Written and Directed by:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Rebecca Glicksman</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Produced by:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Rebecca Glicksman</span>
+                                
+                                    <span class="credit-name">Jack Buchholz</span>
+                                
+                                    <span class="credit-name">Kiana Pandit</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Lead Cast:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Will Chehab as Mark</span>
+                                
+                                    <span class="credit-name">Tara Lemon as Jennifer</span>
+                                
+                                    <span class="credit-name">Arjun Manyam as Sam</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Supporting Cast:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Katie Bartlett</span>
+                                
+                                    <span class="credit-name">Adina Farca</span>
+                                
+                                    <span class="credit-name">Ana Ferrera</span>
+                                
+                                    <span class="credit-name">Leila Idrissi</span>
+                                
+                                    <span class="credit-name">Chloe Valentino</span>
+                                
+                                    <span class="credit-name">Brayden Lichty</span>
+                                
+                                    <span class="credit-name">Madeleine Miller</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Director of Photography:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Leah Gouin</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Production Designer:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Asia Adams</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Editor:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Jonathan Thompson</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Assistant Director:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Madison Slater</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Costume Designer:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Madeleine Miller</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Sound Recordists:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Brock McIntyre</span>
+                                
+                                    <span class="credit-name">Peter Gottschalk</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Production Assistants:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Elise Kubvaruno</span>
+                                
+                                    <span class="credit-name">Sammi Smith</span>
+                                
+                                    <span class="credit-name">Jonathan Thompson</span>
+                                
+                            </div>
+                        </li>
+                    
+                </ul>
             </div>
-        </div>
-    
-</div>
-<div id="loadMore">
-    <button type="button" class="button">Load More</button>
+        </aside>
+    </div>
+    <div id="more">
+        
+        <section id="description">
+            <p>There's nothing more cliché than the popular high school jock falling for the stereotypical nerd. That's why we've upgraded to college.<br><br>Edited by yours truly. Hope you enjoy!</p>
+        </section>
+    </div>
 </div>
     </main>
     <footer>
