@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jonathan Thompson</title>
+    <title>Plumb Out of Time | Jonathan Thompson</title>
     <link rel="icon" type="image/x-icon" href="/resources/images/icons/favicon.png">
 
     <meta property="og:title" content="Jonathan Thompson" />
@@ -12,15 +12,19 @@
     <meta property="og:url" content="itsjonathanthompson.com" />
 
     <link rel="stylesheet" href="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.css">
-    
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+
     <link rel="stylesheet" href="/resources/css/global.css">
-    <link rel="stylesheet" href="/resources/css/index.css">
+    <link rel="stylesheet" href="/resources/css/project/main.css">  <link rel="stylesheet" href="/resources/css/project/video-viewer.css">
+
 
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
     <script src="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.js" defer></script>
-    
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+
     <script src="/resources/js/global.js" defer></script>
-    <script src="/resources/js/index.js" defer></script>
+    <script src="/resources/js/project/main.js" defer></script>  <script type="module" src="/resources/js/project/video-viewer.js" defer></script>
+
 </head>
 <body>
     <div class="effects">
@@ -76,115 +80,263 @@
     </header>
     <main>
         
-<div id="content">
-    
-    
-    
-        
-            
-        
-    
-        
-            
-        
-    
-        
-            
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-
-    
-        <div class="contentContainer pop-in"> 
-            <a class="frame" href="/explore/the-final-draft">
-                <img class="thumbnail active" src="https://i.ytimg.com/vi/aOSlvVq_nrw/maxresdefault.jpg" alt="">
-                <video class="thumbnail passive" src="/resources/videos/previews/the-final-draft-preview.webm" muted loop></video>
-            </a>
-            <div class="info">
-                <a class="expand" href="/explore/the-final-draft"></a>
-                <h2 class="contentTitle">The Final Draft</h2>
-                <h3 class="date">December 04, 2025</h3>
+<div id="project-page">
+    <div id="content-box">
+        <section id="project">
+            <div id="frame">
                 
-                <div class="roles">
-                    <a class="role-tag" href="/explore/?roles=Actor">Actor</a><a class="role-tag" href="/explore/?roles=Gaffer">Gaffer</a>
+                
+                <div class="plyr__video-embed" id="player">
+                    <iframe
+                        src="https://www.youtube.com/embed/1yzAB4w0LtI"
+                        allowfullscreen
+                        allowtransparency
+                        allow="autoplay"
+                    ></iframe>
+                </div>
+                
+                
+            </div>
+            <div id="info">
+                <div id="specs">
+                    <h1 id="contentTitle">Plumb Out of Time</h1>
+                    <small id="date">April 17, 2025</small>
+                </div>
+                <div id="tags">
+                    
+                    <div class="roles">
+                        
+                        <a class="role-tag" href="/explore/?roles=Production%20Assistant">Production Assistant</a>
+                        
+                        <a class="role-tag" href="/explore/?roles=Actor">Actor</a>
+                        
+                    </div>
+                    <span id="divider"> | </span>
+                    <a class="type-tag" href="/explore/?types=Short%20Film">Short Film</a>
                 </div>
             </div>
-        </div>
-    
-        <div class="contentContainer pop-in"> 
-            <a class="frame" href="/explore/dear-black-umich">
-                <img class="thumbnail active" src="https://i.ytimg.com/vi/oFJd16_O2Kk/maxresdefault.jpg" alt="">
-                <video class="thumbnail passive" src="/resources/videos/previews/dear-black-umich-preview.webm" muted loop></video>
-            </a>
-            <div class="info">
-                <a class="expand" href="/explore/dear-black-umich"></a>
-                <h2 class="contentTitle">Dear Black Umich,</h2>
-                <h3 class="date">April 20, 2025</h3>
-                
-                <div class="roles">
-                    <a class="role-tag" href="/explore/?roles=Camera%20Operator">Camera Operator</a>
-                </div>
+        </section>
+        <aside id="credits">
+            <div id="credits-header">
+                <h2>Credits</h2>
             </div>
-        </div>
-    
-        <div class="contentContainer pop-in"> 
-            <a class="frame" href="/explore/clocks">
-                <img class="thumbnail active" src="https://i.vimeocdn.com/video/2009409295-6486bfa962769990f948226c8ea2ddb657959440db9a5cbc6846a0ef6f8aa801-d" alt="">
-                <video class="thumbnail passive" src="/resources/videos/previews/clocks-preview.webm" muted loop></video>
-            </a>
-            <div class="info">
-                <a class="expand" href="/explore/clocks"></a>
-                <h2 class="contentTitle">Clocks</h2>
-                <h3 class="date">April 17, 2025</h3>
-                
-                <div class="roles">
-                    <a class="role-tag" href="/explore/?roles=Editor">Editor</a>
-                </div>
+            <div id="credits-container">
+                <ul>
+                    
+                        <li>
+                            <strong>Written &amp; Directed by:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Brock McIntyre</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Produced by:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Jack Buchholz</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Lead Cast:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Jason Liang as Aloysius</span>
+                                
+                                    <span class="credit-name">Isabella Garcia as Cecilia</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Supporting Cast:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Jonathan Thompson as Meathead 1</span>
+                                
+                                    <span class="credit-name">Michael Prater as Meathead 2</span>
+                                
+                                    <span class="credit-name">Abbey Kelly as Motorist</span>
+                                
+                                    <span class="credit-name">Sammi Smith as Student</span>
+                                
+                                    <span class="credit-name">Brock McIntyre as Chris</span>
+                                
+                                    <span class="credit-name">Elijah Iacovoni as Gent</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Additional Roles:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Sydney Cole</span>
+                                
+                                    <span class="credit-name">Gabe Sugarman</span>
+                                
+                                    <span class="credit-name">Mark Skonieczny</span>
+                                
+                                    <span class="credit-name">Clara Squio De Cezaro</span>
+                                
+                                    <span class="credit-name">Analise Richiez</span>
+                                
+                                    <span class="credit-name">Sammi Smith</span>
+                                
+                                    <span class="credit-name">Noah Avalos</span>
+                                
+                                    <span class="credit-name">Elijah Iacovoni</span>
+                                
+                                    <span class="credit-name">Jonathan Thompson</span>
+                                
+                                    <span class="credit-name">Devin Hurd</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Director of Photography:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Jack Buchholz</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Production Designer:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Clara Squio De Cezaro</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Editor &amp; VFX Artist:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Zach Forman</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Associate Producers:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Analise Richiez</span>
+                                
+                                    <span class="credit-name">Brock McIntyre</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Assistant Director:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Mark Skonieczny</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Music Composer:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Brynn Hilliker</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Assistant Camera:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Noah Avalos</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Gaffer:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Sammi Smith</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Sound Recordist:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Devin Hurd</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Graphic Designer:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Brianna Anzures</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Production Assistants:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Gabe Sugarman</span>
+                                
+                                    <span class="credit-name">Jonathan Thompson</span>
+                                
+                                    <span class="credit-name">Sydney Cole</span>
+                                
+                                    <span class="credit-name">Elijah Iacovini</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Band:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Brynn Hilliker on Upright Bass</span>
+                                
+                                    <span class="credit-name">Kevin Payne on Drum Set and Piano</span>
+                                
+                                    <span class="credit-name">Milo Stout on Piano</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Music Production:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Josh Cheng</span>
+                                
+                            </div>
+                        </li>
+                    
+                </ul>
             </div>
-        </div>
-    
-</div>
-<div id="loadMore">
-    <button type="button" class="button">Load More</button>
+        </aside>
+    </div>
+    <div id="more">
+        
+        <section id="description">
+            <p>A University of Michigan student from 1925 is bewildered to find himself in the present day as he tries to figure out his way back home in this silent fish-out-of-water comedy.<br><br><br>Producer: Jack Buchholz<br>Associate Producers: Analise Richiez, Brock McIntyre<br>Writer/Director: Brock McIntyre<br>Starring: Jason Liang, Isabella Garcia<br>Assistant Director: Mark Skonieczny<br>DP: Jack Buchholz<br>Camera Assistant: Noah Avalos<br>Editor/VFX: Zach Forman<br>Gaffer: Sammi Smith<br>Art: Clara Squio De Cezaro<br>Composer: Brynn Hilliker<br>Music Production: Josh Cheng<br>Band: Brynn Hilliker, Kevin Payne, Milo Stout<br>Sound/Boom Op: Devin Hurd<br>Production Assistants: Gabe Sugarman, Jonathan Thompson, Sydney Cole, Elijah Lacovini<br>Graphic Design: Brianna Anzures</p>
+        </section>
+    </div>
 </div>
     </main>
     <footer>

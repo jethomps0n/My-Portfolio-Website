@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jonathan Thompson</title>
+    <title>Clocks | Jonathan Thompson</title>
     <link rel="icon" type="image/x-icon" href="/resources/images/icons/favicon.png">
 
     <meta property="og:title" content="Jonathan Thompson" />
@@ -12,15 +12,19 @@
     <meta property="og:url" content="itsjonathanthompson.com" />
 
     <link rel="stylesheet" href="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.css">
-    
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+
     <link rel="stylesheet" href="/resources/css/global.css">
-    <link rel="stylesheet" href="/resources/css/index.css">
+    <link rel="stylesheet" href="/resources/css/project/main.css">  <link rel="stylesheet" href="/resources/css/project/video-viewer.css">
+
 
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
     <script src="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.js" defer></script>
-    
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+
     <script src="/resources/js/global.js" defer></script>
-    <script src="/resources/js/index.js" defer></script>
+    <script src="/resources/js/project/main.js" defer></script>  <script type="module" src="/resources/js/project/video-viewer.js" defer></script>
+
 </head>
 <body>
     <div class="effects">
@@ -76,115 +80,188 @@
     </header>
     <main>
         
-<div id="content">
-    
-    
-    
-        
-            
-        
-    
-        
-            
-        
-    
-        
-            
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-
-    
-        <div class="contentContainer pop-in"> 
-            <a class="frame" href="/explore/the-final-draft">
-                <img class="thumbnail active" src="https://i.ytimg.com/vi/aOSlvVq_nrw/maxresdefault.jpg" alt="">
-                <video class="thumbnail passive" src="/resources/videos/previews/the-final-draft-preview.webm" muted loop></video>
-            </a>
-            <div class="info">
-                <a class="expand" href="/explore/the-final-draft"></a>
-                <h2 class="contentTitle">The Final Draft</h2>
-                <h3 class="date">December 04, 2025</h3>
+<div id="project-page">
+    <div id="content-box">
+        <section id="project">
+            <div id="frame">
                 
-                <div class="roles">
-                    <a class="role-tag" href="/explore/?roles=Actor">Actor</a><a class="role-tag" href="/explore/?roles=Gaffer">Gaffer</a>
+                
+                <div class="plyr__video-embed" id="player">
+                    <iframe
+                        src="https://www.youtube.com/embed/MBBuDqiENag"
+                        allowfullscreen
+                        allowtransparency
+                        allow="autoplay"
+                    ></iframe>
+                </div>
+                
+                
+            </div>
+            <div id="info">
+                <div id="specs">
+                    <h1 id="contentTitle">Clocks</h1>
+                    <small id="date">April 17, 2025</small>
+                </div>
+                <div id="tags">
+                    
+                    <div class="roles">
+                        
+                        <a class="role-tag" href="/explore/?roles=Editor">Editor</a>
+                        
+                    </div>
+                    <span id="divider"> | </span>
+                    <a class="type-tag" href="/explore/?types=Short%20Film">Short Film</a>
                 </div>
             </div>
-        </div>
-    
-        <div class="contentContainer pop-in"> 
-            <a class="frame" href="/explore/dear-black-umich">
-                <img class="thumbnail active" src="https://i.ytimg.com/vi/oFJd16_O2Kk/maxresdefault.jpg" alt="">
-                <video class="thumbnail passive" src="/resources/videos/previews/dear-black-umich-preview.webm" muted loop></video>
-            </a>
-            <div class="info">
-                <a class="expand" href="/explore/dear-black-umich"></a>
-                <h2 class="contentTitle">Dear Black Umich,</h2>
-                <h3 class="date">April 20, 2025</h3>
-                
-                <div class="roles">
-                    <a class="role-tag" href="/explore/?roles=Camera%20Operator">Camera Operator</a>
-                </div>
+        </section>
+        <aside id="credits">
+            <div id="credits-header">
+                <h2>Credits</h2>
             </div>
-        </div>
-    
-        <div class="contentContainer pop-in"> 
-            <a class="frame" href="/explore/clocks">
-                <img class="thumbnail active" src="https://i.vimeocdn.com/video/2009409295-6486bfa962769990f948226c8ea2ddb657959440db9a5cbc6846a0ef6f8aa801-d" alt="">
-                <video class="thumbnail passive" src="/resources/videos/previews/clocks-preview.webm" muted loop></video>
-            </a>
-            <div class="info">
-                <a class="expand" href="/explore/clocks"></a>
-                <h2 class="contentTitle">Clocks</h2>
-                <h3 class="date">April 17, 2025</h3>
-                
-                <div class="roles">
-                    <a class="role-tag" href="/explore/?roles=Editor">Editor</a>
-                </div>
+            <div id="credits-container">
+                <ul>
+                    
+                        <li>
+                            <strong>Written &amp; Directed by:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Leah Gouin</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Produced by:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Chloe Pfeifer</span>
+                                
+                                    <span class="credit-name">Amy Douglas</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Associate Producer:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Jack Buchholz</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Lead Cast:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Isabella Vasari as Liana</span>
+                                
+                                    <span class="credit-name">Emily Haselschwert as Kat</span>
+                                
+                                    <span class="credit-name">Jason Liang as George</span>
+                                
+                                    <span class="credit-name">Mateo St. Remy as Lucas Bennett</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Director of Photography:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Analise Richiez</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Editor:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Jonathan Thompson</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Assistant Director:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Robin Wyllie-Scholz</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Art Director:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Kas Brajkovic</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Music Composer:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Lorelei Moxon</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Gaffer:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Sammi Smith</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Sound Recordists:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Peyton Schumacher</span>
+                                
+                                    <span class="credit-name">Grace Wright</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Graphic Designer:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Brianna Anzures</span>
+                                
+                            </div>
+                        </li>
+                    
+                        <li>
+                            <strong>Production Assistants:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Brock McIntyre</span>
+                                
+                                    <span class="credit-name">Kaylece Dorsey</span>
+                                
+                                    <span class="credit-name">Samantha Wheelis</span>
+                                
+                            </div>
+                        </li>
+                    
+                </ul>
             </div>
-        </div>
-    
-</div>
-<div id="loadMore">
-    <button type="button" class="button">Load More</button>
+        </aside>
+    </div>
+    <div id="more">
+        
+        <section id="description">
+            <p>With her best friend's chess state championships on the line, a loyal friend with clouded judgment finds a watch in an antique store that is able to take her back in time. But when she causes a devastating paradox, she must learn that winning isn't everything before their futures are forever altered.</p>
+        </section>
+    </div>
 </div>
     </main>
     <footer>
