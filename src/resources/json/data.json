@@ -177,9 +177,50 @@
     "slug": "the-orb-in-class-short-ftvm-290",
     "title": "The Orb",
     "date": "November 08, 2024",
-    "role": "Editor/Director",
-    "description": "This short film was made in my Intro to Production class using the bedroom and kitchen set we had access to. We were all given a script, mapped out already - all we had to do was film it. I directed all of the scenes in the kitchen. Once filming wrapped, everyone in the class worked on their own individual edits - this is mine.",
-    "credits": {},
+    "role": "Writer/Editor/Director/Actor",
+    "description": "This short film was made in my Intro to Production class using the bedroom and kitchen set we had access to. We were all given a short treatment, and we all worked on a script based on that treatment as a class. Once we finished the script, all we had to do was film it. I directed all of the scenes in the kitchen. Once filming wrapped, everyone in the class worked on their own individual edits - this is mine.",
+    "credits": {
+      "Directed by": [
+        "Jonathan Thompson",
+        "Ta'Niah Parker"
+      ],
+      "Written by": [
+        "The FTVM 290 Class of Fall 2024"
+      ],
+      "Lead Cast": [
+        "Riley Crimmins as CK",
+        "Daisy Sklar as HB"
+      ],
+      "Supporting Cast": [
+        "Jonathan Thompson as The Orb (voice)"
+      ],
+      "Directors of Photography": [
+        "Luke Matelic",
+        "Ethan Malaver"
+      ],
+      "Editor": [
+        "Jonathan Thompson"
+      ],
+      "Assistant Directors": [
+        "Ella Schaftel",
+        "Vihaan Easwar"
+      ],
+      "Art Directors": [
+        "Sofia Swope",
+        "Tyler Mick"
+      ],
+      "Sound Recordists": [
+        "Maryjane Francis",
+        "Alex Selvin",
+        "Vivienne Schlussel"
+      ],
+      "Gaffers": [
+        "Luke Matelic",
+        "Amy Wujcikowski",
+        "Audrey Gietzen",
+        "Ethan Malaver"
+      ]
+    },
     "type": "Short Film",
     "Screenplay": ""
   },

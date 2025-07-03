@@ -139,7 +139,14 @@ eleventyComputed:
             <div id="credits-container">
                 <ul>
                     {% for role, names in i.credits %}
-                        <li><strong>{{ role }}:</strong> {{ names | join(', ') }}</li>
+                        <li>
+                            <strong>{{ role }}:</strong>
+                            <div class="credit-names">
+                                {% for name in names %}
+                                    <span class="credit-name">{{ name }}</span>
+                                {% endfor %}
+                            </div>
+                        </li>
                     {% endfor %}
                 </ul>
             </div>
