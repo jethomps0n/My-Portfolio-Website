@@ -223,7 +223,7 @@
       ]
     },
     "type": "Short Film",
-    "Screenplay": ""
+    "Screenplay": "Yes"
   },
   {
     "imgSrc": "/resources/images/thumbnails/life-is-strange-episode-2---final-scene-rescore-with-the-walking-dead-soundtrack-thumbnail.webp",
@@ -452,7 +452,7 @@
     "Screenplay": ""
   },
   {
-    "imgSrc": "https://i.ytimg.com/vi/an1KeLpn0JE/sd2.jpg?sqp=-oaymwEoCIAFEOAD8quKqQMcGADwAQH4AbYIgAK4CIoCDAgAEAEYZSBUKEUwDw==&rs=AOn4CLC-B8Y7VU-r_hFyEFhGLTEM0BTUJg",
+    "imgSrc": "/resources/images/thumbnails/voto-latino-post-debate-ads-thumbnail.webp",
     "previewSrc": "/resources/videos/previews/voto-latino-post-debate-ads-preview.webm",
     "videoSrc": "https://drive.google.com/file/d/1gchDAqgKxYTrGhKHZPtkOTJ-MWSnxTL-/preview",
     "PDFSrc": "",
@@ -470,7 +470,7 @@
     "Screenplay": ""
   },
   {
-    "imgSrc": "https://i.ytimg.com/vi_webp/a0GMm2rLcrw/maxresdefault.webp",
+    "imgSrc": "/resources/images/thumbnails/bloody-caps-thumbnail.webp",
     "previewSrc": "/resources/videos/previews/bloody-caps-preview.webm",
     "videoSrc": "https://www.youtube.com/embed/a0GMm2rLcrw",
     "PDFSrc": "",
@@ -575,7 +575,7 @@
     "Screenplay": ""
   },
   {
-    "imgSrc": "https://i.vimeocdn.com/video/2009409295-6486bfa962769990f948226c8ea2ddb657959440db9a5cbc6846a0ef6f8aa801-d",
+    "imgSrc": "https://i.ytimg.com/vi/MBBuDqiENag/maxresdefault.jpg",
     "previewSrc": "/resources/videos/previews/clocks-preview.webm",
     "videoSrc": "https://www.youtube.com/embed/MBBuDqiENag",
     "PDFSrc": "",
@@ -672,7 +672,7 @@
       ]
     },
     "type": "Short Film",
-    "Screenplay": ""
+    "Screenplay": "Yes"
   },
   {
     "imgSrc": "https://i.ytimg.com/vi/aOSlvVq_nrw/maxresdefault.jpg",
@@ -713,7 +713,7 @@
     "Screenplay": ""
   },
   {
-    "imgSrc": "https://i.ytimg.com/vi/1yzAB4w0LtI/hqdefault.jpg",
+    "imgSrc": "/resources/images/thumbnails/plumb-out-of-time-thumbnail.webp",
     "previewSrc": "/resources/videos/previews/plumb-out-of-time-a-short-film-by-m-agination-preview.webm",
     "videoSrc": "https://www.youtube.com/embed/1yzAB4w0LtI",
     "PDFSrc": "",
@@ -721,7 +721,7 @@
     "title": "Plumb Out of Time",
     "date": "April 17, 2025",
     "role": "Production Assistant/Actor",
-    "description": "A University of Michigan student from 1925 is bewildered to find himself in the present day as he tries to figure out his way back home in this silent fish-out-of-water comedy.\n\n\nProducer: Jack Buchholz\nAssociate Producers: Analise Richiez, Brock McIntyre\nWriter/Director: Brock McIntyre\nStarring: Jason Liang, Isabella Garcia\nAssistant Director: Mark Skonieczny\nDP: Jack Buchholz\nCamera Assistant: Noah Avalos\nEditor/VFX: Zach Forman\nGaffer: Sammi Smith\nArt: Clara Squio De Cezaro\nComposer: Brynn Hilliker\nMusic Production: Josh Cheng\nBand: Brynn Hilliker, Kevin Payne, Milo Stout\nSound/Boom Op: Devin Hurd\nProduction Assistants: Gabe Sugarman, Jonathan Thompson, Sydney Cole, Elijah Lacovini\nGraphic Design: Brianna Anzures",
+    "description": "A University of Michigan student from 1925 is bewildered to find himself in the present day as he tries to figure out his way back home in this silent fish-out-of-water comedy.",
     "credits": {
       "Written & Directed by": [
         "Brock McIntyre"
