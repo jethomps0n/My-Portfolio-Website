@@ -366,10 +366,82 @@ function renderResults(){
         const a=document.createElement('a');
         a.href=`/explore/${item.slug}`||'#';
         const hasScreenplay = item.Screenplay === 'Yes' || item.Screenplay === 'Sole';
-        const thumbClass = hasScreenplay ? 'thumb screenplay-attached' : 'thumb';
+        let thumbClass = hasScreenplay ? 'thumb screenplay-attached' : 'thumb';
+        
+        // Add version badge to screenplay-attached class if versioning is enabled
+        if (hasScreenplay && (item.versioning === 'Yes' || item.versioning === 'Completed')) {
+            // Use current version if available, otherwise default to v1
+            const version = (item.versionInfo && item.versionInfo.currentVersion) ? item.versionInfo.currentVersion : 1;
+            thumbClass += ` versioned v${version}`;
+        }
+        
         const disablePreview = item.Screenplay === 'Sole';
         if (disablePreview) a.classList.add('no-preview');
-        a.innerHTML=`<div class="${thumbClass}"><img class="thumbnail active" src="${item.imgSrc}" alt=""><video class="thumbnail passive" src="${item.previewSrc}" muted loop></video></div>`;
+        
+        // Create the thumbnail HTML
+        const thumbDiv = document.createElement('div');
+        thumbDiv.className = thumbClass;
+        thumbDiv.innerHTML = `<img class="thumbnail active" src="${item.imgSrc}" alt=""><video class="thumbnail passive" src="${item.previewSrc}" muted loop></video>`;
+        
+        // Add screenplay/version badges if needed
+        if (hasScreenplay) {
+            const badgeWrapper = document.createElement('div');
+            badgeWrapper.className = 'badge-wrapper';
+            badgeWrapper.style.cssText = `
+                position: absolute;
+                bottom: 8px;
+                right: 8px;
+                display: flex;
+                pointer-events: none;
+                z-index: 5;
+            `;
+            
+            // Create screenplay badge
+            const screenplayBadge = document.createElement('span');
+            screenplayBadge.className = 'screenplay-badge';
+            screenplayBadge.textContent = 'Screenplay Attached';
+            screenplayBadge.style.cssText = `
+                background: hsla(214, 100%, 45%, 1);
+                color: hsla(0, 0%, 100%, 1);
+                padding: 2px 8px;
+                border-radius: 8px;
+                font-size: 0.65rem;
+                white-space: nowrap;
+            `;
+            
+            // Add version badge if versioned
+            if (item.versioning === 'Yes' || item.versioning === 'Completed') {
+                const version = (item.versionInfo && item.versionInfo.currentVersion) ? item.versionInfo.currentVersion : 1;
+                
+                // Remove right border radius from screenplay badge
+                screenplayBadge.style.borderTopRightRadius = '0';
+                screenplayBadge.style.borderBottomRightRadius = '0';
+                
+                // Create version badge
+                const versionBadge = document.createElement('span');
+                versionBadge.className = 'version-badge';
+                versionBadge.textContent = `v${version}`;
+                versionBadge.style.cssText = `
+                    background: hsla(120, 60%, 45%, 1);
+                    color: white;
+                    padding: 2px 8px;
+                    border-radius: 8px;
+                    border-top-left-radius: 0;
+                    border-bottom-left-radius: 0;
+                    font-size: 0.65rem;
+                    font-weight: 500;
+                `;
+                
+                badgeWrapper.appendChild(screenplayBadge);
+                badgeWrapper.appendChild(versionBadge);
+            } else {
+                badgeWrapper.appendChild(screenplayBadge);
+            }
+            
+            thumbDiv.appendChild(badgeWrapper);
+        }
+        
+        a.appendChild(thumbDiv);
 
         const info=document.createElement('div');
         info.className='result-info';

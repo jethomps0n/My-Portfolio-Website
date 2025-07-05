@@ -1,5 +1,4 @@
 _site/
 cors-rules.json
-src/debug.log
 .env
 node_modules/

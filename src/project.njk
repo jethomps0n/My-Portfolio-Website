@@ -117,7 +117,7 @@ eleventyComputed:
             </div>
             <div id="info">
                 <div id="specs">
-                    <h1 id="contentTitle">{{ i.title }}</h1>
+                    <h1 id="contentTitle">{{ i.title }}{% if i.Screenplay == "Sole" and (i.versioning == "Yes" or i.versioning == "Completed") and i.versionInfo and i.versionInfo.currentVersion %}<span class="version-badge">v{{ i.versionInfo.currentVersion }}</span>{% endif %}</h1>
                     <small id="date">{{ i.date }}</small>
                 </div>
                 <div id="tags">
@@ -162,5 +162,35 @@ eleventyComputed:
         <section id="description">
             <p>{{ i.description | processDescriptionLinks | safe }}</p>
         </section>
+        {% if (i.versioning == "Yes" or i.versioning == "Completed") and i.versionInfo and i.versionInfo.currentVersion %}
+        <section id="version-history">
+            <div class="version-header">
+                <h3>Screenplay Version History{% if i.versioning == "Yes" %} <span class="dev-status">(In Active Development)</span>{% endif %}</h3>
+                <button class="version-toggle" type="button" aria-expanded="false">
+                    <span class="version-summary">{% if i.versioning == "Completed" %}Final{% else %}Current{% endif %}: v{{ i.versionInfo.currentVersion }} ({% if i.versionInfo.currentVersion == 1 %}{{ i.date | dateFormat }}{% else %}{{ i.versionInfo.versions[i.versionInfo.currentVersion - 1].uploadDate | dateFormat }}{% endif %})</span>
+                    <span class="toggle-arrow">▼</span>
+                </button>
+            </div>
+            <div class="version-list" aria-hidden="true">
+                <ul>
+                    {% for version in i.versionInfo.versions %}
+                    <li class="version-item{% if loop.index == i.versionInfo.currentVersion %} current{% endif %}">
+                        <span class="version-number">v{{ loop.index }}</span>
+                        <span class="version-date">
+                            {% if loop.index == 1 %}
+                                {{ i.date }}
+                            {% else %}
+                                {{ version.uploadDate | dateFormat }}
+                            {% endif %}
+                        </span>
+                        {% if loop.index == i.versionInfo.currentVersion %}
+                        <span class="current-badge">{% if i.versioning == "Completed" %}Final{% else %}Current{% endif %}</span>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section>
+        {% endif %}
     </div>
 </div>

@@ -75,7 +75,7 @@ module.exports = function (eleventyConfig) {
         return new Intl.DateTimeFormat("en-US", {
             year: "numeric",
             month: "long",
-            day: "numeric"
+            day: "2-digit"
         }).format(new Date(date));
     });
 
