@@ -98,7 +98,7 @@
     display: flex;
     justify-content: center;
     gap: 8px;
-    margin-top: 25px;
+    margin-top: 20px;
     padding-top: 20px;
     border-top: 1px solid hsla(0, 0%, 100%, 0.1);
 }
@@ -277,6 +277,64 @@
     border-color: hsla(242, 61%, 80%, 0.5);
     transform: translateY(-2px);
     box-shadow: 0 8px 20px hsla(242, 61%, 80%, 0.2);
+}
+
+/* Resume Section */
+.resume-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid hsla(0, 0%, 100%, 0.1);
+    display: flex;
+    justify-content: center;
+}
+
+.resume-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 12px;
+    background: linear-gradient(135deg, 
+        hsla(242, 61%, 80%, 0.15) 0%, 
+        hsla(242, 61%, 60%, 0.15) 100%);
+    border: 1px solid hsla(242, 61%, 80%, 0.3);
+    border-radius: 12px;
+    text-decoration: none;
+    color: hsla(0, 0%, 100%, 0.9);
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 300ms ease;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px hsla(242, 61%, 80%, 0.1);
+    margin: 0;
+}
+
+.resume-btn:hover {
+    background: linear-gradient(135deg, 
+        hsla(242, 61%, 80%, 0.25) 0%, 
+        hsla(242, 61%, 60%, 0.25) 100%);
+    border-color: hsla(242, 61%, 80%, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px hsla(242, 61%, 80%, 0.3);
+    color: white;
+}
+
+.resume-btn img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    opacity: 0.9;
+    flex-shrink: 0;
+    display: block;
+}
+
+.resume-text {
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1;
+    display: flex;
+    align-items: center;
 }
 
 /* Animation classes */

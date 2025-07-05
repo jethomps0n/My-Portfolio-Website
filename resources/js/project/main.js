@@ -22,6 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', () => {
         matchCreditsHeight();
     });
+    
+    // Setup version history toggle functionality
+    setupVersionHistory();
 });
 
 function processCharacterRoles() {
@@ -216,3 +219,27 @@ document.addEventListener('focusout', (e) => {
         e.target.style.transform = '';
     }
 });
+
+function setupVersionHistory() {
+    const versionToggle = document.querySelector('.version-toggle');
+    const versionList = document.querySelector('.version-list');
+    
+    if (versionToggle && versionList) {
+        versionToggle.addEventListener('click', () => {
+            const isExpanded = versionToggle.getAttribute('aria-expanded') === 'true';
+            
+            // Toggle aria-expanded
+            versionToggle.setAttribute('aria-expanded', !isExpanded);
+            
+            // Toggle aria-hidden on version list
+            versionList.setAttribute('aria-hidden', isExpanded);
+            
+            // Update max-height for smooth animation
+            if (!isExpanded) {
+                versionList.style.maxHeight = versionList.scrollHeight + 'px';
+            } else {
+                versionList.style.maxHeight = '0';
+            }
+        });
+    }
+}

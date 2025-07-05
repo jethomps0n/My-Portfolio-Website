@@ -23,7 +23,7 @@
 
 #frame {
     width: 100%;
-    aspect-ratio: 16/9;
+    aspect-ratio: 16 / 9;
     position: relative;
     border-radius: 25px;
     overflow: hidden;
@@ -56,6 +56,9 @@
     margin: 0 0 0 0;
     max-width: 80%;
     transition: color 300ms ease;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Add gap between title and version badge */
 }
 
 #tags {
@@ -371,6 +374,132 @@
 #description a:hover {
     color: hsla(228, 48%, 70%, 1);
     text-decoration: none;
+}
+
+/* Version badge styling */
+.version-badge {
+    background: hsla(120, 60%, 45%, 1);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-block;
+    /* Remove margin since we use gap in the parent flex container */
+}
+
+/* Version history section styling */
+#version-history {
+    margin-top: 20px;
+    border: 1px solid hsla(248, 9%, 45%, 0.3);
+    border-radius: 12px;
+    overflow: hidden;
+    background: hsla(228, 48%, 8%, 0.4);
+}
+
+.version-header {
+    position: relative;
+}
+
+.version-header h3 {
+    margin: 0;
+    padding: 16px 20px;
+    font-size: 0.95rem;
+    color: hsla(0, 0%, 90%, 1);
+    border-bottom: 1px solid hsla(248, 9%, 45%, 0.3);
+}
+
+.dev-status {
+    color: hsla(120, 45%, 70%, 1);
+    font-weight: normal;
+    font-size: 0.8em;
+}
+
+.version-toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: none;
+    border: none;
+    padding: 0 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: hsla(0, 0%, 70%, 1);
+    transition: color 200ms ease;
+}
+
+.version-toggle:hover {
+    color: hsla(0, 0%, 90%, 1);
+}
+
+.version-summary {
+    font-size: 0.85rem;
+}
+
+.toggle-arrow {
+    transition: transform 200ms ease;
+    font-size: 0.8rem;
+}
+
+.version-toggle[aria-expanded="true"] .toggle-arrow {
+    transform: rotate(180deg);
+}
+
+.version-list {
+    background: hsla(228, 48%, 6%, 0.6);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 300ms ease;
+}
+
+.version-list[aria-hidden="false"] {
+    max-height: 300px;
+}
+
+.version-list ul {
+    list-style: none;
+    margin: 0;
+    padding: 12px 0;
+}
+
+.version-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 20px;
+    transition: background-color 200ms ease;
+}
+
+.version-item:hover {
+    background: hsla(228, 48%, 10%, 0.5);
+}
+
+.version-item.current {
+    background: hsla(120, 45%, 50%, 0.1);
+}
+
+.version-number {
+    font-weight: 600;
+    color: hsla(120, 45%, 70%, 1);
+    min-width: 30px;
+}
+
+.version-date {
+    color: hsla(0, 0%, 70%, 1);
+    font-size: 0.85rem;
+}
+
+.current-badge {
+    background: hsla(120, 45%, 50%, 1);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    margin-left: auto;
 }
 
 /* Using your exact explore page animations */

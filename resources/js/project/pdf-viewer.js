@@ -8,6 +8,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const pagesContainer = document.getElementById('pdf-pages');
   const canvasContainer = document.getElementById('pdf-canvas-container');
   const url = viewer.dataset.pdf;
+  
+  // Get the actual decoded filename from the URL
+  const getDecodedFilename = (url) => {
+    try {
+      // Extract filename from URL and decode it
+      const filename = url.split('/').pop();
+      // First replace + with spaces, then decode URI components
+      let decodedFilename = decodeURIComponent(filename.replace(/\+/g, ' '));
+      
+      // Replace quotes with a file-system-friendly alternative
+      // Using single quotes or removing them entirely - you can choose your preference
+      decodedFilename = decodedFilename.replace(/"/g, "'"); // Replace " with '
+      // Alternative: decodedFilename = decodedFilename.replace(/"/g, ""); // Remove quotes entirely
+      
+      return decodedFilename;
+    } catch (e) {
+      // If decoding fails, fallback to original filename
+      console.warn('Failed to decode filename:', e);
+      return url.split('/').pop();
+    }
+  };
   let pdfDoc = null;
   let pageNum = 1;
   let zoom = 1;
@@ -268,7 +289,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const blob = await res.blob();
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = url.split('/').pop();
+      // Use decoded filename from URL
+      link.download = getDecodedFilename(url);
       link.click();
       URL.revokeObjectURL(link.href);
     } catch (e) {
@@ -648,7 +670,8 @@ document.addEventListener('DOMContentLoaded', () => {
                       const blob = await res.blob();
                       const link = document.createElement('a');
                       link.href = URL.createObjectURL(blob);
-                      link.download = url.split('/').pop();
+                      // Use decoded filename from URL
+                      link.download = getDecodedFilename(url);
                       link.click();
                       URL.revokeObjectURL(link.href);
                   } catch (e) {

@@ -95,10 +95,14 @@ document.addEventListener('DOMContentLoaded',()=>{
     document.querySelectorAll('.pop-in').forEach(el=>{
         el.addEventListener('animationend',()=>el.classList.remove('pop-in'),{once:true});
     });
-    document.querySelectorAll('.filter-group .options').forEach(o=>{
-        o.classList.add('expanded');
-        o.style.maxHeight = o.scrollHeight + 'px';
+    
+    // Add smooth staggered animation for category expansion
+    document.querySelectorAll('.filter-group .options').forEach((o, index) => {
+        setTimeout(() => {
+            o.classList.add('expanded');
+        }, index * 100); // 100ms delay between each category
     });
+    
     bindEvents();
     applyURL();
     loadData();
@@ -139,20 +143,19 @@ function bindEvents(){
         const group=document.getElementById(id);
         const btn=group.querySelector('.show-more');
         const more=group.querySelector('.more');
-        const opts=group.querySelector('.options');
+        
         btn.addEventListener('click',()=>{
             const expanding=!more.classList.contains('expanded');
-            btn.classList.toggle('expanded', expanding);
+            
             if(expanding){
                 more.classList.add('expanded');
+                btn.classList.add('expanded');
                 btn.querySelector('.text').textContent='Show Less';
             }else{
                 more.classList.remove('expanded');
+                btn.classList.remove('expanded');
                 btn.querySelector('.text').textContent='Show More';
             }
-            requestAnimationFrame(()=>{
-                opts.style.maxHeight='450px';
-            });
         });
     }
     setupShowMore('filter-role');
@@ -170,13 +173,23 @@ function bindEvents(){
             const group=btn.closest('.filter-group');
             const opts=group.querySelector('.options');
             const expanded=btn.classList.toggle('open');
+            
+            // Reset "Show More" state when collapsing/expanding categories
+            const showMoreBtn = group.querySelector('.show-more');
+            const moreSection = group.querySelector('.more');
+            
             if(expanded){
                 opts.classList.add('expanded');
-                opts.style.maxHeight=opts.scrollHeight+'px';
                 btn.setAttribute('aria-expanded','true');
             }else{
-                opts.style.maxHeight=opts.scrollHeight+'px';
-                requestAnimationFrame(()=>{opts.classList.remove('expanded');opts.style.maxHeight='0';});
+                // Reset "Show More" state when collapsing
+                // if(showMoreBtn && moreSection) {
+                //     moreSection.classList.remove('expanded');
+                //     showMoreBtn.classList.remove('expanded');
+                //     showMoreBtn.querySelector('.text').textContent='Show More';
+                // }
+                
+                opts.classList.remove('expanded');
                 btn.setAttribute('aria-expanded','false');
             }
         });
@@ -366,10 +379,82 @@ function renderResults(){
         const a=document.createElement('a');
         a.href=`/explore/${item.slug}`||'#';
         const hasScreenplay = item.Screenplay === 'Yes' || item.Screenplay === 'Sole';
-        const thumbClass = hasScreenplay ? 'thumb screenplay-attached' : 'thumb';
+        let thumbClass = hasScreenplay ? 'thumb screenplay-attached' : 'thumb';
+        
+        // Add version badge to screenplay-attached class if versioning is enabled
+        if (hasScreenplay && (item.versioning === 'Yes' || item.versioning === 'Completed')) {
+            // Use current version if available, otherwise default to v1
+            const version = (item.versionInfo && item.versionInfo.currentVersion) ? item.versionInfo.currentVersion : 1;
+            thumbClass += ` versioned v${version}`;
+        }
+        
         const disablePreview = item.Screenplay === 'Sole';
         if (disablePreview) a.classList.add('no-preview');
-        a.innerHTML=`<div class="${thumbClass}"><img class="thumbnail active" src="${item.imgSrc}" alt=""><video class="thumbnail passive" src="${item.previewSrc}" muted loop></video></div>`;
+        
+        // Create the thumbnail HTML
+        const thumbDiv = document.createElement('div');
+        thumbDiv.className = thumbClass;
+        thumbDiv.innerHTML = `<img class="thumbnail active" src="${item.imgSrc}" alt=""><video class="thumbnail passive" src="${item.previewSrc}" muted loop></video>`;
+        
+        // Add screenplay/version badges if needed
+        if (hasScreenplay) {
+            const badgeWrapper = document.createElement('div');
+            badgeWrapper.className = 'badge-wrapper';
+            badgeWrapper.style.cssText = `
+                position: absolute;
+                bottom: 8px;
+                right: 8px;
+                display: flex;
+                pointer-events: none;
+                z-index: 5;
+            `;
+            
+            // Create screenplay badge
+            const screenplayBadge = document.createElement('span');
+            screenplayBadge.className = 'screenplay-badge';
+            screenplayBadge.textContent = 'Screenplay Attached';
+            screenplayBadge.style.cssText = `
+                background: hsla(214, 100%, 45%, 1);
+                color: hsla(0, 0%, 100%, 1);
+                padding: 2px 8px;
+                border-radius: 8px;
+                font-size: 0.65rem;
+                white-space: nowrap;
+            `;
+            
+            // Add version badge if versioned
+            if (item.versioning === 'Yes' || item.versioning === 'Completed') {
+                const version = (item.versionInfo && item.versionInfo.currentVersion) ? item.versionInfo.currentVersion : 1;
+                
+                // Remove right border radius from screenplay badge
+                screenplayBadge.style.borderTopRightRadius = '0';
+                screenplayBadge.style.borderBottomRightRadius = '0';
+                
+                // Create version badge
+                const versionBadge = document.createElement('span');
+                versionBadge.className = 'version-badge';
+                versionBadge.textContent = `v${version}`;
+                versionBadge.style.cssText = `
+                    background: hsla(120, 60%, 45%, 1);
+                    color: white;
+                    padding: 2px 8px;
+                    border-radius: 8px;
+                    border-top-left-radius: 0;
+                    border-bottom-left-radius: 0;
+                    font-size: 0.65rem;
+                    font-weight: 500;
+                `;
+                
+                badgeWrapper.appendChild(screenplayBadge);
+                badgeWrapper.appendChild(versionBadge);
+            } else {
+                badgeWrapper.appendChild(screenplayBadge);
+            }
+            
+            thumbDiv.appendChild(badgeWrapper);
+        }
+        
+        a.appendChild(thumbDiv);
 
         const info=document.createElement('div');
         info.className='result-info';
