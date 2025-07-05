@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jonathan Thompson</title>
+    <title>Gen V - &amp;quot;Pain&amp;quot; | Jonathan Thompson</title>
     <link rel="icon" type="image/x-icon" href="/resources/images/icons/favicon.png">
 
     <meta property="og:title" content="Jonathan Thompson" />
@@ -13,14 +13,18 @@
 
     <link rel="stylesheet" href="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.css">
     
+
     <link rel="stylesheet" href="/resources/css/global.css">
-    <link rel="stylesheet" href="/resources/css/index.css">
+    <link rel="stylesheet" href="/resources/css/project/main.css"> <link rel="stylesheet" href="/resources/css/project/pdf-viewer.css"> 
+
 
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
     <script src="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.js" defer></script>
     
+
     <script src="/resources/js/global.js" defer></script>
-    <script src="/resources/js/index.js" defer></script>
+    <script src="/resources/js/project/main.js" defer></script> <script type="module" src="/resources/js/project/pdf-viewer.js" defer></script> 
+
 </head>
 <body>
     <div class="effects">
@@ -76,129 +80,124 @@
     </header>
     <main>
         
-<div id="content">
-    
-    
-    
-        
-    
-        
-            
-        
-    
-        
-            
-        
-    
-        
-            
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-
-    
-        <div class="contentContainer pop-in"> 
-            <a class="frame" href="/explore/dear-black-umich">
-                <img class="thumbnail active" src="https://i.ytimg.com/vi/oFJd16_O2Kk/maxresdefault.jpg" alt="">
-                <video class="thumbnail passive" src="/resources/videos/previews/dear-black-umich-preview.webm" muted loop></video>
-            </a>
-            <div class="info">
-                <a class="expand" href="/explore/dear-black-umich"></a>
-                <h2 class="contentTitle">Dear Black Umich,</h2>
-                <h3 class="date">April 20, 2025</h3>
+<div id="project-page">
+    <div id="content-box">
+        <section id="project">
+            <div id="frame">
                 
-                <div class="roles">
-                    <a class="role-tag" href="/explore/?roles=Camera%20Operator">Camera Operator</a>
+                 <div id="pdf-viewer" data-pdf="https://files.itsjonathanthompson.com/screenplays/Gen+V+%22Pain%22+%5BSpec+Script%5D+-+Jonathan+Thompson.pdf">
+                    <div id="pdf-container">
+                        <div id="pdf-sidebar"></div>
+                        <div id="pdf-canvas-container">
+                            <div id="pdf-pages"></div>
+                        </div>
+                    </div>
+                    <div id="pdf-controls">
+                        <div class="pdf-controls-left">
+                            <button id="pdf-sidebar-toggle" title="Toggle sidebar">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="#fff" fill-rule="evenodd" d="M6 2.5h7a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6zm-1.5 0H3a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h1.5zM1 3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2z" clip-rule="evenodd"/></svg>
+                            </button>
+                        </div>
+                        <div class="pdf-controls-center">
+                            <div class="pdf-nav-group">
+                                <button id="pdf-prev" title="Previous page">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#fff" d="m4.431 12.822l13 9A1 1 0 0 0 19 21V3a1 1 0 0 0-1.569-.823l-13 9a1.003 1.003 0 0 0 0 1.645"/></svg>
+                                </button>
+                                <input id="pdf-page-num" value="1" min="1">
+                                <span class="pdf-page-info">/  <span id="pdf-page-count">1</span></span>
+                                <button id="pdf-next" title="Next page">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#fff" d="M5.536 21.886a1 1 0 0 0 1.033-.064l13-9a1 1 0 0 0 0-1.644l-13-9A1 1 0 0 0 5 3v18a1 1 0 0 0 .536.886"/></svg>
+                                </button>
+                            </div>
+                            <div class="pdf-zoom-group">
+                                <button id="pdf-zoom-out" title="Zoom out">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M19 11H5a1 1 0 0 0 0 2h14a1 1 0 0 0 0-2"/></svg>
+                                </button>
+                                <select id="pdf-zoom-select">
+                                    <option value="auto">Automatic Zoom</option>
+                                    <option value="fit">Page Fit</option>
+                                    <option value="width">Page Width</option>
+                                    <option value="0.25" style="display: none;">25%</option>
+                                    <option value="0.5">50%</option>
+                                    <option value="0.75">75%</option>
+                                    <option value="1" selected>100%</option>
+                                    <option value="1.25">125%</option>
+                                    <option value="1.5">150%</option>
+                                    <option value="1.75" style="display: none;">175%</option>
+                                    <option value="2">200%</option>
+                                    <option value="2.25" style="display: none;">225%</option>
+                                    <option value="2.5" style="display: none;">250%</option>
+                                    <option value="2.75" style="display: none;">275%</option>
+                                    <option value="3">300%</option>
+                                </select>
+                                <button id="pdf-zoom-in" title="Zoom in">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M19 11h-6V5a1 1 0 0 0-2 0v6H5a1 1 0 0 0 0 2h6v6a1 1 0 0 0 2 0v-6h6a1 1 0 0 0 0-2"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="pdf-controls-right">
+                            <button id="pdf-download" title="Download">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#fff" d="M12 2a1 1 0 0 1 1 1v10.586l2.293-2.293a1 1 0 0 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 1 1 1.414-1.414L11 13.586V3a1 1 0 0 1 1-1M5 17a1 1 0 0 1 1 1v2h12v-2a1 1 0 1 1 2 0v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a1 1 0 0 1 1-1"/></svg>
+                            </button>
+                            <button id="pdf-print" title="Print">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#fff" d="M22.909 4.363h-3.272V1.091C19.637.488 19.148 0 18.546 0H5.455c-.603 0-1.091.489-1.091 1.091v3.272H1.092c-.603 0-1.091.489-1.091 1.091v13.091c0 .603.489 1.091 1.091 1.091h3.272v3.273c0 .603.489 1.091 1.091 1.091h13.091c.603 0 1.091-.489 1.091-1.091v-3.273h3.273c.603 0 1.091-.489 1.091-1.091V5.454c0-.603-.489-1.091-1.091-1.091zM6.546 2.182h10.908v2.182H6.546zm10.908 19.636H6.546v-6.546h10.908zm4.363-4.363h-2.181v-3.273c0-.603-.489-1.091-1.091-1.091H5.454c-.603 0-1.091.489-1.091 1.091v3.273H2.181V6.546h19.637z"/><path fill="#fff" d="M14.182 17.454H9.788a1.091 1.091 0 0 0 0 2.182h.032h-.002h4.394a1.091 1.091 0 0 0 0-2.182h-.032zm3.592-8.407a1.092 1.092 0 1 0 .772-.319h-.001a1.1 1.1 0 0 0-.771.32z"/></svg>
+                            </button>
+                            <button id="pdf-expand" title="Expand">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M9.79 12.79L4 18.59V17a1 1 0 0 0-2 0v4a1 1 0 0 0 .08.38a1 1 0 0 0 .54.54A1 1 0 0 0 3 22h4a1 1 0 0 0 0-2H5.41l5.8-5.79a1 1 0 0 0-1.42-1.42M21.92 2.62a1 1 0 0 0-.54-.54A1 1 0 0 0 21 2h-4a1 1 0 0 0 0 2h1.59l-5.8 5.79a1 1 0 0 0 0 1.42a1 1 0 0 0 1.42 0L20 5.41V7a1 1 0 0 0 2 0V3a1 1 0 0 0-.08-.38"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            <div id="info">
+                <div id="specs">
+                    <h1 id="contentTitle">Gen V - &quot;Pain&quot;</h1>
+                    <small id="date">April 17, 2025</small>
+                </div>
+                <div id="tags">
+                    
+                    <div class="roles">
+                        
+                        <a class="role-tag" href="/explore/?roles=Writer">Writer</a>
+                        
+                    </div>
+                    <span id="divider"> | </span>
+                    <a class="type-tag" href="/explore/?types=Spec%20Script">Spec Script</a>
                 </div>
             </div>
-        </div>
-    
-        <div class="contentContainer pop-in"> 
-            <a class="frame" href="/explore/clocks">
-                <img class="thumbnail active" src="https://i.ytimg.com/vi/MBBuDqiENag/maxresdefault.jpg" alt="">
-                <video class="thumbnail passive" src="/resources/videos/previews/clocks-preview.webm" muted loop></video>
-            </a>
-            <div class="info">
-                <a class="expand" href="/explore/clocks"></a>
-                <h2 class="contentTitle">Clocks</h2>
-                <h3 class="date">April 17, 2025</h3>
-                
-                <div class="roles">
-                    <a class="role-tag" href="/explore/?roles=Editor">Editor</a>
-                </div>
+        </section>
+        <aside id="credits">
+            <div id="credits-header">
+                <h2>Credits</h2>
             </div>
-        </div>
-    
-        <div class="contentContainer pop-in"> 
-            <a class="frame" href="/explore/plumb-out-of-time">
-                <img class="thumbnail active" src="/resources/images/thumbnails/plumb-out-of-time-thumbnail.webp" alt="">
-                <video class="thumbnail passive" src="/resources/videos/previews/plumb-out-of-time-a-short-film-by-m-agination-preview.webm" muted loop></video>
-            </a>
-            <div class="info">
-                <a class="expand" href="/explore/plumb-out-of-time"></a>
-                <h2 class="contentTitle">Plumb Out of Time</h2>
-                <h3 class="date">April 17, 2025</h3>
-                
-                <div class="roles">
-                    <a class="role-tag" href="/explore/?roles=Production%20Assistant">Production Assistant</a><a class="role-tag" href="/explore/?roles=Actor">Actor</a>
-                </div>
+            <div id="credits-container">
+                <ul>
+                    
+                        <li>
+                            <strong>Written by:</strong>
+                            <div class="credit-names">
+                                
+                                    <span class="credit-name">Jonathan Thompson</span>
+                                
+                            </div>
+                        </li>
+                    
+                </ul>
             </div>
-        </div>
-    
-</div>
-<div id="loadMore">
-    <button type="button" class="button">Load More</button>
+        </aside>
+    </div>
+    <div id="more">
+        
+        <a href="https://files.itsjonathanthompson.com/screenplays/Gen+V+%22Pain%22+%5BSpec+Script%5D+-+Jonathan+Thompson.pdf" target="_blank" id="attachments">
+            <img id="screenplay" src="/resources/images/icons/screenplay-icon.webp" alt="Screenplay">
+            <div id="view-container"><span id="view">View</span></div>
+        </a>
+        
+        <section id="description">
+            <p>As Vought looms over them all, Marie, Jordan, and Emma find themselves in a vulnerable situation. Sam and Cate make progress on their Vought+ feature film, "FLIPPED".</p>
+        </section>
+    </div>
 </div>
     </main>
     <footer>
