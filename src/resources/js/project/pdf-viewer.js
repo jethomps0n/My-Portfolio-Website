@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return zoom;
   }
 
-  function renderPages() {
+  function renderPages(skipScrollToPage = false) {
     if (!pdfDoc) return;
     
     // Clear existing pages
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         page.render(renderContext).promise.then(() => {
           renderedPages++;
-          if (renderedPages === totalPages) {
+          if (renderedPages === totalPages && !skipScrollToPage) {
             // All pages rendered
             scrollToPage(pageNum);
           }
@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     zoom = Math.min(zoom + 0.25, 3);
     zoomSelect.value = zoom;
-    renderPages();
+    renderPages(true);
     repositionScroll();
   });
 
@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     zoom = Math.max(zoom - 0.25, 0.25);
     zoomSelect.value = zoom;
-    renderPages();
+    renderPages(true);
     repositionScroll();
   });
 
@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
       zoom = parseFloat(val);
       currentZoom = zoom;
     }
-    renderPages();
+    renderPages(true);
     repositionScroll();
   });
 
@@ -366,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
               sidebar.scrollTop = selectedThumb.offsetTop - selectedThumb.offsetHeight / 2;
             }
           }
-          renderPages();
+          renderPages(true);
           repositionScroll();
         },
         { once: true }
@@ -375,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
       sidebar.addEventListener(
         'transitionend',
         () => {
-          renderPages();
+          renderPages(true);
           repositionScroll();
         },
         { once: true }
@@ -450,7 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return modalZoom;
           }
 
-          function renderModalPages() {
+          function renderModalPages(skipScrollToPage = false) {
             if (!pdfDoc) return;
             const currentPage = modalPageNum; // Store current page
             modalPagesContainer.innerHTML = '';
@@ -479,12 +479,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             Promise.all(renderPromises).then(() => {
-                // Restore scroll position for current page
-                const target = modalPagesContainer.querySelector(`canvas[data-page="${currentPage}"]`);
-                if (target) {
-                    modalCanvasContainer.scrollTop = (target.height * (currentPage - 1)) + (12 * (currentPage - 1));
+                if (!skipScrollToPage) {
+                    // Restore scroll position for current page
+                    const target = modalPagesContainer.querySelector(`canvas[data-page="${currentPage}"]`);
+                    if (target) {
+                        modalCanvasContainer.scrollTop = (target.height * (currentPage - 1)) + (12 * (currentPage - 1));
+                    }
                 }
                 updateModalPageDisplay(currentPage);
+            });
+          }
+
+          function repositionModalScroll() {
+            requestAnimationFrame(() => {
+              const scaleRatio = modalZoom / modalOldZoom;
+              modalCanvasContainer.scrollLeft = modalOldScrollLeft * scaleRatio;
+              modalCanvasContainer.scrollTop = modalOldScrollTop * scaleRatio;
             });
           }
 
@@ -628,7 +638,8 @@ document.addEventListener('DOMContentLoaded', () => {
                   }
                   modalZoom = Math.min(modalZoom + 0.25, 3);
                   modalZoomSelect.value = modalZoom;
-                  renderModalPages();
+                  renderModalPages(true);
+                  repositionModalScroll();
               });
 
               modalZoomOutBtn.addEventListener('click', () => {
@@ -642,7 +653,8 @@ document.addEventListener('DOMContentLoaded', () => {
                   }
                   modalZoom = Math.max(modalZoom - 0.25, 0.25);
                   modalZoomSelect.value = modalZoom;
-                  renderModalPages();
+                  renderModalPages(true);
+                  repositionModalScroll();
               });
 
               modalZoomSelect.addEventListener('change', () => {
@@ -660,7 +672,8 @@ document.addEventListener('DOMContentLoaded', () => {
                       } else {
                           modalZoom = parseFloat(val);
                       }
-                      renderModalPages();
+                      renderModalPages(true);
+                      repositionModalScroll();
                   });
               });
 
