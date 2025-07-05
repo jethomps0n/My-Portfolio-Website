@@ -95,10 +95,14 @@ document.addEventListener('DOMContentLoaded',()=>{
     document.querySelectorAll('.pop-in').forEach(el=>{
         el.addEventListener('animationend',()=>el.classList.remove('pop-in'),{once:true});
     });
-    document.querySelectorAll('.filter-group .options').forEach(o=>{
-        o.classList.add('expanded');
-        o.style.maxHeight = o.scrollHeight + 'px';
+    
+    // Add smooth staggered animation for category expansion
+    document.querySelectorAll('.filter-group .options').forEach((o, index) => {
+        setTimeout(() => {
+            o.classList.add('expanded');
+        }, index * 100); // 100ms delay between each category
     });
+    
     bindEvents();
     applyURL();
     loadData();
@@ -139,20 +143,19 @@ function bindEvents(){
         const group=document.getElementById(id);
         const btn=group.querySelector('.show-more');
         const more=group.querySelector('.more');
-        const opts=group.querySelector('.options');
+        
         btn.addEventListener('click',()=>{
             const expanding=!more.classList.contains('expanded');
-            btn.classList.toggle('expanded', expanding);
+            
             if(expanding){
                 more.classList.add('expanded');
+                btn.classList.add('expanded');
                 btn.querySelector('.text').textContent='Show Less';
             }else{
                 more.classList.remove('expanded');
+                btn.classList.remove('expanded');
                 btn.querySelector('.text').textContent='Show More';
             }
-            requestAnimationFrame(()=>{
-                opts.style.maxHeight='450px';
-            });
         });
     }
     setupShowMore('filter-role');
@@ -170,13 +173,23 @@ function bindEvents(){
             const group=btn.closest('.filter-group');
             const opts=group.querySelector('.options');
             const expanded=btn.classList.toggle('open');
+            
+            // Reset "Show More" state when collapsing/expanding categories
+            const showMoreBtn = group.querySelector('.show-more');
+            const moreSection = group.querySelector('.more');
+            
             if(expanded){
                 opts.classList.add('expanded');
-                opts.style.maxHeight=opts.scrollHeight+'px';
                 btn.setAttribute('aria-expanded','true');
             }else{
-                opts.style.maxHeight=opts.scrollHeight+'px';
-                requestAnimationFrame(()=>{opts.classList.remove('expanded');opts.style.maxHeight='0';});
+                // Reset "Show More" state when collapsing
+                // if(showMoreBtn && moreSection) {
+                //     moreSection.classList.remove('expanded');
+                //     showMoreBtn.classList.remove('expanded');
+                //     showMoreBtn.querySelector('.text').textContent='Show More';
+                // }
+                
+                opts.classList.remove('expanded');
                 btn.setAttribute('aria-expanded','false');
             }
         });
