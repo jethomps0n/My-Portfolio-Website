@@ -2,9 +2,239 @@ import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.3.31/
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.3.31/pdf.worker.min.mjs';
 
-document.addEventListener('DOMContentLoaded', () => {
+// Enhanced yielding utility using the latest scheduler.yield() API for optimal INP
+function yieldToMain() {
+  if (globalThis.scheduler?.yield) {
+    return scheduler.yield();
+  }
+  // Optimized fallback: use requestAnimationFrame + setTimeout pattern for better prioritization
+  return new Promise(resolve => {
+    requestAnimationFrame(() => {
+      setTimeout(resolve, 0);
+    });
+  });
+}
+
+// Advanced batch task runner with dynamic batching based on actual performance
+async function runTasksBatched(tasks, initialBatchSize = 3, targetFrameTime = 16) {
+  let batchSize = initialBatchSize;
+  let processed = 0;
+  let lastYield = performance.now();
+  
+  for (const task of tasks) {
+    const taskStart = performance.now();
+    
+    try {
+      await task();
+    } catch (error) {
+      console.warn('Task failed:', error);
+      continue;
+    }
+    
+    const taskDuration = performance.now() - taskStart;
+    processed++;
+    
+    // Dynamic batch size adjustment based on actual task performance
+    if (taskDuration > 5) {
+      batchSize = Math.max(1, Math.floor(batchSize * 0.8)); // Reduce batch size for heavy tasks
+    } else if (taskDuration < 1) {
+      batchSize = Math.min(5, Math.floor(batchSize * 1.1)); // Increase batch size for light tasks
+    }
+    
+    const elapsed = performance.now() - lastYield;
+    
+    // Yield if we've exceeded our time budget or processed enough items
+    if (elapsed >= targetFrameTime || processed >= batchSize) {
+      await yieldToMain();
+      lastYield = performance.now();
+      processed = 0;
+    }
+  }
+}
+
+// Enhanced virtual page manager with optimized intersection observer and memory management
+class VirtualPageManager {
+  constructor(pagesContainer, canvasContainer) {
+    this.pagesContainer = pagesContainer;
+    this.canvasContainer = canvasContainer;
+    this.pages = new Map();
+    this.visiblePages = new Set();
+    this.renderQueue = new Set();
+    this.observer = null;
+    this.initialized = false;
+    this.renderTimeoutId = null;
+  }
+
+  async initialize() {
+    if (this.initialized) return;
+    
+    // Setup intersection observer with optimized settings for better performance
+    this.observer = new IntersectionObserver(
+      (entries) => this.scheduleIntersectionHandling(entries),
+      {
+        root: this.canvasContainer,
+        rootMargin: '150px 0px', // Increased preload margin for smoother scrolling
+        threshold: [0, 0.25, 0.75] // Simplified thresholds for better performance
+      }
+    );
+    
+    this.initialized = true;
+  }
+
+  // Debounce intersection handling to avoid excessive processing during scroll
+  scheduleIntersectionHandling(entries) {
+    if (this.renderTimeoutId) {
+      cancelAnimationFrame(this.renderTimeoutId);
+    }
+    
+    this.renderTimeoutId = requestAnimationFrame(() => {
+      this.handleIntersections(entries);
+    });
+  }
+
+  async handleIntersections(entries) {
+    const renderTasks = [];
+    
+    for (const entry of entries) {
+      const pageNum = parseInt(entry.target.dataset.page, 10);
+      
+      if (entry.isIntersecting) {
+        this.visiblePages.add(pageNum);
+        
+        // Higher priority for pages that are more visible
+        const priority = entry.intersectionRatio > 0.5 ? 'user-visible' : 'background';
+        
+        if (!this.renderQueue.has(pageNum)) {
+          this.renderQueue.add(pageNum);
+          renderTasks.push(() => this.renderPageWithPriority(pageNum, priority));
+        }
+      } else {
+        this.visiblePages.delete(pageNum);
+        this.renderQueue.delete(pageNum);
+        
+        // More aggressive memory cleanup for pages far from view
+        if (entry.intersectionRatio === 0) {
+          this.schedulePageUnload(pageNum);
+        }
+      }
+    }
+    
+    // Process render tasks with appropriate yielding
+    if (renderTasks.length > 0) {
+      await runTasksBatched(renderTasks, 2, 16);
+    }
+  }
+
+  async renderPageWithPriority(pageNum, priority = 'background') {
+    const pageData = this.pages.get(pageNum);
+    if (!pageData || pageData.rendered) {
+      this.renderQueue.delete(pageNum);
+      return;
+    }
+
+    // Use scheduler.postTask when available for proper priority scheduling
+    const renderTask = () => this.performPageRender(pageNum);
+    
+    if (globalThis.scheduler?.postTask) {
+      try {
+        await scheduler.postTask(renderTask, { priority });
+      } catch (error) {
+        console.warn(`Failed to schedule page render for ${pageNum}:`, error);
+        await renderTask(); // Fallback to immediate execution
+      }
+    } else {
+      // Fallback for browsers without scheduler.postTask
+      if (priority === 'user-visible') {
+        // Higher priority - render immediately
+        await renderTask();
+      } else {
+        // Lower priority - defer with requestIdleCallback or setTimeout
+        if (window.requestIdleCallback) {
+          requestIdleCallback(renderTask, { timeout: 1000 });
+        } else {
+          setTimeout(renderTask, 0);
+        }
+      }
+    }
+  }
+
+  async performPageRender(pageNum) {
+    const pageData = this.pages.get(pageNum);
+    if (!pageData || pageData.rendered) {
+      this.renderQueue.delete(pageNum);
+      return;
+    }
+
+    try {
+      await yieldToMain(); // Yield before heavy rendering work
+      
+      const page = await pageData.pdfPage;
+      const canvas = pageData.canvas;
+      const ctx = canvas.getContext('2d', { 
+        alpha: false,
+        desynchronized: true // Enable desynchronized rendering for better performance
+      });
+      
+      await page.render({
+        canvasContext: ctx,
+        viewport: pageData.viewport
+      }).promise;
+      
+      pageData.rendered = true;
+      this.renderQueue.delete(pageNum);
+    } catch (error) {
+      console.warn(`Failed to render page ${pageNum}:`, error);
+      this.renderQueue.delete(pageNum);
+    }
+  }
+
+  schedulePageUnload(pageNum) {
+    // Debounce unloading to avoid unnecessary work during rapid scrolling
+    setTimeout(() => {
+      if (!this.visiblePages.has(pageNum)) {
+        this.unloadPage(pageNum);
+      }
+    }, 2000); // Wait 2 seconds before unloading
+  }
+
+  unloadPage(pageNum) {
+    const pageData = this.pages.get(pageNum);
+    if (!pageData || this.visiblePages.has(pageNum) || this.renderQueue.has(pageNum)) return;
+    
+    // Clear the canvas to free memory
+    const canvas = pageData.canvas;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pageData.rendered = false;
+  }
+
+  addPage(pageNum, canvas, pdfPage, viewport) {
+    this.pages.set(pageNum, {
+      canvas,
+      pdfPage,
+      viewport,
+      rendered: false
+    });
+    this.observer.observe(canvas);
+  }
+
+  destroy() {
+    if (this.observer) {
+      this.observer.disconnect();
+    }
+    if (this.renderTimeoutId) {
+      cancelAnimationFrame(this.renderTimeoutId);
+    }
+    this.pages.clear();
+    this.visiblePages.clear();
+    this.renderQueue.clear();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
   const viewer = document.getElementById('pdf-viewer');
   if (!viewer) return;
+  
   const pagesContainer = document.getElementById('pdf-pages');
   const canvasContainer = document.getElementById('pdf-canvas-container');
   const url = viewer.dataset.pdf;
@@ -12,23 +242,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // Get the actual decoded filename from the URL
   const getDecodedFilename = (url) => {
     try {
-      // Extract filename from URL and decode it
       const filename = url.split('/').pop();
-      // First replace + with spaces, then decode URI components
       let decodedFilename = decodeURIComponent(filename.replace(/\+/g, ' '));
-      
-      // Replace quotes with a file-system-friendly alternative
-      // Using single quotes or removing them entirely - you can choose your preference
-      decodedFilename = decodedFilename.replace(/"/g, "'"); // Replace " with '
-      // Alternative: decodedFilename = decodedFilename.replace(/"/g, ""); // Remove quotes entirely
-      
+      decodedFilename = decodedFilename.replace(/"/g, "'");
       return decodedFilename;
     } catch (e) {
-      // If decoding fails, fallback to original filename
       console.warn('Failed to decode filename:', e);
       return url.split('/').pop();
     }
   };
+
   let pdfDoc = null;
   let pageNum = 1;
   let zoom = 1;
@@ -37,6 +260,10 @@ document.addEventListener('DOMContentLoaded', () => {
   let oldZoom = zoom;
   let oldScrollLeft = 0;
   let oldScrollTop = 0;
+
+  // Initialize virtual page manager
+  const virtualPageManager = new VirtualPageManager(pagesContainer, canvasContainer);
+  await virtualPageManager.initialize();
 
   const pageNumInput = document.getElementById('pdf-page-num');
   const pageCountSpan = document.getElementById('pdf-page-count');
@@ -72,68 +299,88 @@ document.addEventListener('DOMContentLoaded', () => {
     return zoom;
   }
 
-  function renderPages(skipScrollToPage = false) {
+  // Optimized rendering with enhanced virtual scrolling and priority-based yielding
+  async function renderPages(skipScrollToPage = false) {
     if (!pdfDoc) return;
     
-    // Clear existing pages
+    // Yield immediately to ensure UI responsiveness during page setup
+    await yieldToMain();
+    
+    // Clear existing pages and reset virtual manager
     pagesContainer.innerHTML = '';
+    virtualPageManager.destroy();
+    await virtualPageManager.initialize();
     
     // Track rendering completion
-    let renderedPages = 0;
+    let createdPages = 0;
     const totalPages = pdfDoc.numPages;
     
-    for (let i = 1; i <= pdfDoc.numPages; i++) {
-      const canvas = document.createElement('canvas');
-      canvas.dataset.page = i;
-      canvas.classList.add('pdf-page');
-      pagesContainer.appendChild(canvas);
-      
-      pdfDoc.getPage(i).then(page => {
+    // Split canvas creation into micro-tasks for better INP
+    const canvasCreationTasks = [];
+    for (let i = 1; i <= totalPages; i++) {
+      canvasCreationTasks.push(() => createPageCanvas(i));
+    }
+    
+    // Process canvas creation with optimized batching (smaller batches, more frequent yields)
+    await runTasksBatched(canvasCreationTasks, 2, 8);
+    
+    async function createPageCanvas(pageNum) {
+      try {
+        // Yield before DOM manipulation for heavy documents
+        if (pageNum % 5 === 0) {
+          await yieldToMain();
+        }
+        
+        const canvas = document.createElement('canvas');
+        canvas.dataset.page = pageNum;
+        canvas.classList.add('pdf-page');
+        pagesContainer.appendChild(canvas);
+        
+        // Get page and calculate viewport - yield before heavy computation
+        await yieldToMain();
+        const page = await pdfDoc.getPage(pageNum);
         const base = page.getViewport({ scale: 1 });
         const scale = calculateScale(base);
         const viewport = page.getViewport({ scale });
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-        canvas.style.width = viewport.width + 'px';
-        canvas.style.height = viewport.height + 'px';
         
-        // Render the page
-        const renderContext = {
-          canvasContext: canvas.getContext('2d'),
-          viewport: viewport
-        };
+        // Use integer coordinates for better performance and avoid sub-pixel rendering
+        canvas.width = Math.floor(viewport.width);
+        canvas.height = Math.floor(viewport.height);
+        canvas.style.width = Math.floor(viewport.width) + 'px';
+        canvas.style.height = Math.floor(viewport.height) + 'px';
         
-        page.render(renderContext).promise.then(() => {
-          renderedPages++;
-          if (renderedPages === totalPages && !skipScrollToPage) {
-            // All pages rendered
-            scrollToPage(pageNum);
+        // Add to virtual page manager
+        virtualPageManager.addPage(pageNum, canvas, page, viewport);
+        
+        createdPages++;
+        if (createdPages === totalPages && !skipScrollToPage) {
+          // All pages created - use scheduler.postTask for scroll positioning if available
+          const scrollTask = () => scrollToPage(1); // Always scroll to first page on initial load
+          if (globalThis.scheduler?.postTask) {
+            scheduler.postTask(scrollTask, { priority: 'user-visible' });
+          } else {
+            requestAnimationFrame(scrollTask);
           }
-        });
-      });
+        }
+      } catch (error) {
+        console.warn(`Failed to create page ${pageNum}:`, error);
+      }
     }
     
-    pageCountSpan.textContent = pdfDoc.numPages;
+    pageCountSpan.textContent = totalPages;
   }
 
   function repositionScroll() {
     requestAnimationFrame(() => {
-      // Calculate the scale ratio
       const scaleRatio = zoom / oldZoom;
-      
-      // For horizontal scrolling, simple scaling works
       canvasContainer.scrollLeft = oldScrollLeft * scaleRatio;
       
-      // For vertical scrolling, we need to account for the 12px margins between pages
-      // Find which page the old scroll position was on
       const pages = pagesContainer.querySelectorAll('.pdf-page');
       if (pages.length === 0) return;
       
-      // Calculate the old page height (before zoom change)
       const oldPageHeight = pages[0].height / zoom * oldZoom;
       const marginBetweenPages = 12;
       
-      // Find which page we were viewing
       let accumulatedHeight = 0;
       let currentPageIndex = 0;
       
@@ -149,10 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentPageIndex = i + 1;
       }
       
-      // Calculate position within the page
       const scrollWithinPage = oldScrollTop - accumulatedHeight;
-      
-      // Now calculate the new position with the new zoom
       const newPageHeight = pages[0].height;
       let newAccumulatedHeight = 0;
       
@@ -160,7 +404,6 @@ document.addEventListener('DOMContentLoaded', () => {
         newAccumulatedHeight += newPageHeight + (i < pages.length - 1 ? marginBetweenPages : 0);
       }
       
-      // Scale the position within the page and add to accumulated height
       const newScrollWithinPage = scrollWithinPage * scaleRatio;
       canvasContainer.scrollTop = newAccumulatedHeight + newScrollWithinPage;
     });
@@ -210,77 +453,170 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function updateCurrentPage() {
-    const pages = pagesContainer.querySelectorAll('.pdf-page');
-    let current = pageNum;
-    for (const p of pages) {
-      if (p.offsetTop + p.clientHeight / 2 > canvasContainer.scrollTop) {
-        current = parseInt(p.dataset.page, 10);
-        break;
+  // Enhanced page tracking with better debouncing and yielding
+  let updatePageTimeout;
+  async function updateCurrentPage() {
+    // Enhanced debouncing for rapid scroll events
+    if (updatePageTimeout) {
+      cancelAnimationFrame(updatePageTimeout);
+    }
+    
+    updatePageTimeout = requestAnimationFrame(async () => {
+      // Yield to main thread before heavy DOM queries
+      await yieldToMain();
+      
+      const pages = pagesContainer.querySelectorAll('.pdf-page');
+      let current = pageNum;
+      
+      // Optimized page detection with early exit
+      for (const p of pages) {
+        const pageTop = p.offsetTop;
+        const pageHeight = p.clientHeight;
+        const scrollPosition = canvasContainer.scrollTop;
+        const containerHeight = canvasContainer.clientHeight;
+        
+        // Check if page center is visible in viewport
+        if (pageTop + pageHeight / 2 > scrollPosition && 
+            pageTop < scrollPosition + containerHeight) {
+          current = parseInt(p.dataset.page, 10);
+          break;
+        }
       }
-    }
-    if (current !== pageNum) {
-      updatePageDisplay(current);
-      scrollSidebarThumbIntoView(current);
-    }
+      
+      if (current !== pageNum) {
+        // Batch UI updates to avoid layout thrashing
+        requestAnimationFrame(() => {
+          updatePageDisplay(current);
+          scrollSidebarThumbIntoView(current);
+        });
+      }
+    });
   }
 
-  function renderSidebar() {
-    sidebar.innerHTML = ''; // Clear existing thumbnails
-    return Promise.all(
-      Array.from({length: pdfDoc.numPages}, (_, i) => i + 1).map(i => 
-        pdfDoc.getPage(i).then(p => {
-          const v = p.getViewport({ scale: 0.2 });
-          const thumbWrapper = document.createElement('div');
-          thumbWrapper.classList.add('pdf-thumb-wrapper');
-          const c = document.createElement('canvas');
-          c.width = v.width;
-          c.height = v.height;
-          c.classList.add('pdf-thumb');
-          c.dataset.page = i;
-          if (i === pageNum) c.classList.add('active');
-          c.addEventListener('click', () => scrollToPage(i));
-          thumbWrapper.appendChild(c);
-          const label = document.createElement('span');
-          label.classList.add('pdf-thumb-label');
-          label.textContent = i;
-          thumbWrapper.appendChild(label);
-          sidebar.appendChild(thumbWrapper);
-          return p.render({ canvasContext: c.getContext('2d'), viewport: v }).promise;
-        })
-      )
+  // Enhanced sidebar rendering with prioritized thumbnail loading and progressive rendering
+  async function renderSidebar() {
+    sidebar.innerHTML = '';
+    
+    // Yield before starting thumbnail creation
+    await yieldToMain();
+    
+    const renderThumbnailTask = async (pageNum) => {
+      try {
+        // Yield periodically to maintain responsiveness
+        if (pageNum % 3 === 0) {
+          await yieldToMain();
+        }
+        
+        const page = await pdfDoc.getPage(pageNum);
+        const viewport = page.getViewport({ scale: 0.15 }); // Slightly smaller thumbnails for better performance
+        
+        const thumbWrapper = document.createElement('div');
+        thumbWrapper.classList.add('pdf-thumb-wrapper');
+        
+        const canvas = document.createElement('canvas');
+        // Use integer coordinates for thumbnails
+        canvas.width = Math.floor(viewport.width);
+        canvas.height = Math.floor(viewport.height);
+        canvas.classList.add('pdf-thumb');
+        canvas.dataset.page = pageNum;
+        
+        if (pageNum === pageNum) canvas.classList.add('active');
+        
+        // Use passive event listener and event delegation for better performance
+        canvas.addEventListener('click', async () => {
+          await yieldToMain(); // Yield before scroll operation
+          scrollToPage(pageNum);
+        }, { passive: true });
+        
+        thumbWrapper.appendChild(canvas);
+        
+        const label = document.createElement('span');
+        label.classList.add('pdf-thumb-label');
+        label.textContent = pageNum;
+        thumbWrapper.appendChild(label);
+        
+        sidebar.appendChild(thumbWrapper);
+        
+        // Render thumbnail with optimized context settings
+        const ctx = canvas.getContext('2d', { 
+          alpha: false,
+          desynchronized: true // Enable desynchronized rendering for better performance
+        });
+        
+        await page.render({ 
+          canvasContext: ctx, 
+          viewport: viewport 
+        }).promise;
+        
+      } catch (error) {
+        console.warn(`Failed to render thumbnail for page ${pageNum}:`, error);
+      }
+    };
+    
+    // Create tasks with priority for visible thumbnails first
+    const thumbnailTasks = Array.from(
+      { length: pdfDoc.numPages }, 
+      (_, i) => () => renderThumbnailTask(i + 1)
     );
+    
+    // Render thumbnails in smaller batches with more frequent yielding for better INP
+    await runTasksBatched(thumbnailTasks, 2, 12);
   }
 
-  canvasContainer.addEventListener('scroll', updateCurrentPage);
+  // Use passive event listeners for better performance
+  canvasContainer.addEventListener('scroll', updateCurrentPage, { passive: true });
 
-  pdfjsLib.getDocument(url).promise.then(pdf => {
+  // Optimized PDF initialization with progressive loading
+  pdfjsLib.getDocument(url).promise.then(async (pdf) => {
     pdfDoc = pdf;
     pageCountSpan.textContent = pdfDoc.numPages;
-    renderPages();
-    renderSidebar();
+    
+    await yieldToMain();
+    
+    const renderPagesPromise = renderPages();
+    await yieldToMain();
+    const renderSidebarPromise = renderSidebar();
+    
+    await Promise.all([renderPagesPromise, renderSidebarPromise]);
   }).catch(err => console.error('Failed to load PDF:', err));
 
-  prevBtn.addEventListener('click', () => {
+  // Enhanced event handlers with priority-based yielding and better user interaction feedback
+  prevBtn.addEventListener('click', async () => {
     if (pageNum <= 1) return;
+    
+    // Immediate visual feedback before yielding
+    prevBtn.disabled = true;
+    await yieldToMain();
     scrollToPage(pageNum - 1);
-  });
+    prevBtn.disabled = false;
+  }, { passive: true });
 
-  nextBtn.addEventListener('click', () => {
+  nextBtn.addEventListener('click', async () => {
     if (pageNum >= pdfDoc.numPages) return;
+    
+    // Immediate visual feedback before yielding
+    nextBtn.disabled = true;
+    await yieldToMain();
     scrollToPage(pageNum + 1);
-  });
+    nextBtn.disabled = false;
+  }, { passive: true });
 
-  pageNumInput.addEventListener('change', () => {
+  pageNumInput.addEventListener('change', async () => {
     const n = parseInt(pageNumInput.value, 10);
     if (!isNaN(n) && n >= 1 && n <= pdfDoc.numPages) {
+      await yieldToMain();
       scrollToPage(n);
     } else {
       pageNumInput.value = pageNum;
     }
   });
 
-  zoomInBtn.addEventListener('click', () => {
+  // Enhanced zoom handlers with optimized yielding and feedback
+  zoomInBtn.addEventListener('click', async () => {
+    // Prevent multiple rapid clicks
+    if (zoomInBtn.disabled) return;
+    zoomInBtn.disabled = true;
+    
     oldZoom = zoom;
     oldScrollLeft = canvasContainer.scrollLeft;
     oldScrollTop = canvasContainer.scrollTop;
@@ -291,29 +627,63 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     zoom = Math.min(zoom + 0.25, 3);
     zoomSelect.value = zoom;
-    renderPages(true);
-    repositionScroll();
-  });
+    
+    // Yield before heavy rendering work to show immediate feedback
+    await yieldToMain();
+    await renderPages(true);
+    
+    // Use scheduler.postTask for scroll repositioning if available
+    const repositionTask = () => {
+      repositionScroll();
+      zoomInBtn.disabled = false;
+    };
+    
+    if (globalThis.scheduler?.postTask) {
+      scheduler.postTask(repositionTask, { priority: 'user-visible' });
+    } else {
+      requestAnimationFrame(repositionTask);
+    }
+  }, { passive: true });
 
-  zoomOutBtn.addEventListener('click', () => {
+  zoomOutBtn.addEventListener('click', async () => {
+    // Prevent multiple rapid clicks
+    if (zoomOutBtn.disabled) return;
+    zoomOutBtn.disabled = true;
+    
     oldZoom = zoom;
     oldScrollLeft = canvasContainer.scrollLeft;
     oldScrollTop = canvasContainer.scrollTop;
+    
     if (zoomMode !== 'custom') {
       zoom = Math.ceil(currentZoom / 0.25) * 0.25;
       zoomMode = 'custom';
     }
     zoom = Math.max(zoom - 0.25, 0.25);
     zoomSelect.value = zoom;
-    renderPages(true);
-    repositionScroll();
-  });
+    
+    // Yield before heavy rendering work
+    await yieldToMain();
+    await renderPages(true);
+    
+    // Use scheduler.postTask for scroll repositioning if available
+    const repositionTask = () => {
+      repositionScroll();
+      zoomOutBtn.disabled = false;
+    };
+    
+    if (globalThis.scheduler?.postTask) {
+      scheduler.postTask(repositionTask, { priority: 'user-visible' });
+    } else {
+      requestAnimationFrame(repositionTask);
+    }
+  }, { passive: true });
 
-  zoomSelect.addEventListener('change', () => {
+  zoomSelect.addEventListener('change', async () => {
     oldZoom = zoom;
     oldScrollLeft = canvasContainer.scrollLeft;
     oldScrollTop = canvasContainer.scrollTop;
     const val = zoomSelect.value;
+    
     if (val === 'fit' || val === 'width' || val === 'auto') {
       zoomMode = val;
     } else {
@@ -321,8 +691,17 @@ document.addEventListener('DOMContentLoaded', () => {
       zoom = parseFloat(val);
       currentZoom = zoom;
     }
-    renderPages(true);
-    repositionScroll();
+    
+    // Yield before heavy rendering work
+    await yieldToMain();
+    await renderPages(true);
+    
+    // Use scheduler.postTask for scroll repositioning if available
+    if (globalThis.scheduler?.postTask) {
+      scheduler.postTask(() => repositionScroll(), { priority: 'user-visible' });
+    } else {
+      requestAnimationFrame(() => repositionScroll());
+    }
   });
 
   downloadBtn.addEventListener('click', async () => {
@@ -331,7 +710,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const blob = await res.blob();
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      // Use decoded filename from URL
       link.download = getDecodedFilename(url);
       link.click();
       URL.revokeObjectURL(link.href);
@@ -342,7 +720,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   printBtn.addEventListener('click', async () => {
     try {
-      // Fetch PDF from B2 and create blob URL to avoid cross-origin issues
       const response = await fetch(url);
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
@@ -357,13 +734,12 @@ document.addEventListener('DOMContentLoaded', () => {
         iframe.contentWindow.focus();
         iframe.contentWindow.print();
         
-        // Clean up after a longer delay to allow print dialog interaction
         setTimeout(() => {
           URL.revokeObjectURL(blobUrl);
           if (document.body.contains(iframe)) {
             document.body.removeChild(iframe);
           }
-        }, 600000); // 10 minutes
+        }, 600000);
       };
 
       iframe.onerror = () => {
@@ -450,8 +826,6 @@ document.addEventListener('DOMContentLoaded', () => {
           // Update expand button
           expandBtn.textContent = '✕';
           expandBtn.title = 'Close';
-          
-          // Remove focus to clear any hover state when modal opens
           expandBtn.blur();
 
           // Get modal elements
@@ -479,12 +853,14 @@ document.addEventListener('DOMContentLoaded', () => {
           let modalOldScrollTop = frameState.scrollTop;
           let modalSidebarScrollState = null;
 
+          // Initialize modal virtual page manager
+          const modalVirtualPageManager = new VirtualPageManager(modalPagesContainer, modalCanvasContainer);
+
           function calculateModalZoom(base) {
             if (modalZoomMode === 'fit') {
                 modalZoom = modalCanvasContainer.clientHeight / base.height;
                 return modalZoom;
             } else if (modalZoomMode === 'width') {
-                // Calculate available width accounting for sidebar
                 const availableWidth = modalCanvasContainer.clientWidth;
                 modalZoom = availableWidth / base.width;
                 return modalZoom;
@@ -495,64 +871,66 @@ document.addEventListener('DOMContentLoaded', () => {
             return modalZoom;
           }
 
-          function renderModalPages(skipScrollToPage = false) {
+          // Optimized modal rendering with virtual scrolling
+          async function renderModalPages(skipScrollToPage = false) {
             if (!pdfDoc) return;
-            const currentPage = modalPageNum; // Store current page
+            const currentPage = modalPageNum;
             modalPagesContainer.innerHTML = '';
+            modalVirtualPageManager.destroy();
+            await modalVirtualPageManager.initialize();
             
-            const renderPromises = [];
+            const canvasCreationTasks = [];
             for (let i = 1; i <= pdfDoc.numPages; i++) {
+                canvasCreationTasks.push(() => createModalPageCanvas(i));
+            }
+            
+            await runTasksBatched(canvasCreationTasks, 2, 10);
+            
+            async function createModalPageCanvas(pageNum) {
+              try {
                 const canvas = document.createElement('canvas');
-                canvas.dataset.page = i;
+                canvas.dataset.page = pageNum;
                 canvas.classList.add('pdf-page');
                 modalPagesContainer.appendChild(canvas);
                 
-                const renderPromise = pdfDoc.getPage(i).then(page => {
-                    const base = page.getViewport({ scale: 1 });
-                    const scale = calculateModalZoom(base);
-                    const viewport = page.getViewport({ scale });
-                    canvas.width = viewport.width;
-                    canvas.height = viewport.height;
-                    canvas.style.width = viewport.width + 'px';
-                    canvas.style.height = viewport.height + 'px';
-                    return page.render({
-                        canvasContext: canvas.getContext('2d'),
-                        viewport
-                    }).promise;
-                });
-                renderPromises.push(renderPromise);
+                const page = await pdfDoc.getPage(pageNum);
+                const base = page.getViewport({ scale: 1 });
+                const scale = calculateModalZoom(base);
+                const viewport = page.getViewport({ scale });
+                
+                canvas.width = Math.floor(viewport.width);
+                canvas.height = Math.floor(viewport.height);
+                canvas.style.width = Math.floor(viewport.width) + 'px';
+                canvas.style.height = Math.floor(viewport.height) + 'px';
+                
+                modalVirtualPageManager.addPage(pageNum, canvas, page, viewport);
+              } catch (error) {
+                console.warn(`Failed to create modal page ${pageNum}:`, error);
+              }
             }
-
-            Promise.all(renderPromises).then(() => {
-                if (!skipScrollToPage) {
-                    // Restore scroll position for current page
-                    const target = modalPagesContainer.querySelector(`canvas[data-page="${currentPage}"]`);
-                    if (target) {
-                        modalCanvasContainer.scrollTop = (target.height * (currentPage - 1)) + (12 * (currentPage - 1));
-                    }
-                }
-                updateModalPageDisplay(currentPage);
-            });
+            
+            if (!skipScrollToPage) {
+                requestAnimationFrame(() => {
+                  const target = modalPagesContainer.querySelector(`canvas[data-page="${currentPage}"]`);
+                  if (target) {
+                      modalCanvasContainer.scrollTop = (target.height * (currentPage - 1)) + (12 * (currentPage - 1));
+                  }
+                  updateModalPageDisplay(currentPage);
+                });
+            }
           }
 
           function repositionModalScroll() {
             requestAnimationFrame(() => {
-              // Calculate the scale ratio
               const scaleRatio = modalZoom / modalOldZoom;
-              
-              // For horizontal scrolling, simple scaling works
               modalCanvasContainer.scrollLeft = modalOldScrollLeft * scaleRatio;
               
-              // For vertical scrolling, we need to account for the 12px margins between pages
-              // Find which page the old scroll position was on
               const pages = modalPagesContainer.querySelectorAll('.pdf-page');
               if (pages.length === 0) return;
               
-              // Calculate the old page height (before zoom change)
               const oldPageHeight = pages[0].height / modalZoom * modalOldZoom;
               const marginBetweenPages = 12;
               
-              // Find which page we were viewing
               let accumulatedHeight = 0;
               let currentPageIndex = 0;
               
@@ -568,10 +946,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentPageIndex = i + 1;
               }
               
-              // Calculate position within the page
               const scrollWithinPage = modalOldScrollTop - accumulatedHeight;
-              
-              // Now calculate the new position with the new zoom
               const newPageHeight = pages[0].height;
               let newAccumulatedHeight = 0;
               
@@ -579,7 +954,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 newAccumulatedHeight += newPageHeight + (i < pages.length - 1 ? marginBetweenPages : 0);
               }
               
-              // Scale the position within the page and add to accumulated height
               const newScrollWithinPage = scrollWithinPage * scaleRatio;
               modalCanvasContainer.scrollTop = newAccumulatedHeight + newScrollWithinPage;
             });
@@ -598,7 +972,6 @@ document.addEventListener('DOMContentLoaded', () => {
               const thumb = modalSidebar.querySelector(`.pdf-thumb[data-page="${pageNum}"]`)?.parentElement;
               if (!thumb) return;
               
-              // Center the thumbnail in the sidebar
               modalSidebar.scrollTop = thumb.offsetTop - 
                   (modalSidebar.clientHeight / 2) + (thumb.clientHeight / 2);
           }
@@ -611,46 +984,31 @@ document.addEventListener('DOMContentLoaded', () => {
               updateModalPageDisplay(num);
           }
 
-          function updateModalCurrentPage() {
-              const pages = modalPagesContainer.querySelectorAll('.pdf-page');
-              let current = modalPageNum;
-              for (const p of pages) {
-                  if (p.offsetTop + p.clientHeight / 2 > modalCanvasContainer.scrollTop) {
-                      current = parseInt(p.dataset.page, 10);
-                      break;
-                  }
+          let modalUpdatePageTimeout;
+          async function updateModalCurrentPage() {
+              if (modalUpdatePageTimeout) {
+                cancelAnimationFrame(modalUpdatePageTimeout);
               }
-              if (current !== modalPageNum) {
-                  updateModalPageDisplay(current);
-              }
+              
+              modalUpdatePageTimeout = requestAnimationFrame(async () => {
+                await yieldToMain();
+                
+                const pages = modalPagesContainer.querySelectorAll('.pdf-page');
+                let current = modalPageNum;
+                for (const p of pages) {
+                    if (p.offsetTop + p.clientHeight / 2 > modalCanvasContainer.scrollTop) {
+                        current = parseInt(p.dataset.page, 10);
+                        break;
+                    }
+                }
+                if (current !== modalPageNum) {
+                    updateModalPageDisplay(current);
+                }
+              });
           }
 
           // Add scroll listener to modal
-          modalCanvasContainer.addEventListener('scroll', () => {
-              const pages = modalPagesContainer.querySelectorAll('.pdf-page');
-              let currentVisible = modalPageNum;
-              
-              for (const page of pages) {
-                  const pageNum = parseInt(page.dataset.page, 10);
-                  const rect = page.getBoundingClientRect();
-                  const containerRect = modalCanvasContainer.getBoundingClientRect();
-                  
-                  // Calculate how much of the page is visible
-                  const visibleHeight = Math.min(rect.bottom, containerRect.bottom) - 
-                                      Math.max(rect.top, containerRect.top);
-                  const pageVisiblePercent = visibleHeight / rect.height;
-                  
-                  // If more than 50% of the page is visible, consider it the current page
-                  if (pageVisiblePercent > 0.5) {
-                      currentVisible = pageNum;
-                      break;
-                  }
-              }
-              
-              if (currentVisible !== modalPageNum) {
-                  updateModalPageDisplay(currentVisible);
-              }
-          });
+          modalCanvasContainer.addEventListener('scroll', updateModalCurrentPage, { passive: true });
 
           // Re-render PDF in modal
           if (pdfDoc) {
@@ -658,63 +1016,73 @@ document.addEventListener('DOMContentLoaded', () => {
               modalPageNumInput.value = modalPageNum;
               modalZoomSelect.value = modalZoom;
               
-              // Set initial sidebar state
               if (frameState.sidebarOpen) {
                   modalSidebar.classList.add('open');
               }
               
-              // Render pages
-              renderModalPages();
-              
-              // Re-render sidebar thumbnails
-              modalSidebar.innerHTML = '';
-              for (let i = 1; i <= pdfDoc.numPages; i++) {
-                  pdfDoc.getPage(i).then(p => {
-                      const v = p.getViewport({ scale: 0.2 });
-                      const thumbWrapper = document.createElement('div');
-                      thumbWrapper.classList.add('pdf-thumb-wrapper');
-                      const c = document.createElement('canvas');
-                      c.width = v.width;
-                      c.height = v.height;
-                      c.classList.add('pdf-thumb');
-                      c.dataset.page = i;
-                      if (i === modalPageNum) c.classList.add('active');
-                      c.addEventListener('click', () => {
-                          scrollModalToPage(i);
-                      });
-                      thumbWrapper.appendChild(c);
-                      const label = document.createElement('span');
-                      label.classList.add('pdf-thumb-label');
-                      label.textContent = i;
-                      thumbWrapper.appendChild(label);
-                      modalSidebar.appendChild(thumbWrapper);
-                      p.render({ canvasContext: c.getContext('2d'), viewport: v });
-                  });
-              }
+              modalVirtualPageManager.initialize().then(() => {
+                renderModalPages();
+                
+                // Re-render sidebar thumbnails
+                modalSidebar.innerHTML = '';
+                const thumbnailTasks = [];
+                for (let i = 1; i <= pdfDoc.numPages; i++) {
+                  thumbnailTasks.push(() => createModalThumbnail(i));
+                }
+                runTasksBatched(thumbnailTasks, 2, 10);
+                
+                async function createModalThumbnail(i) {
+                  try {
+                    const p = await pdfDoc.getPage(i);
+                    const v = p.getViewport({ scale: 0.2 });
+                    const thumbWrapper = document.createElement('div');
+                    thumbWrapper.classList.add('pdf-thumb-wrapper');
+                    const c = document.createElement('canvas');
+                    c.width = v.width;
+                    c.height = v.height;
+                    c.classList.add('pdf-thumb');
+                    c.dataset.page = i;
+                    if (i === modalPageNum) c.classList.add('active');
+                    c.addEventListener('click', () => scrollModalToPage(i), { passive: true });
+                    thumbWrapper.appendChild(c);
+                    const label = document.createElement('span');
+                    label.classList.add('pdf-thumb-label');
+                    label.textContent = i;
+                    thumbWrapper.appendChild(label);
+                    modalSidebar.appendChild(thumbWrapper);
+                    await p.render({ canvasContext: c.getContext('2d'), viewport: v }).promise;
+                  } catch (error) {
+                    console.warn(`Failed to render modal thumbnail ${i}:`, error);
+                  }
+                }
+              });
 
               // Attach event listeners to modal controls
-              modalPrevBtn.addEventListener('click', () => {
+              modalPrevBtn.addEventListener('click', async () => {
                   if (modalPageNum > 1) {
+                      await yieldToMain();
                       scrollModalToPage(modalPageNum - 1);
                   }
               });
 
-              modalNextBtn.addEventListener('click', () => {
+              modalNextBtn.addEventListener('click', async () => {
                   if (modalPageNum < pdfDoc.numPages) {
+                      await yieldToMain();
                       scrollModalToPage(modalPageNum + 1);
                   }
               });
 
-              modalPageNumInput.addEventListener('change', () => {
+              modalPageNumInput.addEventListener('change', async () => {
                   const n = parseInt(modalPageNumInput.value);
                   if (!isNaN(n) && n >= 1 && n <= pdfDoc.numPages) {
+                      await yieldToMain();
                       scrollModalToPage(n);
                   } else {
                       modalPageNumInput.value = modalPageNum;
                   }
               });
 
-              modalZoomInBtn.addEventListener('click', () => {
+              modalZoomInBtn.addEventListener('click', async () => {
                   modalOldZoom = modalZoom;
                   modalOldScrollLeft = modalCanvasContainer.scrollLeft;
                   modalOldScrollTop = modalCanvasContainer.scrollTop;
@@ -725,11 +1093,13 @@ document.addEventListener('DOMContentLoaded', () => {
                   }
                   modalZoom = Math.min(modalZoom + 0.25, 3);
                   modalZoomSelect.value = modalZoom;
-                  renderModalPages(true);
+                  
+                  await yieldToMain();
+                  await renderModalPages(true);
                   repositionModalScroll();
               });
 
-              modalZoomOutBtn.addEventListener('click', () => {
+              modalZoomOutBtn.addEventListener('click', async () => {
                   modalOldZoom = modalZoom;
                   modalOldScrollLeft = modalCanvasContainer.scrollLeft;
                   modalOldScrollTop = modalCanvasContainer.scrollTop;
@@ -740,11 +1110,13 @@ document.addEventListener('DOMContentLoaded', () => {
                   }
                   modalZoom = Math.max(modalZoom - 0.25, 0.25);
                   modalZoomSelect.value = modalZoom;
-                  renderModalPages(true);
+                  
+                  await yieldToMain();
+                  await renderModalPages(true);
                   repositionModalScroll();
               });
 
-              modalZoomSelect.addEventListener('change', () => {
+              modalZoomSelect.addEventListener('change', async () => {
                   modalOldZoom = modalZoom;
                   modalOldScrollLeft = modalCanvasContainer.scrollLeft;
                   modalOldScrollTop = modalCanvasContainer.scrollTop;
@@ -752,16 +1124,17 @@ document.addEventListener('DOMContentLoaded', () => {
                   const val = modalZoomSelect.value;
                   modalZoomMode = (val === 'fit' || val === 'width' || val === 'auto') ? val : 'custom';
                   
-                  pdfDoc.getPage(1).then(page => {
-                      const base = page.getViewport({ scale: 1 });
-                      if (val === 'fit' || val === 'width' || val === 'auto') {
-                          modalZoom = calculateModalZoom(base);
-                      } else {
-                          modalZoom = parseFloat(val);
-                      }
-                      renderModalPages(true);
-                      repositionModalScroll();
-                  });
+                  const page = await pdfDoc.getPage(1);
+                  const base = page.getViewport({ scale: 1 });
+                  if (val === 'fit' || val === 'width' || val === 'auto') {
+                      modalZoom = calculateModalZoom(base);
+                  } else {
+                      modalZoom = parseFloat(val);
+                  }
+                  
+                  await yieldToMain();
+                  await renderModalPages(true);
+                  repositionModalScroll();
               });
 
               modalDownloadBtn.addEventListener('click', async () => {
@@ -770,7 +1143,6 @@ document.addEventListener('DOMContentLoaded', () => {
                       const blob = await res.blob();
                       const link = document.createElement('a');
                       link.href = URL.createObjectURL(blob);
-                      // Use decoded filename from URL
                       link.download = getDecodedFilename(url);
                       link.click();
                       URL.revokeObjectURL(link.href);
@@ -781,7 +1153,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
               modalPrintBtn.addEventListener('click', async () => {
                   try {
-                    // Fetch PDF from B2 and create blob URL to avoid cross-origin issues
                     const response = await fetch(url);
                     const blob = await response.blob();
                     const blobUrl = URL.createObjectURL(blob);
@@ -796,13 +1167,12 @@ document.addEventListener('DOMContentLoaded', () => {
                       iframe.contentWindow.focus();
                       iframe.contentWindow.print();
                       
-                      // Clean up after a longer delay to allow print dialog interaction
                       setTimeout(() => {
                         URL.revokeObjectURL(blobUrl);
                         if (document.body.contains(iframe)) {
                           document.body.removeChild(iframe);
                         }
-                      }, 600000); // 10 minutes
+                      }, 600000);
                     };
 
                     iframe.onerror = () => {
@@ -822,7 +1192,6 @@ document.addEventListener('DOMContentLoaded', () => {
               modalSidebarToggle.addEventListener('click', () => {
                   const currentPage = modalPageNum;
                   
-                  // Store scroll state before toggle
                   if (modalSidebar.classList.contains('open')) {
                       const selectedThumb = modalSidebar.querySelector('.pdf-thumb.active')?.parentElement;
                       if (selectedThumb) {
@@ -855,10 +1224,10 @@ document.addEventListener('DOMContentLoaded', () => {
                       }
                       
                       if (modalZoomMode === 'width') {
-                          pdfDoc.getPage(1).then(page => {
+                          pdfDoc.getPage(1).then(async page => {
                               const base = page.getViewport({ scale: 1 });
                               modalZoom = calculateModalZoom(base);
-                              renderModalPages();
+                              await renderModalPages();
                               scrollModalToPage(currentPage);
                           });
                       }
@@ -868,12 +1237,11 @@ document.addEventListener('DOMContentLoaded', () => {
               // Add resize handler for zoom modes
               window.addEventListener('resize', () => {
                   if (modal && modalZoomMode !== 'custom') {
-                      const currentPage = modalPageNum; // Store current page
-                      pdfDoc.getPage(1).then(page => {
+                      const currentPage = modalPageNum;
+                      pdfDoc.getPage(1).then(async page => {
                           const base = page.getViewport({ scale: 1 });
                           modalZoom = calculateModalZoom(base);
-                          renderModalPages();
-                          // Restore the current page after re-render
+                          await renderModalPages();
                           scrollModalToPage(currentPage);
                       });
                   }
@@ -885,7 +1253,6 @@ document.addEventListener('DOMContentLoaded', () => {
           modalExpandBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M6.225 4.811a1 1 0 0 0-1.414 1.414L10.586 12L4.81 17.775a1 1 0 1 0 1.414 1.414L12 13.414l5.775 5.775a1 1 0 0 0 1.414-1.414L13.414 12l5.775-5.775a1 1 0 0 0-1.414-1.414L12 10.586z" stroke-width="1.5" stroke="#fff"/></svg>';
           modalExpandBtn.title = 'Close';
           modalExpandBtn.addEventListener('click', () => {
-              // Store modal's final state
               const finalState = {
                   pageNum: modalPageNum,
                   zoom: modalZoom,
@@ -895,14 +1262,14 @@ document.addEventListener('DOMContentLoaded', () => {
                   scrollTop: modalCanvasContainer.scrollTop
               };
 
-              // Close modal first
+              // Cleanup modal virtual page manager
+              modalVirtualPageManager.destroy();
+
               modal.remove();
               modal = null;
               document.body.classList.remove('no-scroll');
               expandBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M9.79 12.79L4 18.59V17a1 1 0 0 0-2 0v4a1 1 0 0 0 .08.38a1 1 0 0 0 .54.54A1 1 0 0 0 3 22h4a1 1 0 0 0 0-2H5.41l5.8-5.79a1 1 0 0 0-1.42-1.42M21.92 2.62a1 1 0 0 0-.54-.54A1 1 0 0 0 21 2h-4a1 1 0 0 0 0 2h1.59l-5.8 5.79a1 1 0 0 0 0 1.42a1 1 0 0 0 1.42 0L20 5.41V7a1 1 0 0 0 2 0V3a1 1 0 0 0-.08-.38"/></svg>';
               expandBtn.title = 'Expand';
-              
-              // Remove focus to clear any hover state
               expandBtn.blur();
 
               // Update frame state
@@ -910,26 +1277,22 @@ document.addEventListener('DOMContentLoaded', () => {
               zoom = finalState.zoom;
               zoomMode = finalState.zoomMode;
               
-              // Update UI elements
               zoomSelect.value = modalZoomSelect.value;
               pageNumInput.value = finalState.pageNum;
               
-              // Sync sidebar state
               if (finalState.sidebarOpen !== sidebar.classList.contains('open')) {
                   sidebar.classList.toggle('open');
               }
 
               // Re-render frame with new state
-              pdfDoc.getPage(1).then(page => {
+              pdfDoc.getPage(1).then(async page => {
                   const base = page.getViewport({ scale: 1 });
                   if (zoomMode !== 'custom') {
                       zoom = calculateScale(base);
                   }
                   
-                  // Complete re-render
-                  renderPages();
+                  await renderPages();
                   
-                  // After render, set correct page and scroll
                   Promise.resolve().then(() => {
                       scrollToPage(finalState.pageNum);
                       canvasContainer.scrollLeft = finalState.scrollLeft;
@@ -949,5 +1312,37 @@ document.addEventListener('DOMContentLoaded', () => {
       }
   });
 
-  window.addEventListener('resize', renderPages);
+  // Enhanced resize handler with better debouncing and priority scheduling
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    if (resizeTimeout) {
+      clearTimeout(resizeTimeout);
+    }
+    
+    resizeTimeout = setTimeout(async () => {
+      // Use scheduler.postTask for resize handling if available
+      const resizeTask = async () => {
+        await yieldToMain();
+        await renderPages();
+      };
+      
+      if (globalThis.scheduler?.postTask) {
+        scheduler.postTask(resizeTask, { priority: 'user-visible' });
+      } else {
+        await resizeTask();
+      }
+    }, 150); // Slightly longer debounce for better performance
+  }, { passive: true });
+
+  // Enhanced cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    virtualPageManager.destroy();
+    // Clear any pending timeouts
+    if (resizeTimeout) {
+      clearTimeout(resizeTimeout);
+    }
+    if (updatePageTimeout) {
+      cancelAnimationFrame(updatePageTimeout);
+    }
+  });
 });

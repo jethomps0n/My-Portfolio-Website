@@ -120,82 +120,152 @@ function createRefinedCursor() {
     let cursorX = 0;
     let cursorY = 0;
 
-    // Get current cursor size for proper centering
-    function getCurrentCursorSize() {
-        const rect = cursorEl.getBoundingClientRect();
-        return { width: rect.width, height: rect.height };
-    }
-
-    // Smooth cursor movement with elastic effect
-    function animateCursor() {
+    // Smooth cursor movement with elastic effect - optimized for INP
+    let animationId = null;
+    let lastFrameTime = 0;
+    const targetFPS = 60;
+    const frameInterval = 1000 / targetFPS;
+    
+    function animateCursor(currentTime) {
+        // Throttle to target FPS to reduce main thread pressure
+        if (currentTime - lastFrameTime < frameInterval) {
+            animationId = requestAnimationFrame(animateCursor);
+            return;
+        }
+        
+        lastFrameTime = currentTime;
+        
         const ease = 0.12;
         cursorX += (globalMouseX - cursorX) * ease;
         cursorY += (globalMouseY - cursorY) * ease;
 
-        // Get current size and center the cursor on the cursor tip
-        const size = getCurrentCursorSize();
-        const offsetX = size.width / 2;
-        const offsetY = size.height / 2;
+        // Always center the cursor at the cursor tip using CSS transforms
+        // This ensures perfect centering regardless of size changes
+        cursorEl.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) translate(-50%, -50%)`;
 
-        // Center the custom cursor on the real cursor tip
-        cursorEl.style.transform = `translate(${cursorX - offsetX}px, ${cursorY - offsetY}px)`;
-
-        requestAnimationFrame(animateCursor);
+        animationId = requestAnimationFrame(animateCursor);
     }
 
-    // Mouse move handler with player element detection
+    // Cache for player detection to avoid repeated queries
+    let playerElementCache = null;
+    let playerCacheValid = false;
+    
+    function getPlayerElement() {
+        if (!playerCacheValid) {
+            playerElementCache = document.getElementById('player');
+            playerCacheValid = true;
+        }
+        return playerElementCache;
+    }
+    
+    // Invalidate player cache if DOM changes
+    const playerObserver = new MutationObserver(() => {
+        playerCacheValid = false;
+    });
+    
+    // Watch for DOM changes that might affect player element
+    playerObserver.observe(document.body, { 
+        childList: true, 
+        subtree: true, 
+        attributes: true, 
+        attributeFilter: ['id'] 
+    });
+
+    // Throttled mouse move handler to improve INP
+    let mouseMoveTimeout = null;
+    let lastPlayerCheck = 0;
+    const playerCheckThrottle = 16; // ~60fps
+    
     document.addEventListener('mousemove', (e) => {
         globalMouseX = e.clientX;
         globalMouseY = e.clientY;
 
-        // Check if we're hovering over an element with id "player"
-        const elementUnderCursor = document.elementFromPoint(e.clientX, e.clientY);
-        const isOverPlayer = elementUnderCursor && (
-            elementUnderCursor.id === 'player' ||
-            elementUnderCursor.closest('#player')
-        );
+        // Throttle expensive player detection
+        const now = performance.now();
+        if (now - lastPlayerCheck > playerCheckThrottle) {
+            lastPlayerCheck = now;
+            
+            // Use cached player element and optimized detection
+            const playerEl = getPlayerElement();
+            const elementUnderCursor = document.elementFromPoint(e.clientX, e.clientY);
+            const isOverPlayer = playerEl && elementUnderCursor && (
+                elementUnderCursor === playerEl ||
+                playerEl.contains(elementUnderCursor)
+            );
 
-        if (isOverPlayer) {
-            cursorEl.classList.add('hidden');
-        } else {
-            // Show cursor if hidden and not over player
-            if (cursorEl.classList.contains('hidden')) {
-                cursorEl.classList.remove('hidden');
+            if (isOverPlayer) {
+                cursorEl.classList.add('hidden');
+            } else {
+                // Show cursor if hidden and not over player
+                if (cursorEl.classList.contains('hidden')) {
+                    cursorEl.classList.remove('hidden');
+                }
             }
         }
-    });
+    }, { passive: true }); // Use passive listener for better performance
 
-    // Mouse leave/enter handlers
+    // Mouse leave/enter handlers with passive listeners
     document.addEventListener('mouseleave', () => {
         cursorEl.classList.add('hidden');
-    });
+    }, { passive: true });
 
     document.addEventListener('mouseenter', () => {
         cursorEl.classList.remove('hidden');
-    });
+    }, { passive: true });
 
     // Enhanced but simplified interaction handlers
     setupRefinedInteractions(cursorEl);
 
     // Start animation loop
     animateCursor();
+    
+    // Cleanup function
+    return () => {
+        if (animationId) {
+            cancelAnimationFrame(animationId);
+        }
+        playerObserver.disconnect();
+        if (cursorEl.parentNode) {
+            cursorEl.parentNode.removeChild(cursorEl);
+        }
+    };
 }
 
 function setupRefinedInteractions(cursorEl) {
     let currentHoverTarget = null;
+    
+    // Cache for DOM queries and computations
+    const elementCache = new Map();
+    const selectorCache = new Map();
+    
+    // Debounced cache invalidation
+    let cacheInvalidationTimeout = null;
+    function invalidateElementCache() {
+        if (cacheInvalidationTimeout) return;
+        cacheInvalidationTimeout = setTimeout(() => {
+            elementCache.clear();
+            selectorCache.clear();
+            cacheInvalidationTimeout = null;
+        }, 1000);
+    }
 
     // Helper function to determine appropriate hover size based on element
     function getHoverClass(element) {
+        // Check cache first
+        if (elementCache.has(element)) {
+            return elementCache.get(element);
+        }
+        
         const rect = element.getBoundingClientRect();
         const area = rect.width * rect.height;
+        let result;
         
         // Special cases for specific elements
         if (element.matches('.role-tag, .type-tag')) {
-            return 'hover-small role-hover';
+            result = 'hover-small role-hover';
         }
-        
         // Transparent cursor for better text legibility on these elements
-        if (element.matches(`
+        else if (element.matches(`
             .filter-group .toggle,
             #clear-filters,
             #pagination button,
@@ -206,75 +276,102 @@ function setupRefinedInteractions(cursorEl) {
             .active-filter button,
             #set-custom
         `)) {
-            return 'transparent';
+            result = 'transparent';
         }
-        
         // Small clickable elements (buttons, small links, nav items)
-        if (element.matches('button, .nav, input[type="submit"], input[type="button"]') ||
+        else if (element.matches('button, .nav, input[type="submit"], input[type="button"]') ||
             (element.tagName === 'A' && area < 5000)) {
-            return 'hover-small';
+            result = 'hover-small';
         }
-        
         // Medium elements (larger links, medium containers)
-        if ((element.tagName === 'A' && area < 15000) ||
+        else if ((element.tagName === 'A' && area < 15000) ||
             element.matches('.button, [data-cursor="pointer"]')) {
-            return 'hover-medium';
+            result = 'hover-medium';
         }
-        
         // Large clickable areas
-        if (area >= 15000) {
-            return 'hover-large';
+        else if (area >= 15000) {
+            result = 'hover-large';
+        }
+        // Default medium size
+        else {
+            result = 'hover-medium';
         }
         
-        // Default medium size
-        return 'hover-medium';
+        // Cache the result
+        elementCache.set(element, result);
+        return result;
     }
 
-    // Helper function to find the closest interactive element
+    // Helper function to find the closest interactive element with caching
     function findInteractiveElement(element) {
+        if (selectorCache.has(element)) {
+            return selectorCache.get(element);
+        }
+        
         let current = element;
+        let result = null;
+        
         while (current && current !== document.body) {
             if (current.matches('a, button, .nav, .button, [data-cursor="pointer"], .role-tag, .type-tag, .filter-group .toggle')) {
-                return current;
+                result = current;
+                break;
             }
             current = current.parentElement;
         }
-        return null;
+        
+        selectorCache.set(element, result);
+        return result;
     }
 
-    // Global mouseover handler with simplified logic
+    // Optimized mouseover handler with reduced DOM operations
     document.addEventListener('mouseover', (e) => {
         const target = e.target;
         
+        // Early exit if target hasn't changed
+        if (currentHoverTarget === target) {
+            return;
+        }
+        
+        // Cache player element check
+        const playerEl = document.getElementById('player');
+        
         // Check for player element first - always hide cursor
-        if (target.id === 'player' || target.closest('#player')) {
-            cursorEl.className = 'refined-cursor hidden';
-            cursorEl.style.background = '';
-            currentHoverTarget = null;
+        if (target.id === 'player' || (playerEl && playerEl.contains(target))) {
+            if (!cursorEl.classList.contains('hidden')) {
+                cursorEl.className = 'refined-cursor hidden';
+                cursorEl.style.background = '';
+                currentHoverTarget = null;
+            }
             return;
         }
         
         // Text inputs get text cursor
         if (target.matches('input[type="text"], input[type="search"], textarea, [contenteditable]')) {
-            cursorEl.className = 'refined-cursor text';
-            cursorEl.style.background = '';
-            currentHoverTarget = target;
+            if (currentHoverTarget !== target) {
+                cursorEl.className = 'refined-cursor text';
+                cursorEl.style.background = '';
+                currentHoverTarget = target;
+            }
             return;
         }
         
         // Hide on non-text form inputs
         if (target.matches('input:not([type="text"]):not([type="search"]), select')) {
-            cursorEl.className = 'refined-cursor hidden';
-            cursorEl.style.background = '';
-            currentHoverTarget = target;
+            if (currentHoverTarget !== target) {
+                cursorEl.className = 'refined-cursor hidden';
+                cursorEl.style.background = '';
+                currentHoverTarget = target;
+            }
             return;
         }
         
         // Media elements
         if (target.matches('video, img, .thumbnail, .frame, canvas')) {
-            cursorEl.className = 'refined-cursor media';
-            cursorEl.style.background = '';
-            currentHoverTarget = target;
+            if (currentHoverTarget !== target) {
+                cursorEl.className = 'refined-cursor media';
+                cursorEl.style.background = '';
+                currentHoverTarget = target;
+            }
             return;
         }
         
@@ -309,9 +406,9 @@ function setupRefinedInteractions(cursorEl) {
             cursorEl.style.background = '';
             currentHoverTarget = null;
         }
-    });
+    }, { passive: true });
 
-    // Global mouseout handler
+    // Optimized mouseout handler
     document.addEventListener('mouseout', (e) => {
         const target = e.target;
         const relatedTarget = e.relatedTarget;
@@ -332,15 +429,15 @@ function setupRefinedInteractions(cursorEl) {
         
         // Special handling for player element
         if (target.id === 'player' || target.closest('#player')) {
-            // Check if we're still over a player element
-            setTimeout(() => {
+            // Use requestAnimationFrame instead of setTimeout for better performance
+            requestAnimationFrame(() => {
                 const elementUnderCursor = document.elementFromPoint(globalMouseX, globalMouseY);
                 if (!elementUnderCursor || 
                     (elementUnderCursor.id !== 'player' && !elementUnderCursor.closest('#player'))) {
                     cursorEl.classList.remove('hidden');
                     currentHoverTarget = null;
                 }
-            }, 10);
+            });
             return;
         }
         
@@ -351,35 +448,52 @@ function setupRefinedInteractions(cursorEl) {
             cursorEl.style.background = '';
             currentHoverTarget = null;
         }
-    });
+    }, { passive: true });
 
-    // Mouse down/up for active state
+    // Mouse down/up for active state with passive listeners
     document.addEventListener('mousedown', (e) => {
         const target = e.target;
         if (target.id !== 'player' && !target.closest('#player')) {
             cursorEl.classList.add('active');
         }
-    });
+    }, { passive: true });
 
     document.addEventListener('mouseup', () => {
         cursorEl.classList.remove('active');
-    });
+    }, { passive: true });
 
-    // Special navbar logo interaction
+    // Special navbar logo interaction with caching
     const webTitle = document.getElementById('webTitle');
     if (webTitle) {
         webTitle.addEventListener('mouseenter', () => {
             if (currentHoverTarget === webTitle) {
                 cursorEl.style.background = 'hsla(242, 61%, 80%, 0.9)';
             }
-        });
+        }, { passive: true });
         
         webTitle.addEventListener('mouseleave', () => {
             if (currentHoverTarget === webTitle) {
                 cursorEl.style.background = '';
             }
-        });
+        }, { passive: true });
     }
+    
+    // Set up cache invalidation on DOM mutations
+    const observer = new MutationObserver(invalidateElementCache);
+    observer.observe(document.body, { 
+        childList: true, 
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['class', 'id']
+    });
+    
+    // Return cleanup function
+    return () => {
+        observer.disconnect();
+        if (cacheInvalidationTimeout) {
+            clearTimeout(cacheInvalidationTimeout);
+        }
+    };
 }
 
 //-------AUTOMATIC COPYRIGHT YEAR UPDATE-------------//
