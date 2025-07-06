@@ -1,48 +1,62 @@
-// Blog Page JavaScript - Following the design philosophy
+// Blog Page JavaScript - Following the design philosophy with INP optimizations
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize blog page elements
-    initializeBlogPage();
+    // Initialize blog page elements with scheduler prioritization
+    scheduler.postTask(() => {
+        initializeBlogPage();
+    }, { priority: 'user-blocking' });
     
-    // Setup scroll animations
-    setupScrollAnimations();
+    // Setup scroll animations with lower priority
+    scheduler.postTask(() => {
+        setupScrollAnimations();
+    }, { priority: 'user-visible' });
     
-    // Add interactive enhancements
-    addInteractiveEffects();
-    
-    // Setup category filtering (future enhancement)
-    setupCategoryNavigation();
+    // Add interactive enhancements with background priority
+    scheduler.postTask(() => {
+        addInteractiveEffects();
+        setupCategoryNavigation();
+    }, { priority: 'background' });
 });
 
 function initializeBlogPage() {
     // Remove pop-in classes after animation completes (matching site pattern)
-    document.querySelectorAll('.pop-in').forEach(el => {
-        el.addEventListener('animationend', () => el.classList.remove('pop-in'), {once: true});
+    const popInElements = document.querySelectorAll('.pop-in');
+    popInElements.forEach(el => {
+        el.addEventListener('animationend', () => el.classList.remove('pop-in'), {once: true, passive: true});
     });
     
-    // Stagger animations for blog sections
+    // Stagger animations for blog sections with batching
     staggerAnimations();
 }
 
-function staggerAnimations() {
+async function staggerAnimations() {
     const sections = document.querySelectorAll('.blog-section');
-    sections.forEach((section, index) => {
-        section.style.animationDelay = `${index * 0.1}s`;
-    });
-    
-    // Stagger blog post animations
     const posts = document.querySelectorAll('.blog-post');
-    posts.forEach((post, index) => {
-        post.style.opacity = '0';
-        post.style.transform = 'translateY(20px)';
-        post.style.transition = 'all 0.4s ease';
-        post.style.animationDelay = `${index * 0.1}s`;
-        
-        setTimeout(() => {
-            post.style.opacity = '1';
-            post.style.transform = 'translateY(0)';
-        }, 200 + (index * 100));
-    });
+    
+    // Batch DOM style updates for better performance
+    await scheduler.postTask(() => {
+        sections.forEach((section, index) => {
+            section.style.animationDelay = `${index * 0.1}s`;
+        });
+    }, { priority: 'user-visible' });
+    
+    // Stagger blog post animations with yielding
+    await scheduler.postTask(() => {
+        posts.forEach((post, index) => {
+            post.style.opacity = '0';
+            post.style.transform = 'translateY(20px)';
+            post.style.transition = 'all 0.4s ease';
+            post.style.animationDelay = `${index * 0.1}s`;
+            
+            // Use requestAnimationFrame for smooth animations
+            setTimeout(() => {
+                requestAnimationFrame(() => {
+                    post.style.opacity = '1';
+                    post.style.transform = 'translateY(0)';
+                });
+            }, 200 + (index * 100));
+        });
+    }, { priority: 'user-visible' });
 }
 
 function setupScrollAnimations() {

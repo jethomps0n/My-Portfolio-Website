@@ -1,3 +1,32 @@
+//-------SCHEDULER POLYFILL FOR INP OPTIMIZATION-------------//
+// Polyfill for scheduler.postTask to ensure cross-browser compatibility
+if (!('scheduler' in window)) {
+    window.scheduler = {
+        postTask: function(callback, options = {}) {
+            const priority = options.priority || 'user-visible';
+            
+            // Simple priority mapping to setTimeout delays
+            const priorityDelays = {
+                'user-blocking': 0,
+                'user-visible': 1,
+                'background': 5
+            };
+            
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    try {
+                        const result = callback();
+                        resolve(result);
+                    } catch (error) {
+                        console.error('Scheduler task failed:', error);
+                        resolve();
+                    }
+                }, priorityDelays[priority] || 1);
+            });
+        }
+    };
+}
+
 //-------NOISE-------------//
 const noise = id => {
     let canvas, ctx;

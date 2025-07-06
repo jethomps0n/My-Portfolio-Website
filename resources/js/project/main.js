@@ -1,59 +1,71 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Use your exact explore page animation cleanup pattern
-    document.querySelectorAll('.pop-in').forEach(el => {
-        el.addEventListener('animationend', () => el.classList.remove('pop-in'), {once: true});
-    });
+    // Use scheduler for better prioritization of initialization tasks
+    scheduler.postTask(() => {
+        // Critical animations first
+        document.querySelectorAll('.pop-in').forEach(el => {
+            el.addEventListener('animationend', () => el.classList.remove('pop-in'), {once: true, passive: true});
+        });
+        
+        animatePageElements();
+    }, { priority: 'user-blocking' });
     
-    // Apply animations using your exact pattern
-    animatePageElements();
+    // Secondary functionality with lower priority
+    scheduler.postTask(() => {
+        setupHoverEffects();
+        setupSmoothScroll();
+    }, { priority: 'user-visible' });
     
-    // Setup other functionality
-    setupHoverEffects();
-    setupSmoothScroll();
-    setupScrollAnimations();
-    
-    // Process character roles in credits
-    processCharacterRoles();
-    
-    // Setup credits height matching
-    matchCreditsHeight();
-    
-    // Update credits height on window resize
-    window.addEventListener('resize', () => {
+    // Background tasks with lowest priority
+    scheduler.postTask(() => {
+        setupScrollAnimations();
+        processCharacterRoles();
         matchCreditsHeight();
-    });
+        setupVersionHistory();
+    }, { priority: 'background' });
     
-    // Setup version history toggle functionality
-    setupVersionHistory();
+    // Setup resize handler with passive listener
+    window.addEventListener('resize', () => {
+        scheduler.postTask(() => {
+            matchCreditsHeight();
+        }, { priority: 'user-visible' });
+    }, { passive: true });
 });
 
-function processCharacterRoles() {
+async function processCharacterRoles() {
     // Find all credit name elements
     const creditNames = document.querySelectorAll('.credit-name');
     
-    creditNames.forEach(nameElement => {
-        const text = nameElement.textContent;
+    // Process in batches for better INP
+    const BATCH_SIZE = 5;
+    for (let i = 0; i < creditNames.length; i += BATCH_SIZE) {
+        const batch = creditNames.slice(i, i + BATCH_SIZE);
         
-        // Pattern to match " as [character name]" or " on [instrument/role]"
-        // Must start with " as " or " on " and be followed by characters
-        // This avoids matching names that end with "as" like "Matthias" or "on" like "Mason"
-        const characterPattern = /(\s+(?:as|on)\s+[^,]+(?:\s*\([^)]+\))?)/gi;
-        
-        const matches = text.match(characterPattern);
-        
-        if (matches) {
-            let newHtml = text;
-            
-            // Replace each match with a styled span
-            matches.forEach(match => {
-                const trimmedMatch = match.trim(); // Remove extra whitespace
-                const styledMatch = ` <span class="character-role">${trimmedMatch}</span>`;
-                newHtml = newHtml.replace(match, styledMatch);
+        await scheduler.postTask(() => {
+            batch.forEach(nameElement => {
+                const text = nameElement.textContent;
+                
+                // Pattern to match " as [character name]" or " on [instrument/role]"
+                // Must start with " as " or " on " and be followed by characters
+                // This avoids matching names that end with "as" like "Matthias" or "on" like "Mason"
+                const characterPattern = /(\s+(?:as|on)\s+[^,]+(?:\s*\([^)]+\))?)/gi;
+                
+                const matches = text.match(characterPattern);
+                
+                if (matches) {
+                    let newHtml = text;
+                    
+                    // Replace each match with a styled span
+                    matches.forEach(match => {
+                        const trimmedMatch = match.trim(); // Remove extra whitespace
+                        const styledMatch = ` <span class="character-role">${trimmedMatch}</span>`;
+                        newHtml = newHtml.replace(match, styledMatch);
+                    });
+                    
+                    nameElement.innerHTML = newHtml;
+                }
             });
-            
-            nameElement.innerHTML = newHtml;
-        }
-    });
+        }, { priority: 'background' });
+    }
 }
 
 function matchCreditsHeight() {

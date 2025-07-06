@@ -289,8 +289,10 @@ button:disabled {
     max-height: 450px;
 }
 
+
 .custom-range input {
-    width: 105px;
+    width: 95px;
+    font-size: 0.5rem;
     position: relative;
 }
 

@@ -1,46 +1,68 @@
-// About Page JavaScript - Following the design philosophy
+// About Page JavaScript - Following the design philosophy with INP optimizations
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize page elements
-    initializeAboutPage();
+    // Initialize page elements with proper prioritization
+    scheduler.postTask(() => {
+        initializeAboutPage();
+    }, { priority: 'user-blocking' });
     
-    // Setup scroll animations
-    setupScrollAnimations();
+    // Setup scroll animations with lower priority
+    scheduler.postTask(() => {
+        setupScrollAnimations();
+    }, { priority: 'user-visible' });
     
-    // Add interactive enhancements
-    addInteractiveEffects();
+    // Add interactive enhancements with background priority
+    scheduler.postTask(() => {
+        addInteractiveEffects();
+    }, { priority: 'background' });
 });
 
 function initializeAboutPage() {
-    // Force scroll to top
+    // Force scroll to top - optimize with single batch operation
     if ('scrollRestoration' in history) {
         history.scrollRestoration = 'manual';
     }
     
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-    window.scrollTo(0, 0);
+    // Batch scroll operations
+    requestAnimationFrame(() => {
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        window.scrollTo(0, 0);
+    });
     
     // Check if this is a fresh page load for animations
     const isPageReload = performance.getEntriesByType('navigation')[0].type === 'reload' || 
                         !document.referrer || 
                         !document.referrer.includes(window.location.hostname);
     
-    // Add staggered animations to elements
+    // Add staggered animations to elements with yielding
     if (isPageReload) {
-        staggerAnimations();
+        scheduler.postTask(() => {
+            staggerAnimations();
+        }, { priority: 'user-visible' });
     }
 }
 
-function staggerAnimations() {
+async function staggerAnimations() {
     const elements = document.querySelectorAll('.pop-in');
     
-    elements.forEach((element, index) => {
-        // Add visible class with staggered delay
-        setTimeout(() => {
-            element.classList.add('visible');
-        }, index * 200);
-    });
+    // Process elements in batches for better performance
+    const BATCH_SIZE = 3;
+    for (let i = 0; i < elements.length; i += BATCH_SIZE) {
+        const batch = elements.slice(i, i + BATCH_SIZE);
+        
+        await scheduler.postTask(() => {
+            batch.forEach((element, batchIndex) => {
+                const index = i + batchIndex;
+                // Add visible class with staggered delay
+                setTimeout(() => {
+                    requestAnimationFrame(() => {
+                        element.classList.add('visible');
+                    });
+                }, index * 200);
+            });
+        }, { priority: 'user-visible' });
+    }
 }
 
 function setupScrollAnimations() {

@@ -2,50 +2,63 @@ const contentContainer = document.querySelectorAll('.contentContainer');
 let hoverDelay = 600; //ms
 let timeout;
 
-// Start the video from the beginning after 'hoverDelay' milleseconds
+// Optimized video handling with requestAnimationFrame for better INP
 const vidStart = event => {
     const video = event.currentTarget.querySelector('.passive');
-    if (video.checkVisibility({visibilityProperty: false})) {
+    if (video && video.checkVisibility({visibilityProperty: false})) {
         timeout = setTimeout(() => {
-            video.currentTime = 0;
-            video.play();
+            // Use scheduler.postTask for better prioritization
+            scheduler.postTask(() => {
+                video.currentTime = 0;
+                video.play().catch(() => {}); // Silently handle play failures
+            }, { priority: 'user-visible' });
         }, hoverDelay);
     }
 };
 
-// Pause the video, clear 'timeout'
+// Optimized video pause with scheduler
 const vidStop = event => {
     const video = event.currentTarget.querySelector('.passive');
-    if (video.checkVisibility({visibilityProperty: false})) {
+    if (video && video.checkVisibility({visibilityProperty: false})) {
         clearTimeout(timeout);
-        video.pause();
-        // video.src = video.src;
+        scheduler.postTask(() => {
+            video.pause();
+        }, { priority: 'user-visible' });
     }
 };
 
+// Use passive listeners for better scroll performance and batch event listener setup
 contentContainer.forEach(element => {
-    // Call 'vidStart' when hovering mouse over 'contentContainer'
-    element.addEventListener('mouseenter', vidStart);
-    // Call 'vidStop' when exiting mouse from 'contentContainer'
-    element.addEventListener('mouseleave', vidStop);
+    element.addEventListener('mouseenter', vidStart, { passive: true });
+    element.addEventListener('mouseleave', vidStop, { passive: true });
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.contentContainer.pop-in').forEach(el => {
+    // Optimized animation cleanup with passive listeners and batching
+    const popInElements = document.querySelectorAll('.contentContainer.pop-in');
+    popInElements.forEach(el => {
         el.addEventListener('animationend', () => {
             el.classList.remove('pop-in');
-        });
+        }, { once: true, passive: true });
     });
+    
     const contentWrapper = document.getElementById('content'); 
     const loadMoreButton = document.querySelector('.button'); 
     let contentData = []; // Store fetched JSON data
     let loadIndex = 3; // Track how many items have been loaded
 
-    // Fetch the data from data.json
-    fetch('/resources/json/data.json')
-        .then(response => response.json()) 
-        .then(data => {
-            console.log("Fetched Data:", data); // Debugging: Log fetched data
+    // Optimized data fetching with better error handling and yielding
+    async function loadData() {
+        try {
+            const response = await fetch('/resources/json/data.json');
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            const data = await response.json();
+            console.log("Fetched Data:", data);
+            
+            // Yield control while processing data to improve INP
+            await new Promise(resolve => setTimeout(resolve, 0));
+            
             // Sort data by date (newest first) to match Eleventy template
             contentData = data
                 .filter(item => item.Screenplay !== "Sole") // Filter out "Sole" items to match Eleventy
@@ -54,12 +67,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     const dateB = new Date(b.date);
                     return dateB - dateA; // Newest first (descending order)
                 });
-            // load(); // Load first 3 items
-        })
-        .catch(error => console.error("Error loading data.json:", error));
+        } catch (error) {
+            console.error("Error loading data.json:", error);
+        }
+    }
 
-    // Function to load content in increments of 3
-    const load = () => {
+    // Initialize data loading
+    loadData();
+
+    // Optimized content loading with yielding for better INP
+    const load = async () => {
         for (let i = 0; i < 3; i++) {
             if (loadIndex >= contentData.length) {
                 loadMoreButton.disabled = true;
@@ -67,7 +84,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 loadMoreButton.innerHTML = "You've reached the end of the page.";
                 return;
             }
-            addContent(contentData[loadIndex]); // Add content
+            
+            // Yield between content additions to prevent blocking
+            if (i > 0) {
+                await new Promise(resolve => setTimeout(resolve, 0));
+            }
+            
+            addContent(contentData[loadIndex]);
             loadIndex++;
         }
 
@@ -79,46 +102,47 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Function to create and append content
+    // Optimized content creation with requestAnimationFrame for DOM updates
     const addContent = (data) => {
-        const newContentContainer = document.createElement('div');
-        newContentContainer.classList.add('contentContainer', 'pop-in');
+        requestAnimationFrame(() => {
+            const newContentContainer = document.createElement('div');
+            newContentContainer.classList.add('contentContainer', 'pop-in');
 
-        const rolesArray = data.role ? data.role.split('/') : [];
-        
-        const rolesHTML = rolesArray.map((r) =>
-            `<a class="role-tag" href="/explore/?roles=${encodeURIComponent(r)}">${r}</a>`).join('');
+            const rolesArray = data.role ? data.role.split('/') : [];
+            
+            const rolesHTML = rolesArray.map((r) =>
+                `<a class="role-tag" href="/explore/?roles=${encodeURIComponent(r)}">${r}</a>`).join('');
 
-        newContentContainer.innerHTML = `
-            <a class="frame" href="/explore/${data.slug}">
-                <img class="thumbnail active" src="${data.imgSrc}" alt="">
-                <video class="thumbnail passive" src="${data.previewSrc}" muted loop></video>
-            </a>
-            <div class="info">
-                <a class="expand" href="/explore/${data.slug}"></a>
-                <h2 class="contentTitle">${data.title}</h2>
-                <h3 class="date">${data.date}</h3>
-                <div class="roles">${rolesHTML}</div>
-            </div>
-        `;
+            newContentContainer.innerHTML = `
+                <a class="frame" href="/explore/${data.slug}">
+                    <img class="thumbnail active" src="${data.imgSrc}" alt="" loading="lazy">
+                    <video class="thumbnail passive" src="${data.previewSrc}" muted loop preload="none"></video>
+                </a>
+                <div class="info">
+                    <a class="expand" href="/explore/${data.slug}"></a>
+                    <h2 class="contentTitle">${data.title}</h2>
+                    <h3 class="date">${data.date}</h3>
+                    <div class="roles">${rolesHTML}</div>
+                </div>
+            `;
 
-        contentWrapper.appendChild(newContentContainer);
+            contentWrapper.appendChild(newContentContainer);
 
-        // Clean up animation class after it runs (optional)
-        setTimeout(() => {
-            newContentContainer.classList.remove('pop-in');
-        }, 400);
+            // Clean up animation class after it runs
+            setTimeout(() => {
+                newContentContainer.classList.remove('pop-in');
+            }, 400);
 
-        // Call 'vidStart' when hovering mouse over 'contentContainer'
-        newContentContainer.addEventListener('mouseenter', vidStart);
-        // Call 'vidStop' when exiting mouse from 'contentContainer'
-        newContentContainer.addEventListener('mouseleave', vidStop);
+            // Add optimized event listeners with passive options
+            newContentContainer.addEventListener('mouseenter', vidStart, { passive: true });
+            newContentContainer.addEventListener('mouseleave', vidStop, { passive: true });
+        });
     };
-
-    // Wait for content.json to load before adding event listener
-    loadMoreButton.addEventListener('click', () => {
+    
+    // Optimized load more button with async handling
+    loadMoreButton.addEventListener('click', async () => {
         if (contentData.length > 0) {
-            load();
+            await load();
         }
     });
 });

@@ -1,29 +1,47 @@
-// Contact Page JavaScript - Following the design philosophy
+// Contact Page JavaScript - Following the design philosophy with INP optimizations
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize contact page elements
-    initializeContactPage();
+    // Initialize contact page elements with proper prioritization
+    scheduler.postTask(() => {
+        initializeContactPage();
+    }, { priority: 'user-blocking' });
     
-    // Setup form functionality
-    setupContactForm();
+    // Setup form functionality with high priority (user interaction)
+    scheduler.postTask(() => {
+        setupContactForm();
+    }, { priority: 'user-blocking' });
     
-    // Setup scroll animations
-    setupScrollAnimations();
+    // Setup scroll animations with lower priority
+    scheduler.postTask(() => {
+        setupScrollAnimations();
+    }, { priority: 'user-visible' });
     
-    // Add interactive enhancements
-    addInteractiveEffects();
+    // Add interactive enhancements with background priority
+    scheduler.postTask(() => {
+        addInteractiveEffects();
+    }, { priority: 'background' });
 });
 
-function initializeContactPage() {
-    // Initialize pop-in animations (matching site pattern)
-    const popInElements = document.querySelectorAll('.pop-in');
+async function initializeContactPage() {
+    // Initialize pop-in animations (matching site pattern) with batching
+    const popInElements = Array.from(document.querySelectorAll('.pop-in'));
     
-    // Stagger the appearance of pop-in elements
-    popInElements.forEach((element, index) => {
-        setTimeout(() => {
-            element.classList.add('visible');
-        }, index * 200);
-    });
+    // Stagger the appearance of pop-in elements with yielding for better INP
+    const BATCH_SIZE = 3;
+    for (let i = 0; i < popInElements.length; i += BATCH_SIZE) {
+        const batch = popInElements.slice(i, i + BATCH_SIZE);
+        
+        await scheduler.postTask(() => {
+            batch.forEach((element, batchIndex) => {
+                const index = i + batchIndex;
+                setTimeout(() => {
+                    requestAnimationFrame(() => {
+                        element.classList.add('visible');
+                    });
+                }, index * 200);
+            });
+        }, { priority: 'user-visible' });
+    }
 }
 
 function setupContactForm() {
@@ -31,9 +49,9 @@ function setupContactForm() {
     if (!form) return; // Guard clause if form doesn't exist
     
     // Form submission handler for validation and effects
-    form.addEventListener('submit', handleFormValidation);
+    form.addEventListener('submit', handleFormValidation, { passive: false }); // Must not be passive for preventDefault
     
-    // Real-time validation
+    // Real-time validation with debouncing for better INP
     setupFormValidation(form);
     
     // Enhanced input interactions
@@ -46,43 +64,50 @@ function setupContactForm() {
     setupDynamicSubject(form);
 }
 
-function handleFormValidation(e) {
+async function handleFormValidation(e) {
     e.preventDefault(); // Always prevent default form submission
     
     const form = e.target;
     const requiredFields = form.querySelectorAll('input[required], textarea[required], select[required]');
     let hasErrors = false;
     
-    // Clear previous error states
-    requiredFields.forEach(field => {
-        field.classList.remove('error');
-    });
-    
-    // Validate required fields
-    requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-            field.classList.add('error');
-            hasErrors = true;
-        }
-    });
+    // Use scheduler for validation to avoid blocking
+    await scheduler.postTask(() => {
+        // Clear previous error states in batch
+        requiredFields.forEach(field => {
+            field.classList.remove('error');
+        });
+        
+        // Validate required fields
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('error');
+                hasErrors = true;
+            }
+        });
+    }, { priority: 'user-blocking' });
     
     // If there are errors, show message and focus first error
     if (hasErrors) {
-        const result = document.getElementById('result');
-        result.innerHTML = "❌ Please fill in all required fields (marked with *).";
-        result.className = "form-result error";
-        result.style.display = "block";
-        
-        // Focus on first error field
-        const firstError = form.querySelector('.error');
-        if (firstError) {
-            firstError.focus();
-        }
+        await scheduler.postTask(() => {
+            const result = document.getElementById('result');
+            result.innerHTML = "❌ Please fill in all required fields (marked with *).";
+            result.className = "form-result error";
+            result.style.display = "block";
+            
+            // Focus on first error field
+            const firstError = form.querySelector('.error');
+            if (firstError) {
+                firstError.focus();
+            }
+        }, { priority: 'user-blocking' });
         return false;
     }
     
-    // Submit form asynchronously
-    submitFormAsync(form);
+    // Submit form asynchronously with proper prioritization
+    scheduler.postTask(() => {
+        submitFormAsync(form);
+    }, { priority: 'user-blocking' });
     
     return false;
 }
