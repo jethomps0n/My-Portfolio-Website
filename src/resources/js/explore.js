@@ -14,12 +14,19 @@ let firstRender = true;
 let hoverDelay = 600; // ms
 let hoverTimeout;
 
+// Performance optimizations for INP
+let updateTimeout = null;
+let renderTimeout = null;
+const BATCH_SIZE = 3; // Process items in batches
+const FRAME_BUDGET = 16; // 16ms per frame (60fps)
+
+// Video preview functions (simplified from original working version)
 const previewStart = event => {
     const video = event.currentTarget.querySelector('.thumbnail.passive');
     if (video && video.checkVisibility({visibilityProperty: false})) {
         hoverTimeout = setTimeout(() => {
             video.currentTime = 0;
-            video.play();
+            video.play().catch(() => {}); // Handle play failures silently
         }, hoverDelay);
     }
 };
@@ -37,13 +44,23 @@ function parseDate(str){
     return d;
 }
 
-function loadData(){
-    fetch('/resources/json/data.json')
-        .then(r => r.json())
-        .then(d => { allData = d; update(); })
-        .catch(err => {
-            console.error('Failed to load data.json', err);
-        });
+// Optimized data loading with better error handling and yielding
+async function loadData(){
+    try {
+        const response = await fetch('/resources/json/data.json');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const data = await response.json();
+        
+        // Yield control during data processing to improve INP
+        await scheduler.postTask(() => {
+            allData = data;
+        }, { priority: 'user-blocking' });
+        
+        update();
+    } catch (err) {
+        console.error('Failed to load data.json', err);
+    }
 }
 
 function applyURL(){
@@ -77,17 +94,20 @@ function applyURL(){
 }
 
 function updateURL(){
-    const params=new URLSearchParams();
-    if(searchText) params.set('q',searchText);
-    if(selectedRoles.size>0) params.set('roles',Array.from(selectedRoles).join(','));
-    if(selectedTypes.size>0) params.set('types',Array.from(selectedTypes).join(','));
+    const urlParts = [];
+    
+    if(searchText) urlParts.push(`q=${encodeURIComponent(searchText)}`);
+    if(selectedRoles.size>0) urlParts.push(`roles=${encodeURIComponent(Array.from(selectedRoles).join(','))}`);
+    if(selectedTypes.size>0) urlParts.push(`types=${encodeURIComponent(Array.from(selectedTypes).join(','))}`);
     if(dateRange.start&&dateRange.end){
-        params.set('start',dateRange.start.toISOString().split('T')[0]);
-        params.set('end',dateRange.end.toISOString().split('T')[0]);
+        urlParts.push(`start=${encodeURIComponent(dateRange.start.toISOString().split('T')[0])}`);
+        urlParts.push(`end=${encodeURIComponent(dateRange.end.toISOString().split('T')[0])}`);
     }
-    if(sortMode!=='newest') params.set('sort',sortMode);
-    if(currentPage>1) params.set('page',currentPage);
-    const newUrl=location.pathname+(params.toString()?`?${params.toString()}`:'');
+    if(sortMode!=='newest') urlParts.push(`sort=${encodeURIComponent(sortMode)}`);
+    if(currentPage>1) urlParts.push(`page=${encodeURIComponent(currentPage)}`);
+    
+    const queryString = urlParts.join('&');
+    const newUrl = location.pathname + (queryString ? `?${queryString}` : '');
     history.replaceState(null,'',newUrl);
 }
 
@@ -108,105 +128,139 @@ document.addEventListener('DOMContentLoaded',()=>{
     loadData();
 });
 
+// Optimized event binding with passive listeners and debouncing
 function bindEvents(){
     const searchInput = document.getElementById('search-input');
     const clearSearch = document.getElementById('clear-search');
-    searchInput.addEventListener('input',()=>{
-        searchText = searchInput.value.trim().toLowerCase();
-        clearSearch.style.display = searchText? 'block':'none';
-        currentPage=1;update();
-    });
-    clearSearch.addEventListener('click',()=>{
-        searchInput.value='';
-        searchText='';
-        clearSearch.style.display='none';
-        currentPage=1;update();
+    
+    // Debounced search for better INP
+    let searchTimeout;
+    searchInput.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            searchText = searchInput.value.trim().toLowerCase();
+            clearSearch.style.display = searchText ? 'block' : 'none';
+            currentPage = 1;
+            update();
+        }, 150); // 150ms debounce
+    }, { passive: true });
+    
+    clearSearch.addEventListener('click', () => {
+        searchInput.value = '';
+        searchText = '';
+        clearSearch.style.display = 'none';
+        currentPage = 1;
+        update();
     });
 
-    searchInput.addEventListener('focus',()=>{
-        document.body.classList.add('input-focus');
-        if(typeof cursor!=='undefined' && cursor.hide){cursor.hide();}
+    // Optimized focus handlers
+    searchInput.addEventListener('focus', () => {
+        requestAnimationFrame(() => {
+            document.body.classList.add('input-focus');
+            if (typeof cursor !== 'undefined' && cursor.hide) {
+                cursor.hide();
+            }
+        });
     });
-    searchInput.addEventListener('blur',()=>{
-        document.body.classList.remove('input-focus');
-        if(typeof cursor!=='undefined' && cursor.show){cursor.show();}
+    
+    searchInput.addEventListener('blur', () => {
+        requestAnimationFrame(() => {
+            document.body.classList.remove('input-focus');
+            if (typeof cursor !== 'undefined' && cursor.show) {
+                cursor.show();
+            }
+        });
     });
 
-    document.querySelectorAll('#filter-role input[type=checkbox]').forEach(cb=>{
-        cb.addEventListener('change',()=>{
-            if(cb.checked){selectedRoles.add(cb.value);}else{selectedRoles.delete(cb.value);}
-            currentPage=1;update();
+    // Optimized checkbox handlers with yielding
+    document.querySelectorAll('#filter-role input[type=checkbox]').forEach(cb => {
+        cb.addEventListener('change', async () => {
+            if (cb.checked) {
+                selectedRoles.add(cb.value);
+            } else {
+                selectedRoles.delete(cb.value);
+            }
+            currentPage = 1;
+            
+            // Yield control before updating to improve INP
+            await new Promise(resolve => setTimeout(resolve, 0));
+            update();
         });
     });
     
     function setupShowMore(id){
-        const group=document.getElementById(id);
-        const btn=group.querySelector('.show-more');
-        const more=group.querySelector('.more');
+        const group = document.getElementById(id);
+        const btn = group.querySelector('.show-more');
+        const more = group.querySelector('.more');
         
-        btn.addEventListener('click',()=>{
-            const expanding=!more.classList.contains('expanded');
+        btn.addEventListener('click', () => {
+            const expanding = !more.classList.contains('expanded');
             
-            if(expanding){
+            if (expanding) {
                 more.classList.add('expanded');
                 btn.classList.add('expanded');
-                btn.querySelector('.text').textContent='Show Less';
-            }else{
+                btn.querySelector('.text').textContent = 'Show Less';
+            } else {
                 more.classList.remove('expanded');
                 btn.classList.remove('expanded');
-                btn.querySelector('.text').textContent='Show More';
+                btn.querySelector('.text').textContent = 'Show More';
             }
         });
     }
+    
     setupShowMore('filter-role');
 
-    document.querySelectorAll('#filter-type input[type=checkbox]').forEach(cb=>{
-        cb.addEventListener('change',()=>{
-            if(cb.checked){selectedTypes.add(cb.value);}else{selectedTypes.delete(cb.value);}
-            currentPage=1;update();
+    // Optimized type filter handlers
+    document.querySelectorAll('#filter-type input[type=checkbox]').forEach(cb => {
+        cb.addEventListener('change', async () => {
+            if (cb.checked) {
+                selectedTypes.add(cb.value);
+            } else {
+                selectedTypes.delete(cb.value);
+            }
+            currentPage = 1;
+            
+            // Yield control before updating
+            await new Promise(resolve => setTimeout(resolve, 0));
+            update();
         });
     });
+    
     setupShowMore('filter-type');
 
-    document.querySelectorAll('.filter-group .toggle').forEach(btn=>{
-        btn.addEventListener('click',()=>{
-            const group=btn.closest('.filter-group');
-            const opts=group.querySelector('.options');
-            const expanded=btn.classList.toggle('open');
-            
-            // Reset "Show More" state when collapsing/expanding categories
-            const showMoreBtn = group.querySelector('.show-more');
-            const moreSection = group.querySelector('.more');
-            
-            if(expanded){
-                opts.classList.add('expanded');
-                btn.setAttribute('aria-expanded','true');
-            }else{
-                // Reset "Show More" state when collapsing
-                // if(showMoreBtn && moreSection) {
-                //     moreSection.classList.remove('expanded');
-                //     showMoreBtn.classList.remove('expanded');
-                //     showMoreBtn.querySelector('.text').textContent='Show More';
-                // }
+    // Optimized filter group toggles with requestAnimationFrame
+    document.querySelectorAll('.filter-group .toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+            requestAnimationFrame(() => {
+                const group = btn.closest('.filter-group');
+                const opts = group.querySelector('.options');
+                const expanded = btn.classList.toggle('open');
                 
-                opts.classList.remove('expanded');
-                btn.setAttribute('aria-expanded','false');
-            }
+                if (expanded) {
+                    opts.classList.add('expanded');
+                    btn.setAttribute('aria-expanded', 'true');
+                } else {
+                    opts.classList.remove('expanded');
+                    btn.setAttribute('aria-expanded', 'false');
+                }
+            });
         });
     });
 
-    document.querySelectorAll('#filter-date input[type=radio]').forEach(r=>{
-        r.addEventListener('click',()=>{
-            if(selectedDateRadio===r){
-                r.checked=false;
-                selectedDateRadio=null;
-                dateRange={start:null,end:null};
+    // Optimized date filter handlers
+    document.querySelectorAll('#filter-date input[type=radio]').forEach(r => {
+        r.addEventListener('click', () => {
+            if (selectedDateRadio === r) {
+                r.checked = false;
+                selectedDateRadio = null;
+                dateRange = {start: null, end: null};
                 update();
-            }else{
-                selectedDateRadio=r;
+            } else {
+                selectedDateRadio = r;
             }
         });
-        r.addEventListener('change',()=>{
+        
+        r.addEventListener('change', () => {
             if(r.checked){
                 const now = new Date();
                 now.setHours(23,59,59,999);
@@ -243,31 +297,57 @@ function bindEvents(){
     });
 }
 
-function update(){
-    filtered = allData.filter(item=>{
-        if(searchText && !(`${item.title} ${item.description}`.toLowerCase().includes(searchText))) return false;
-        if(selectedRoles.size>0){
-            const r=item.role||'';
-            const roleList=r.split('/').map(s=>s.trim()).filter(Boolean);
-            let match=false;
-            for(const val of selectedRoles){
-                if(roleList.includes(val)){ match=true; break; }
+// Optimized update function with better scheduling for INP
+async function update(){
+    // Use scheduler.postTask for better prioritization
+    await scheduler.postTask(async () => {
+        // Filter data in chunks to avoid blocking
+        const startTime = performance.now();
+        filtered = [];
+        
+        for (let i = 0; i < allData.length; i += BATCH_SIZE) {
+            const batch = allData.slice(i, i + BATCH_SIZE);
+            const batchFiltered = batch.filter(item => {
+                if(searchText && !(`${item.title} ${item.description}`.toLowerCase().includes(searchText))) return false;
+                if(selectedRoles.size>0){
+                    const r=item.role||'';
+                    const roleList=r.split('/').map(s=>s.trim()).filter(Boolean);
+                    let match=false;
+                    for(const val of selectedRoles){
+                        if(roleList.includes(val)){ match=true; break; }
+                    }
+                    if(!match) return false;
+                }
+                if(selectedTypes.size>0){
+                    if(!selectedTypes.has(item.type)) return false;
+                }
+                if(dateRange.start && dateRange.end){
+                    const d=parseDate(item.date);
+                    if(d<dateRange.start||d>dateRange.end) return false;
+                }
+                return true;
+            });
+            
+            filtered.push(...batchFiltered);
+            
+            // Yield if we've used too much time
+            if (performance.now() - startTime > FRAME_BUDGET) {
+                await scheduler.postTask(() => {}, { priority: 'user-visible' });
             }
-            if(!match) return false;
         }
-        if(selectedTypes.size>0){
-            if(!selectedTypes.has(item.type)) return false;
-        }
-        if(dateRange.start && dateRange.end){
-            const d=parseDate(item.date);
-            if(d<dateRange.start||d>dateRange.end) return false;
-        }
-        return true;
-    });
-    sortData();
-    renderFilters();
-    renderResults();
-    updateURL();
+        
+        sortData();
+    }, { priority: 'user-blocking' });
+    
+    // Render in separate tasks to maintain responsiveness
+    await scheduler.postTask(() => {
+        renderFilters();
+    }, { priority: 'user-visible' });
+    
+    await scheduler.postTask(() => {
+        renderResults();
+        updateURL();
+    }, { priority: 'user-visible' });
 }
 
 function sortData(){
@@ -366,138 +446,164 @@ function makeRoleTag(text){
     return span;
 }
 
-function renderResults(){
-    const results=document.getElementById('results-list');
-    results.innerHTML='';
-    const total=filtered.length;
-    const startIndex=(currentPage-1)*itemsPerPage;
-    const endIndex=Math.min(startIndex+itemsPerPage,total);
-    const slice=filtered.slice(startIndex,endIndex);
-    slice.forEach(item=>{
-        const div=document.createElement('div');
-        div.className='result-item ' + (firstRender ? 'pop-in' : 'fade-in');
-        const a=document.createElement('a');
-        a.href=`/explore/${item.slug}`||'#';
-        const hasScreenplay = item.Screenplay === 'Yes' || item.Screenplay === 'Sole';
-        let thumbClass = hasScreenplay ? 'thumb screenplay-attached' : 'thumb';
-        
-        // Add version badge to screenplay-attached class if versioning is enabled
-        if (hasScreenplay && (item.versioning === 'Yes' || item.versioning === 'Completed')) {
-            // Use current version if available, otherwise default to v1
-            const version = (item.versionInfo && item.versionInfo.currentVersion) ? item.versionInfo.currentVersion : 1;
-            thumbClass += ` versioned v${version}`;
-        }
-        
-        const disablePreview = item.Screenplay === 'Sole';
-        if (disablePreview) a.classList.add('no-preview');
-        
-        // Create the thumbnail HTML
-        const thumbDiv = document.createElement('div');
-        thumbDiv.className = thumbClass;
-        thumbDiv.innerHTML = `<img class="thumbnail active" src="${item.imgSrc}" alt=""><video class="thumbnail passive" src="${item.previewSrc}" muted loop></video>`;
-        
-        // Add screenplay/version badges if needed
-        if (hasScreenplay) {
-            const badgeWrapper = document.createElement('div');
-            badgeWrapper.className = 'badge-wrapper';
-            badgeWrapper.style.cssText = `
-                position: absolute;
-                bottom: 8px;
-                right: 8px;
-                display: flex;
-                pointer-events: none;
-                z-index: 5;
-            `;
-            
-            // Create screenplay badge
-            const screenplayBadge = document.createElement('span');
-            screenplayBadge.className = 'screenplay-badge';
-            screenplayBadge.textContent = 'Screenplay Attached';
-            screenplayBadge.style.cssText = `
-                background: hsla(214, 100%, 45%, 1);
-                color: hsla(0, 0%, 100%, 1);
-                padding: 2px 8px;
-                border-radius: 8px;
-                font-size: 0.65rem;
-                white-space: nowrap;
-            `;
-            
-            // Add version badge if versioned
-            if (item.versioning === 'Yes' || item.versioning === 'Completed') {
-                const version = (item.versionInfo && item.versionInfo.currentVersion) ? item.versionInfo.currentVersion : 1;
+// Optimized results rendering with requestAnimationFrame and lazy loading
+async function renderResults(){
+    const results = document.getElementById('results-list');
+    results.innerHTML = '';
+    const total = filtered.length;
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, total);
+    const slice = filtered.slice(startIndex, endIndex);
+    
+    // Use requestAnimationFrame for DOM updates and batch processing
+    await new Promise(resolve => {
+        requestAnimationFrame(async () => {
+            for (let i = 0; i < slice.length; i++) {
+                const item = slice[i];
+                const div = document.createElement('div');
+                div.className = 'result-item ' + (firstRender ? 'pop-in' : 'fade-in');
                 
-                // Remove right border radius from screenplay badge
-                screenplayBadge.style.borderTopRightRadius = '0';
-                screenplayBadge.style.borderBottomRightRadius = '0';
+                const a = document.createElement('a');
+                a.href = `/explore/${item.slug}` || '#';
+                const hasScreenplay = item.Screenplay === 'Yes' || item.Screenplay === 'Sole';
+                let thumbClass = hasScreenplay ? 'thumb screenplay-attached' : 'thumb';
                 
-                // Create version badge
-                const versionBadge = document.createElement('span');
-                versionBadge.className = 'version-badge';
-                versionBadge.textContent = `v${version}`;
-                versionBadge.style.cssText = `
-                    background: hsla(120, 60%, 45%, 1);
-                    color: white;
-                    padding: 2px 8px;
-                    border-radius: 8px;
-                    border-top-left-radius: 0;
-                    border-bottom-left-radius: 0;
-                    font-size: 0.65rem;
-                    font-weight: 500;
-                `;
+                // Add version badge to screenplay-attached class if versioning is enabled
+                if (hasScreenplay && (item.versioning === 'Yes' || item.versioning === 'Completed')) {
+                    const version = (item.versionInfo && item.versionInfo.currentVersion) ? item.versionInfo.currentVersion : 1;
+                    thumbClass += ` versioned v${version}`;
+                }
                 
-                badgeWrapper.appendChild(screenplayBadge);
-                badgeWrapper.appendChild(versionBadge);
-            } else {
-                badgeWrapper.appendChild(screenplayBadge);
+                const disablePreview = item.Screenplay === 'Sole';
+                
+                // Create the thumbnail HTML with lazy loading optimization
+                const thumbDiv = document.createElement('div');
+                thumbDiv.className = thumbClass;
+                
+                // For items with Screenplay === "Sole", only create img element
+                // For all others, create both img and video elements
+                if (disablePreview) {
+                    thumbDiv.innerHTML = `<img class="thumbnail active" src="${item.imgSrc}" alt="" loading="lazy">`;
+                    a.classList.add('no-preview');
+                } else {
+                    thumbDiv.innerHTML = `<img class="thumbnail active" src="${item.imgSrc}" alt="" loading="lazy"><video class="thumbnail passive" src="${item.previewSrc}" muted loop preload="none"></video>`;
+                }
+                
+                // Add video preview event listeners ONLY if preview is not disabled
+                // Attach to the <a> element so hovering anywhere on the result item triggers preview
+                if (!disablePreview) {
+                    a.addEventListener('mouseenter', previewStart);
+                    a.addEventListener('mouseleave', previewStop);
+                }
+                
+                // Add screenplay/version badges if needed
+                if (hasScreenplay) {
+                    const badgeWrapper = document.createElement('div');
+                    badgeWrapper.className = 'badge-wrapper';
+                    badgeWrapper.style.cssText = `
+                        position: absolute;
+                        bottom: 8px;
+                        right: 8px;
+                        display: flex;
+                        pointer-events: none;
+                        z-index: 5;
+                    `;
+                    
+                    // Create screenplay badge
+                    const screenplayBadge = document.createElement('span');
+                    screenplayBadge.className = 'screenplay-badge';
+                    screenplayBadge.textContent = 'Screenplay Attached';
+                    screenplayBadge.style.cssText = `
+                        background: hsla(214, 100%, 45%, 1);
+                        color: hsla(0, 0%, 100%, 1);
+                        padding: 2px 8px;
+                        border-radius: 8px;
+                        font-size: 0.65rem;
+                        white-space: nowrap;
+                    `;
+                    
+                    // Add version badge if versioned
+                    if (item.versioning === 'Yes' || item.versioning === 'Completed') {
+                        const version = (item.versionInfo && item.versionInfo.currentVersion) ? item.versionInfo.currentVersion : 1;
+                        
+                        screenplayBadge.style.borderTopRightRadius = '0';
+                        screenplayBadge.style.borderBottomRightRadius = '0';
+                        
+                        const versionBadge = document.createElement('span');
+                        versionBadge.className = 'version-badge';
+                        versionBadge.textContent = `v${version}`;
+                        versionBadge.style.cssText = `
+                            background: hsla(120, 60%, 45%, 1);
+                            color: white;
+                            padding: 2px 8px;
+                            border-radius: 8px;
+                            border-top-left-radius: 0;
+                            border-bottom-left-radius: 0;
+                            font-size: 0.65rem;
+                            font-weight: 500;
+                        `;
+                        
+                        badgeWrapper.appendChild(screenplayBadge);
+                        badgeWrapper.appendChild(versionBadge);
+                    } else {
+                        badgeWrapper.appendChild(screenplayBadge);
+                    }
+                    
+                    thumbDiv.appendChild(badgeWrapper);
+                }
+                
+                a.appendChild(thumbDiv);
+
+                const info = document.createElement('div');
+                info.className = 'result-info';
+                const h4 = document.createElement('h4');
+                h4.textContent = item.title;
+                info.appendChild(h4);
+                const small = document.createElement('small');
+                const roles = (item.role || '').split('/').map(s => s.trim()).filter(Boolean);
+                roles.forEach(r => {
+                    small.appendChild(makeRoleTag(r));
+                });
+                if (roles.length > 0) small.appendChild(document.createTextNode(' · '));
+                small.appendChild(document.createTextNode(item.date));
+                info.appendChild(small);
+                const p = document.createElement('p');
+                
+                // Handle newlines in description
+                const description = item.description || '';
+                if (description.includes('\n')) {
+                    const lines = description.split('\n');
+                    lines.forEach((line, index) => {
+                        if (index > 0) {
+                            p.appendChild(document.createElement('br'));
+                        }
+                        p.appendChild(document.createTextNode(line));
+                    });
+                } else {
+                    p.textContent = description;
+                }
+                info.appendChild(p);
+                a.appendChild(info);
+
+                div.appendChild(a);
+                div.addEventListener('animationend', () => {
+                    div.classList.remove('pop-in', 'fade-in');
+                }, { once: true });
+                results.appendChild(div);
+                
+                // Yield control every 2 items to prevent blocking
+                if (i % 2 === 1 && i < slice.length - 1) {
+                    await new Promise(resolve => setTimeout(resolve, 0));
+                }
             }
             
-            thumbDiv.appendChild(badgeWrapper);
-        }
-        
-        a.appendChild(thumbDiv);
-
-        const info=document.createElement('div');
-        info.className='result-info';
-        const h4=document.createElement('h4');
-        h4.textContent=item.title;
-        info.appendChild(h4);
-        const small=document.createElement('small');
-        const roles=(item.role||'').split('/').map(s=>s.trim()).filter(Boolean);
-        roles.forEach(r=>{
-            small.appendChild(makeRoleTag(r));
+            document.getElementById('results-count').innerHTML = `Results <b>${startIndex + 1}</b>-<b>${endIndex}</b> of <b>${total}</b>`;
+            renderPagination(total);
+            updateURL();
+            firstRender = false;
+            resolve();
         });
-        if(roles.length>0) small.appendChild(document.createTextNode(' · '));
-        small.appendChild(document.createTextNode(item.date));
-        info.appendChild(small);
-        const p=document.createElement('p');
-        // Handle newlines in description
-        const description = item.description || '';
-        if (description.includes('\n')) {
-            const lines = description.split('\n');
-            lines.forEach((line, index) => {
-                if (index > 0) {
-                    p.appendChild(document.createElement('br'));
-                }
-                p.appendChild(document.createTextNode(line));
-            });
-        } else {
-            p.textContent = description;
-        }
-        info.appendChild(p);
-        a.appendChild(info);
-
-        if(!disablePreview){
-            a.addEventListener('mouseenter', previewStart);
-            a.addEventListener('mouseleave', previewStop);
-        }
-        div.appendChild(a);
-        div.addEventListener('animationend',()=>{div.classList.remove('pop-in');div.classList.remove('fade-in');},{once:true});
-        results.appendChild(div);
     });
-    document.getElementById('results-count').innerHTML=`Results <b>${startIndex+1}</b>-<b>${endIndex}</b> of <b>${total}</b>`;
-    renderPagination(total);
-    updateURL();
-    firstRender=false;
 }
 
 function scrollToTop(){
