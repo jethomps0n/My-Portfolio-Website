@@ -72,53 +72,110 @@ document.addEventListener('DOMContentLoaded', () => {
     return zoom;
   }
 
+  // Track rendered pages for lazy loading
+  const renderedCanvases = new Map();
+  
+  // Debounce for handling momentum scrolling
+  let scrollTimeout;
+  const handleScroll = () => {
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      updateCurrentPage();
+    }, 16); // ~60fps
+  };
+  
+  const pageObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        const canvas = entry.target;
+        const pageIndex = parseInt(canvas.dataset.page);
+        
+        if (entry.isIntersecting && !renderedCanvases.has(pageIndex)) {
+          renderSinglePage(pageIndex, canvas);
+        }
+      });
+    },
+    {
+      root: canvasContainer,
+      rootMargin: '200px', // Increased margin for momentum scrolling
+      threshold: 0.01
+    }
+  );
+
+  function renderSinglePage(pageIndex, canvas) {
+    if (renderedCanvases.has(pageIndex)) return;
+    
+    pdfDoc.getPage(pageIndex).then(page => {
+      const base = page.getViewport({ scale: 1 });
+      const scale = calculateScale(base);
+      const viewport = page.getViewport({ scale });
+      
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      canvas.style.width = viewport.width + 'px';
+      canvas.style.height = viewport.height + 'px';
+      
+      const renderContext = {
+        canvasContext: canvas.getContext('2d'),
+        viewport: viewport
+      };
+      
+      const renderTask = page.render(renderContext);
+      renderedCanvases.set(pageIndex, renderTask);
+      
+      return renderTask.promise;
+    }).catch(err => {
+      console.warn(`Failed to render page ${pageIndex}:`, err);
+    });
+  }
+
   function renderPages(skipScrollToPage = false) {
     if (!pdfDoc) return;
     
-    // Clear existing pages
+    // Clear existing pages and reset rendered cache
     pagesContainer.innerHTML = '';
+    renderedCanvases.clear();
     
-    // Track rendering completion
-    let renderedPages = 0;
-    const totalPages = pdfDoc.numPages;
-    
+    // Create all canvas elements with lazy rendering
     for (let i = 1; i <= pdfDoc.numPages; i++) {
       const canvas = document.createElement('canvas');
       canvas.dataset.page = i;
       canvas.classList.add('pdf-page');
+      
+      // Apply content-visibility for performance
+      canvas.style.contentVisibility = 'auto';
+      canvas.style.containIntrinsicSize = '612px 792px'; // Default PDF page size
+      
       pagesContainer.appendChild(canvas);
       
-      pdfDoc.getPage(i).then(page => {
-        const base = page.getViewport({ scale: 1 });
-        const scale = calculateScale(base);
-        const viewport = page.getViewport({ scale });
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-        canvas.style.width = viewport.width + 'px';
-        canvas.style.height = viewport.height + 'px';
-        
-        // Render the page
-        const renderContext = {
-          canvasContext: canvas.getContext('2d'),
-          viewport: viewport
-        };
-        
-        page.render(renderContext).promise.then(() => {
-          renderedPages++;
-          if (renderedPages === totalPages && !skipScrollToPage) {
-            // All pages rendered
-            scrollToPage(pageNum);
-          }
-        });
-      });
+      // Observe for intersection-based rendering
+      pageObserver.observe(canvas);
     }
     
     pageCountSpan.textContent = pdfDoc.numPages;
+    
+    // Render first few pages immediately for better UX
+    requestAnimationFrame(() => {
+      const initialPages = Math.min(3, pdfDoc.numPages);
+      for (let i = 1; i <= initialPages; i++) {
+        const canvas = pagesContainer.querySelector(`canvas[data-page="${i}"]`);
+        if (canvas) renderSinglePage(i, canvas);
+      }
+      
+      if (!skipScrollToPage) {
+        // Defer scroll to page after initial render
+        setTimeout(() => scrollToPage(pageNum), 50);
+      }
+    });
   }
 
   function repositionScroll() {
     requestAnimationFrame(() => {
+      // For top-left anchored zooming, we want to maintain the top-left visible point
+      // Calculate what was visible at the top-left before zoom
       const scaleRatio = zoom / oldZoom;
+      
+      // Scale the scroll position to maintain top-left anchor point
       canvasContainer.scrollLeft = oldScrollLeft * scaleRatio;
       canvasContainer.scrollTop = oldScrollTop * scaleRatio;
     });
@@ -210,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
     );
   }
 
-  canvasContainer.addEventListener('scroll', updateCurrentPage);
+  canvasContainer.addEventListener('scroll', handleScroll);
 
   pdfjsLib.getDocument(url).promise.then(pdf => {
     pdfDoc = pdf;
@@ -239,38 +296,65 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   zoomInBtn.addEventListener('click', () => {
+    // Store essential state first - capture exact scroll position
     oldZoom = zoom;
     oldScrollLeft = canvasContainer.scrollLeft;
     oldScrollTop = canvasContainer.scrollTop;
 
+    // Calculate new zoom immediately
     if (zoomMode !== 'custom') {
       zoom = Math.floor(currentZoom / 0.25) * 0.25;
       zoomMode = 'custom';
     }
     zoom = Math.min(zoom + 0.25, 3);
+    
+    // Update UI immediately
     zoomSelect.value = zoom;
+    
+    // Render pages immediately
     renderPages(true);
-    repositionScroll();
+    
+    // Defer non-essential operations
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        repositionScroll();
+      }, 0);
+    });
   });
 
   zoomOutBtn.addEventListener('click', () => {
+    // Store essential state first - capture exact scroll position
     oldZoom = zoom;
     oldScrollLeft = canvasContainer.scrollLeft;
     oldScrollTop = canvasContainer.scrollTop;
+    
+    // Calculate new zoom immediately
     if (zoomMode !== 'custom') {
       zoom = Math.ceil(currentZoom / 0.25) * 0.25;
       zoomMode = 'custom';
     }
     zoom = Math.max(zoom - 0.25, 0.25);
+    
+    // Update UI immediately
     zoomSelect.value = zoom;
+    
+    // Render pages immediately
     renderPages(true);
-    repositionScroll();
+    
+    // Defer non-essential operations
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        repositionScroll();
+      }, 0);
+    });
   });
 
   zoomSelect.addEventListener('change', () => {
+    // Store essential state first - capture exact scroll position
     oldZoom = zoom;
     oldScrollLeft = canvasContainer.scrollLeft;
     oldScrollTop = canvasContainer.scrollTop;
+    
     const val = zoomSelect.value;
     if (val === 'fit' || val === 'width' || val === 'auto') {
       zoomMode = val;
@@ -279,8 +363,16 @@ document.addEventListener('DOMContentLoaded', () => {
       zoom = parseFloat(val);
       currentZoom = zoom;
     }
+    
+    // Render pages immediately
     renderPages(true);
-    repositionScroll();
+    
+    // Defer non-essential operations
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        repositionScroll();
+      }, 0);
+    });
   });
 
   downloadBtn.addEventListener('click', async () => {
@@ -492,9 +584,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
           function repositionModalScroll() {
             requestAnimationFrame(() => {
+              // For top-left anchored zooming, maintain the top-left visible point
               const scaleRatio = modalZoom / modalOldZoom;
               modalCanvasContainer.scrollLeft = modalOldScrollLeft * scaleRatio;
               modalCanvasContainer.scrollTop = modalOldScrollTop * scaleRatio;
+            });
+          }
+
+          // Helper function to defer non-essential modal operations after rendering
+          function performModalZoomWithDeferredOperations(renderFunction, deferredOperations = []) {
+            // First, render immediately for responsive UI
+            renderFunction();
+            
+            // Then defer non-essential operations
+            requestAnimationFrame(() => {
+              setTimeout(() => {
+                deferredOperations.forEach(operation => operation());
+              }, 0);
             });
           }
 
@@ -638,8 +744,11 @@ document.addEventListener('DOMContentLoaded', () => {
                   }
                   modalZoom = Math.min(modalZoom + 0.25, 3);
                   modalZoomSelect.value = modalZoom;
-                  renderModalPages(true);
-                  repositionModalScroll();
+                  
+                  performModalZoomWithDeferredOperations(
+                    () => renderModalPages(true),
+                    [repositionModalScroll]
+                  );
               });
 
               modalZoomOutBtn.addEventListener('click', () => {
@@ -653,8 +762,11 @@ document.addEventListener('DOMContentLoaded', () => {
                   }
                   modalZoom = Math.max(modalZoom - 0.25, 0.25);
                   modalZoomSelect.value = modalZoom;
-                  renderModalPages(true);
-                  repositionModalScroll();
+                  
+                  performModalZoomWithDeferredOperations(
+                    () => renderModalPages(true),
+                    [repositionModalScroll]
+                  );
               });
 
               modalZoomSelect.addEventListener('change', () => {
@@ -672,8 +784,11 @@ document.addEventListener('DOMContentLoaded', () => {
                       } else {
                           modalZoom = parseFloat(val);
                       }
-                      renderModalPages(true);
-                      repositionModalScroll();
+                      
+                      performModalZoomWithDeferredOperations(
+                        () => renderModalPages(true),
+                        [repositionModalScroll]
+                      );
                   });
               });
 
