@@ -15,6 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
     scheduler.postTask(() => {
         addInteractiveEffects();
     }, { priority: 'background' });
+    
+    // Setup availability toggle
+    scheduler.postTask(() => {
+        setupAvailabilityToggle();
+    }, { priority: 'user-visible' });
 });
 
 function initializeAboutPage() {
@@ -179,6 +184,29 @@ function setupSkillItemEffects() {
     });
 }
 
+// Availability Toggle Functionality
+function setupAvailabilityToggle() {
+    const availabilityCard = document.getElementById('availability-card');
+    const availabilityTitle = document.getElementById('availability-title');
+    const availabilityMeta = document.getElementById('availability-meta');
+    const availabilityText = document.getElementById('availability-text');
+    
+    if (availabilityCard && availabilityTitle && availabilityMeta && availabilityText) {
+        // Check if card has 'unavailable' class and update content accordingly
+        updateAvailabilityContent();
+    }
+    
+    function updateAvailabilityContent() {
+        const isUnavailable = availabilityCard.classList.contains('unavailable');
+        
+        if (isUnavailable) {
+            availabilityTitle.textContent = 'Currently Unavailable';
+            availabilityMeta.textContent = 'Focused on Current Projects';
+            availabilityText.innerHTML = 'I\'m currently focused on existing commitments and projects. However, I\'m always interested in discussing future opportunities. Feel free to <a href="/contact/" style="color: hsla(242, 61%, 80%, 1);">reach out</a> and I\'ll get back to you when my schedule opens up.';
+        }
+    }
+}
+
 // Add custom animation keyframes
 const style = document.createElement('style');
 style.textContent = `
@@ -215,4 +243,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Start typing effect after a short delay
         setTimeout(typeWriter, 800);
     }
+});
+
+// Initial setup calls
+document.addEventListener('DOMContentLoaded', () => {
+    setupAvailabilityToggle();
 });
