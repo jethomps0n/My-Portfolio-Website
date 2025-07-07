@@ -20,6 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
     scheduler.postTask(() => {
         setupAvailabilityToggle();
     }, { priority: 'user-visible' });
+    
+    // Setup profile image cycling
+    scheduler.postTask(() => {
+        setupProfileImageCycling();
+    }, { priority: 'user-visible' });
 });
 
 function initializeAboutPage() {
@@ -204,6 +209,67 @@ function setupAvailabilityToggle() {
             availabilityMeta.textContent = 'Focused on Current Projects';
             availabilityText.innerHTML = 'I\'m currently focused on existing commitments and projects. However, I\'m always interested in discussing future opportunities. Feel free to <a href="/contact/" style="color: hsla(242, 61%, 80%, 1);">reach out</a> and I\'ll get back to you when my schedule opens up.';
         }
+    }
+}
+
+// Profile Image Cycling Functionality
+function setupProfileImageCycling() {
+    const images = document.querySelectorAll('.profile-image');
+    const profileFrame = document.getElementById('profile-frame');
+    
+    if (images.length === 0) return;
+    
+    let currentImageIndex = 0;
+    let intervalId = null;
+    const cycleInterval = 9500; // 9.5 seconds between images
+    let isPaused = false;
+    
+    function cycleToNextImage() {
+        if (isPaused) return;
+        
+        // Remove active class from current image
+        images[currentImageIndex].classList.remove('active');
+        
+        // Move to next image (loop back to 0 if at end)
+        currentImageIndex = (currentImageIndex + 1) % images.length;
+        
+        // Add active class to new current image
+        images[currentImageIndex].classList.add('active');
+    }
+    
+    function startCycling() {
+        if (intervalId) clearInterval(intervalId);
+        intervalId = setInterval(cycleToNextImage, cycleInterval);
+    }
+    
+    function stopCycling() {
+        if (intervalId) {
+            clearInterval(intervalId);
+            intervalId = null;
+        }
+    }
+    
+    // Start the cycling
+    startCycling();
+    
+    // Pause cycling on hover (optional)
+    if (profileFrame) {
+        profileFrame.addEventListener('mouseenter', () => {
+            isPaused = true;
+            stopCycling();
+        });
+        
+        profileFrame.addEventListener('mouseleave', () => {
+            isPaused = false;
+            startCycling();
+        });
+        
+        // Optional: Allow manual cycling on click
+        profileFrame.addEventListener('click', () => {
+            cycleToNextImage();
+            // Restart the interval to maintain consistent timing
+            startCycling();
+        });
     }
 }
 
