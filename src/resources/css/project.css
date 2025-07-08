@@ -54,7 +54,7 @@
     font-weight: bold;
     color: hsla(0,0%,100%,1);
     margin: 0 0 0 0;
-    max-width: 80%;
+    max-width: 72%;
     transition: color 300ms ease;
     display: flex;
     align-items: center;

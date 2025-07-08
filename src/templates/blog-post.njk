@@ -1,7 +1,9 @@
 ---
 layout: base.njk
 pagecss: <link rel="stylesheet" href="/resources/css/blog.css">
-pagejs: <script src="/resources/js/blog.js" defer></script>
+pagejs: >
+    <script src="/resources/js/blog.js" defer></script>
+    <script src="/resources/js/video-embed.js" defer></script>
 ---
 
 <article class="blog-post-single">
@@ -19,6 +21,18 @@ pagejs: <script src="/resources/js/blog.js" defer></script>
     </header>
     
     <div class="post-content">
+        {% if videoLink %}
+        <div class="video-container">
+            <div class="video-player">
+                <iframe
+                    src="{{ videoLink | replace('https://www.youtube.com/watch?v=', 'https://www.youtube.com/embed/') | replace('https://youtu.be/', 'https://www.youtube.com/embed/') }}"
+                    allowfullscreen
+                    allowtransparency
+                    allow="autoplay"
+                ></iframe>
+            </div>
+        </div>
+        {% endif %}
         {{ content | safe }}
     </div>
     

@@ -202,6 +202,65 @@ module.exports = function (eleventyConfig) {
         return processed;
     });
 
+    // Add transform to process video links in blog posts
+    eleventyConfig.addTransform("processVideoLinks", function(content, outputPath) {
+        // Only process HTML files from blog posts
+        if (outputPath && outputPath.includes('/blog/posts/') && outputPath.endsWith('.html')) {
+            // Process videoLink: [url] patterns
+            const videoLinkRegex = /videoLink:\s*\[([^\]]+)\]/g;
+            
+            content = content.replace(videoLinkRegex, (match, url) => {
+                return createVideoEmbed(url.trim());
+            });
+        }
+        return content;
+    });
+
+    // Helper function to create video embeds
+    function createVideoEmbed(url, width = '70%') {
+        // YouTube regex
+        const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+        // Vimeo regex  
+        const vimeoRegex = /(?:vimeo\.com\/)([0-9]+)/i;
+        
+        let embedUrl = '';
+        
+        // Check for YouTube
+        const youtubeMatch = url.match(youtubeRegex);
+        if (youtubeMatch) {
+            embedUrl = `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+        }
+        
+        // Check for Vimeo
+        const vimeoMatch = url.match(vimeoRegex);
+        if (vimeoMatch) {
+            embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+        }
+        
+        // Fallback for direct embed URLs
+        if (!embedUrl && url.includes('embed')) {
+            embedUrl = url;
+        }
+        
+        if (embedUrl) {
+            return `
+<div class="video-embed" style="width:${width};" id="player">
+    <div class="player">
+        <iframe
+            src="${embedUrl}"
+            allowfullscreen
+            allowtransparency
+            allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            loading="lazy"
+        ></iframe>
+    </div>
+</div>`;
+        }
+        
+        // Return original if no match found
+        return `videoLink: [${url}]`;
+    }
+
     return {
       templateFormats: ["njk", "html", "md"],
       markdownTemplateEngine: "njk",

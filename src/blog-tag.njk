@@ -8,7 +8,7 @@ pagination:
   alias: tagPage
 permalink: "/blog/tags/{{ tagPage.tag | slugify }}/{% if tagPage.pageNumber > 0 %}page-{{ tagPage.pageNumber + 1 }}/{% endif %}index.html"
 eleventyComputed:
-  title: "{{ tagPage.tag | titleCase }} Posts | Jonathan Thompson"
+  title: "{{ tagPage.tag | titleCase }} Posts"
 ---
 
 <div id="blog-page">
