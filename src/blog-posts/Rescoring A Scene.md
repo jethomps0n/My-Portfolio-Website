@@ -12,11 +12,6 @@ pagecss: >
 pagejs: >
     <script src="/resources/js/blog.js" defer></script>
     <script type="module" src="/resources/js/pdf-viewer.js" defer></script>
-    <script type="module" src="/resources/js/video-embed.js" defer></script>
-addcss: >
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
-addjs: >
-    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
 ---
 
 ## The Process
