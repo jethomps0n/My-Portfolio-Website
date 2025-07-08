@@ -207,7 +207,7 @@ function addTimestampStyles() {
             font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
             font-size: 0.9em;
             font-weight: 600;
-            padding: 2px 6px;
+            padding: 0 6px;
             transition: all 0.2s ease;
             white-space: nowrap;
         }
@@ -216,7 +216,6 @@ function addTimestampStyles() {
             background: hsla(242, 61%, 67%, 0.15);
             border-color: hsla(242, 61%, 67%, 0.5);
             color: hsla(242, 61%, 80%, 1);
-            transform: translateY(-1px);
         }
         
         .timestamp-link:focus {
