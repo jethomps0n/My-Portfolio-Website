@@ -651,6 +651,16 @@ body > header {
     border: 1px solid hsla(248, 9%, 45%, 0.2);
 }
 
+/* Embed videos and PDFs */
+.post-content #frame {
+    aspect-ratio: 16 / 9;
+    position: relative;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    margin: 50px auto;
+}
+
 /* Links in content */
 .post-content a {
     color: hsla(210, 90%, 60%, 1);
