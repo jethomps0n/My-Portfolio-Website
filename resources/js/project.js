@@ -21,6 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
         processCharacterRoles();
         matchCreditsHeight();
         setupVersionHistory();
+        
+        // Process timestamps in description for video projects
+        processDescriptionTimestamps();
     }, { priority: 'background' });
     
     // Setup resize handler with passive listener
@@ -255,3 +258,89 @@ function setupVersionHistory() {
         });
     }
 }
+
+function processDescriptionTimestamps() {
+    // This function ensures timestamp processing happens even if video-viewer.js
+    // isn't loaded for some reason (fallback functionality)
+    const descriptionElement = document.querySelector('#description p');
+    if (!descriptionElement) return;
+    
+    // Check if timestamps have already been processed (avoid double processing)
+    if (descriptionElement.querySelector('.timestamp-link')) return;
+    
+    const text = descriptionElement.innerHTML;
+    const timestampRegex = /\b(\d{1,2}:\d{2}(?::\d{2})?)\b/g;
+    
+    const processedText = text.replace(timestampRegex, (match, timestamp) => {
+        return `<span class="timestamp-text" data-timestamp="${timestamp}" title="Timestamp: ${timestamp}">${timestamp}</span>`;
+    });
+    
+    if (processedText !== text) {
+        descriptionElement.innerHTML = processedText;
+    }
+}
+
+// Ripple effect utility function
+function createRipple(element) {
+    // Don't add ripple if reduced motion is preferred
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return;
+    }
+
+    const ripple = document.createElement('span');
+    const rect = element.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    
+    ripple.style.cssText = `
+        position: absolute;
+        width: ${size}px;
+        height: ${size}px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        border-radius: 50%;
+        background: rgba(115, 103, 240, 0.3);
+        pointer-events: none;
+        animation: projectRipple 0.6s ease-out;
+        z-index: 1;
+    `;
+    
+    element.style.position = 'relative';
+    element.style.overflow = 'hidden';
+    element.appendChild(ripple);
+    
+    // Remove ripple after animation
+    setTimeout(() => {
+        if (ripple.parentNode) {
+            ripple.parentNode.removeChild(ripple);
+        }
+    }, 600);
+}
+
+// Add custom CSS for timestamps and ripple effect
+const projectStyles = document.createElement('style');
+projectStyles.textContent = `
+    @keyframes projectRipple {
+        from {
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0.6;
+        }
+        to {
+            transform: translate(-50%, -50%) scale(2);
+            opacity: 0;
+        }
+    }
+    
+    .timestamp-text {
+        color: hsla(242, 61%, 67%, 1);
+        font-weight: 600;
+        text-decoration: underline;
+        text-decoration-style: dotted;
+        cursor: help;
+    }
+    
+    .timestamp-text:hover {
+        color: hsla(242, 61%, 80%, 1);
+    }
+`;
+document.head.appendChild(projectStyles);
