@@ -1291,10 +1291,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                       zoom = calculateScale(base);
                   }
                   
-                  await renderPages();
+                  await renderPages(true); // Skip auto-scroll to page 1
                   
-                  Promise.resolve().then(() => {
-                      scrollToPage(finalState.pageNum);
+                  // Use requestAnimationFrame to ensure DOM is updated before setting scroll position
+                  requestAnimationFrame(() => {
+                      // Set the precise scroll position instead of scrolling to page
                       canvasContainer.scrollLeft = finalState.scrollLeft;
                       canvasContainer.scrollTop = finalState.scrollTop;
                       updatePageDisplay(finalState.pageNum);
