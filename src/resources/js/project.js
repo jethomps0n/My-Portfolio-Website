@@ -41,7 +41,7 @@ async function processCharacterRoles() {
     // Process in batches for better INP
     const BATCH_SIZE = 5;
     for (let i = 0; i < creditNames.length; i += BATCH_SIZE) {
-        const batch = creditNames.slice(i, i + BATCH_SIZE);
+        const batch = Array.from(creditNames).slice(i, i + BATCH_SIZE);
         
         await scheduler.postTask(() => {
             batch.forEach(nameElement => {
