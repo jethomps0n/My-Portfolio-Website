@@ -37,7 +37,7 @@ eleventyComputed:
                 <a href="/blog/tags/{{ postTag | slugify }}/" class="post-category {{ postTag | slugify }}">{{ postTag | titleCase }}</a>
                 {% endfor %}
                 <span class="post-date">{{ post.data.date | dateFormat }}</span>
-                <span class="reading-time">{{ post.data.excerpt | readingTime }} min read</span>
+                <span class="reading-time">{{ post.templateContent | readingTime }} min read</span>
             </div>
             <h2><a href="{{ post.url }}">{{ post.data.title }}</a></h2>
             <p class="post-excerpt">{{ post.data.excerpt }}</p>
