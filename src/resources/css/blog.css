@@ -598,7 +598,7 @@ body > header {
 .post-content ul li {
     position: relative;
     margin-bottom: 4px;
-    padding-left: 14px;
+    padding-left: 20px;
     line-height: 1.7;
     color: hsla(0, 0%, 92%, 1);
     font-size: 1.02rem;
@@ -607,10 +607,10 @@ body > header {
 .post-content ul li::before {
     content: '●';
     position: absolute;
-    left: -4px;
-    top: 0;
+    left: 0;
+    top: 0.1em;
     color: hsla(210, 90%, 65%, 1);
-    font-size: 1.1em;
+    font-size: 0.8em;
     font-weight: bold;
     line-height: 1.7;
     text-shadow: 0 0 4px hsla(210, 90%, 65%, 0.3);
@@ -624,7 +624,7 @@ body > header {
 .post-content ol li {
     position: relative;
     margin-bottom: 4px;
-    padding-left: 18px;
+    padding-left: 32px;
     line-height: 1.7;
     color: hsla(0, 0%, 92%, 1);
     counter-increment: custom-counter;
@@ -634,13 +634,15 @@ body > header {
 .post-content ol li::before {
     content: counter(custom-counter) '.';
     position: absolute;
-    left: -4px;
+    left: 0;
     top: 0;
     color: hsla(210, 90%, 65%, 1);
     font-weight: 600;
-    font-size: 0.95em;
+    font-size: 1em;
     line-height: 1.7;
     text-shadow: 0 0 4px hsla(210, 90%, 65%, 0.3);
+    width: 28px;
+    text-align: right;
 }
 
 /* Nested lists */
@@ -761,6 +763,20 @@ body > header {
     transform: translateY(-2px);
 }
 
+.img-caption {
+    display: block;
+    text-align: center;
+    margin-top: -30px;
+    transition: all 0.3s ease;
+    color: hsla(0, 0%, 70%, 1);
+    font-size: 0.8rem;
+}
+
+img:hover + .img-caption {
+    transform: translateY(-2px);
+    color: hsla(0, 0%, 75%, 1);
+}
+
 .post-content figure {
     margin: 44px 0;
     text-align: center;
@@ -839,6 +855,21 @@ body > header {
     border-color: hsla(248, 9%, 45%, 0.5);
 }
 
+.video-caption {
+    display: block;
+    text-align: center;
+    margin-top: -34px;
+    transition: all 0.4s ease;
+    color: hsla(0, 0%, 70%, 1);
+    font-size: 0.8rem;
+}
+
+.video-container:hover + .video-caption,
+.video-embed:hover + .video-caption {
+    transform: translateY(-4px);
+    color: hsla(0, 0%, 75%, 1);
+}
+
 .video-container.full-width {
     width: 100%;
 }
@@ -907,10 +938,10 @@ body > header {
 
 /* Enhanced spacing and typography */
 .post-content strong {
-    color: hsla(0, 0%, 98%, 1);
+    color: hsla(28, 80%, 70%, 1);
     font-weight: 700;
     letter-spacing: 0.015em;
-    text-shadow: 0 1px 2px hsla(0, 0%, 0%, 0.2);
+    text-shadow: 0 1px 3px hsla(28, 80%, 40%, 0.4);
 }
 
 .post-content em {
@@ -1172,6 +1203,36 @@ body > header {
 .blog-post-item .read-more {
     font-size: 0.9rem;
     margin-top: 8px;
+}
+
+/* Content grouping - subtle sections without borders */
+.post-content .content-section {
+    margin: 40px 0;
+    padding: 32px;
+    background: linear-gradient(135deg, 
+        hsla(0, 0%, 100%, 0.02) 0%, 
+        hsla(0, 0%, 100%, 0.005) 100%);
+    border-radius: 20px;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}
+
+.post-content .content-section:hover {
+    background: linear-gradient(135deg, 
+        hsla(0, 0%, 100%, 0.03) 0%, 
+        hsla(0, 0%, 100%, 0.01) 100%);
+    transform: translateY(-2px);
+}
+
+/* Highlight sections for important content */
+.post-content .highlight-section {
+    background: linear-gradient(135deg, 
+        hsla(28, 40%, 10%, 0.15) 0%, 
+        hsla(28, 40%, 8%, 0.08) 100%);
+    border-left: 3px solid hsla(28, 80%, 60%, 0.6);
+    margin: 32px 0;
+    padding: 24px 28px;
+    border-radius: 0 16px 16px 0;
 }
 
 /* Responsive Design */

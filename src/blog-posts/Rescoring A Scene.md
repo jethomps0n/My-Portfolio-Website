@@ -14,15 +14,16 @@ pagejs: >
     <script type="module" src="/resources/js/pdf-viewer.js" defer></script>
 ---
 
-## The Process
+## The Process - Part I
 
 Like many things, sometimes the toughest part is knowing where to start.
 
-Often times, my inspiration for rescoring a scene comes from two places. Sometimes it’ll come from watching a scene that I think I might want to rescore. Or it’ll come from listening to music that I might want to use in a rescore.
+Often times, my inspiration for rescoring a scene comes will come from one of two places. Sometimes there might be a scene I've watched that I think I might want to rescore. Or sometimes there might be a piece of music I've listened to that I might want to use in a rescore.
 
 Either way, they both create a spark that gets me closer to my end goal. In this case, the music came first.
 
 videoLink: [https://www.youtube.com/embed/XZDStvUubuk]
+<small class="video-caption">The Last of Us</small>
 
 The music in this scene strikes a sense of innocence, but also works as a stark contrast to the overall beats in the story; a premonition for what the main character, Ellie, will soon go through. The general  story of The Last of Us Part II is quite bleak and dire, reflecting over Ellie’s loss of loved ones and dealing with themes of revenge and forgiveness. This scene, a flashback, goes back in time to when things were simpler, when the only thing Ellie had to worry about was if a girl liked her back.
 
@@ -37,6 +38,7 @@ Another point I’d like to add is a **sense of premonition** to the scene, but 
 Now that we’ve narrowed down a series of points to look for, we need to find a scene that ideally fits all of these criteria. This is where the process becomes a little bit muddy. There’s no right or wrong way to find a scene like this. For me, it looks like endless scrolling through my Letterboxd until it jogs my memory of a scene I might be able to use. Fortunately, Kill Bill: Vol. 2 crossed my mind.
 
 <img src="/resources/images/assets/kill-bill-vol-2-banner.png">
+<small class="img-caption">The Last of Us</small>
 
 The music in clip above is called “Ecstasy,” Kill Bill: Vol. 2 is the exact opposite of that. It’s story about a bride that enacts revenge on her husband and child’s murders. And it contains killing, lots of killing. Killing with swords, guns, knives, maces, you name it.
 
@@ -69,7 +71,7 @@ The highlighted line on the audio waveform, points out the audio level of the mu
 
 As you can see, in the majority of the scene, the volume stays constant at a moderate level. Without even watching the scene, you can tell that little to no dialogue is spoken here. Later on, it drops down, this is where we hear our first words. I tend to decrease/increase the volume by 6dB as that feels most natural to me. For smaller changes in volume, I’ll tend to change the volume by multiples of 6, like 2dB or 3dB. The slight volume increase towards the end and then decrease is when the tension is highest between the two characters. The Bride and Bill.
 
-**<u>THE RESULT</u>**
+### <u>THE RESULT</u>
 
 When watching the final rescored version of the scene, keep in mind our four points from earlier:
 - Does the music **contrast** with the overall tone of the story?
@@ -92,3 +94,44 @@ And consider how changes in volume affect the scene.
 </div>
 
 Now that we’ve officially rescored a scene, I should note that the four points we found earlier are not for every rescore. These points are only specific only to this scene. It is important to know what aspects you are aiming for in a given rescore and where your inspiration for rescoring a scene comes from. Drawing from The Last of Us Part 2 clip was easy, because we knew what to look for. In my next post, I will be covering a rescore, inspired by a scene rather than music. The process is slightly different for each.
+
+## The Process - Part II
+
+Like in part I, my inspiration for rescoring a scene comes from two places.
+1) From watching the scene I want to eventually rescore.
+2) From listening to the music I want to use in a rescore.
+This time the scene came first.
+
+videoLink: [https://youtu.be/OflkapcEdKU]
+
+This scene is overwhelmingly positive. The music has a feeling of wonder and of inspiration. From the plot of the movie, the music also conveys pushing through past doubts and embracing the people in your lives.
+
+One soundtrack piece immediately came to mind… A Quiet Place.
+
+videoLink: [https://youtu.be/txC11lMCnMI]
+
+The music here is powerful, but most importantly it is overwhelmingly positive.
+
+It contains wonder and inspiration.
+
+In the film, the characters push through past doubts and embrace the people in their lives
+
+And there we have it, our four points once again.
+
+### <u>The Result</u>
+
+Here’s the rescored version:
+
+<div class="video-embed" style="width=100%;" id="player">
+    <div class="player">
+        <iframe
+            src="https://www.youtube.com/embed/q5tZgBONUZ8"
+            allowfullscreen
+            allowtransparency
+            allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            loading="lazy"
+        ></iframe>
+    </div>
+</div>
+
+<blockquote>When I was a kid, I asked my grandpa once if he ever killed any Germans in the war.</blockquote>
