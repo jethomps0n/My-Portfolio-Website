@@ -13,6 +13,8 @@ layout: "blog-post.njk"
 #     <script type="module" src="/resources/js/pdf-viewer.js" defer></script>
 ---
 
+<figcaption style="text-align:center;"><strong>Spoilers Ahead</strong> for <em>The Last of Us Part II</em>, <em>Kill Bill: Vol. 2</em>, and <em>Ad Astra</em></figcaption>
+
 ## The Process - Part I
 
 Like many things, sometimes the toughest part is knowing where to start.
@@ -24,7 +26,7 @@ Either way, they both create a spark that gets me closer to my end goal. In this
 videoLink: [https://www.youtube.com/embed/XZDStvUubuk]
 <small class="video-caption" style="font-style:italic;">video: The Last of Us Part II</small>
 
-The music in this scene strikes a sense of innocence, but also works as a stark contrast to the overall beats in the story; a premonition for what the main character, Ellie, will soon go through. If you've never played or heard of *The Last of Us* franchise, the story of *The Last of Us Part II* is quite bleak and dire. It reflects over Ellie’s loss of loved ones and it deals with themes of revenge and forgiveness. This scene, a flashback, goes back in time to when things were simpler - when the only thing Ellie had to worry about was if a girl liked her back.
+The music in this scene strikes a sense of innocence, but also works as a stark contrast to the overall beats in the story; a premonition for what the main character, Ellie, will soon go through. If you've never played or heard of *The Last of Us* franchise, the story of *The Last of Us Part II (2020)* is quite bleak and dire. It reflects over Ellie’s loss of loved ones and it deals with themes of revenge and forgiveness. This scene, a flashback, goes back in time to when things were simpler - when the only thing Ellie had to worry about was if a girl liked her back.
 
 Personally, I think it’s easier to draw from what worked in the scene above, to help infuence our goals in finding a scene to rescore that can match the music well. This is why I linked the scene the music was in and not just the music by itself.
 
@@ -36,7 +38,7 @@ To give us some direction, I gathered up some main points from this scene that n
 
 Another point I’d like to add is a **sense of premonition** to the scene, but that relies on the context of the scene itself. The music will only take us halfway there.
 
-Now that we’ve narrowed down a series of points to look for, we need to find a scene that ideally fits all of these criteria. This is where the process becomes a little bit muddy. There’s no right or wrong way to find a scene like this. For me, it looks like endless scrolling through <a href="https://letterboxd.com/Jonathan_T" target="_blank">my Letterboxd</a> until it jogs my memory of a scene I might be able to use. Fortunately, *Kill Bill: Vol. 2* crossed my mind.
+Now that we’ve narrowed down a series of points to look for, we need to find a scene that ideally fits all of these criteria. This is where the process becomes a little bit muddy. There’s no right or wrong way to find a scene like this. For me, it looks like endless scrolling through <a href="https://letterboxd.com/Jonathan_T" target="_blank">my Letterboxd</a> until it jogs my memory of a scene I might be able to use. Fortunately, *Kill Bill: Vol. 2 (2004)* crossed my mind.
 
 <img src="/resources/images/assets/kill-bill-vol-2-banner.png">
 <small class="img-caption" style="font-style:italic;">image: Kill Bill: Vol. 2 Banner</small>
@@ -44,12 +46,6 @@ Now that we’ve narrowed down a series of points to look for, we need to find a
 The song name in *The Last of Us Part II* scene above is called “Ecstasy.” *Kill Bill: Vol. 2* is the exact opposite of that. It’s a story about a bride that enacts revenge on her husband and child’s murders. And it contains killing, lots of killing. Killing with swords, guns, knives, maces, you name it.
 
 I think we’ve found our **contrast**.
-
----
-
-<figcaption style="text-align:center;"><strong>Spoilers Ahead</strong> for <em>Kill Bill: Vol. 2</em></figcaption>
-
----
 
 There’s a crucial moment in *Kill Bill: Vol. 2* where The Bride confronts the main antagonist, the man in the title of the film, Bill. Enriched with rage, she turns a corner and aims her gun where she thinks Bill is, but she is instead met with the eyes of her daughter. The Bride’s daughter, B.B., is alive and well.
 
@@ -115,7 +111,7 @@ And consider how changes in volume affect the scene.
     </div>
 </div>
 
-Now that we’ve officially rescored a scene, I should note that the four points we found earlier are not for every rescore. These points are specific only to this scene. It is important to know what aspects you are aiming for in a given rescore and where your inspiration for rescoring a scene comes from. Drawing from *The Last of Us Part 2* scene was easy, because we knew what to look for. In <u>Part II</u>, I will be covering a rescore, inspired by a scene rather than music. The process is slightly different for each.
+Now that we’ve officially rescored a scene, I should note that the four points we found earlier are not for every rescore. These points are specific only to this scene. It is important to know what aspects you are aiming for in a given rescore and where your inspiration for rescoring a scene comes from. Drawing from *The Last of Us Part II* scene was easy, because we knew what to look for. In <u>Part II</u>, I will be covering a rescore, inspired by a scene rather than music. The process is slightly different for each.
 
 ## The Process - Part II
 
@@ -138,7 +134,7 @@ We ordered these from most important to least important. As you can see, the mor
 
 When our goal is to find a piece of music, this ordering should flip. Our more important aspects should focus on the tone of the music and the effects they invoke. Whereas the less important points should relate to the content of the scene.
 
-With that being said, lets create our main points by analyzing the *Ad Astra* scene:
+With that being said, lets create our main points by analyzing the *Ad Astra (2019)* scene:
 
 - The music is **overwhelmingly positive**.
 - The music has a feeling of **wonder and inspiration**.
@@ -146,7 +142,7 @@ With that being said, lets create our main points by analyzing the *Ad Astra* sc
 
 Once again, there’s no right or wrong way to find a piece of music for this. You could try to browse for scenes that have similar content or beats like we did in Part I, but there's no gaurantee that the scene you find contains music, and getting the music is the goal. This is why I feel like it is slightly easier to create a rescore starting with how we did in Part I than in Part II.
 
-I listen to a lot of music, particularly from soundtracks. For this rescore a piece of music from *A Quiet Place Part II* came to mind.
+I listen to a lot of music, particularly from soundtracks. For this rescore a piece of music from *A Quiet Place (2018)* came to mind.
 
 videoLink: [https://youtu.be/9FvqvSaQIKw]
 
