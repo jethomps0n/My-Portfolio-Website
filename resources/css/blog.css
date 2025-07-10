@@ -90,7 +90,7 @@ body > header {
     padding: 32px;
     display: flex;
     flex-direction: column;
-    height: 380px; /* Fixed height for consistency */
+    height: 390px; /* Fixed height for consistency */
     will-change: transform;
 }
 
@@ -106,7 +106,7 @@ body > header {
     background-color: hsla(201, 100%, 8%, 0.55);
     border: 2px solid hsla(248, 9%, 45%, 0.3);
     filter: drop-shadow(0px 0px 60px hsla(198, 100%, 48.8%, 0.15));
-    min-height: 380px;
+    height: 280px;
     padding: 50px;
 }
 
@@ -132,7 +132,7 @@ body > header {
 }
 
 .blog-post h3 {
-    margin: 1rem 0 8px 0;
+    margin: 18px 0 8px 0;
     font-size: 1.4rem;
     font-weight: 600;
     line-height: 1.25;
@@ -157,6 +157,7 @@ body > header {
 
 .blog-post.featured .post-meta-tags,
 .blog-post.featured .post-meta-info {
+    margin-left: -4px;
     display: contents;
 }
 
@@ -191,6 +192,7 @@ body > header {
 
 .blog-post-item .post-meta-tags,
 .blog-post-item .post-meta-info {
+    margin-left: -4px;
     display: contents;
 }
 
@@ -303,7 +305,6 @@ body > header {
     line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    min-height: 4.8rem; /* Ensures consistent space even for short excerpts */
 }
 
 /* Override for single blog post header excerpt to restore original styling */
