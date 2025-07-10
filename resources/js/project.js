@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         processCharacterRoles();
         matchCreditsHeight();
         setupVersionHistory();
+        setupMobileCredits(); // Add mobile credits functionality
         
         // Process timestamps in description for video projects
         processDescriptionTimestamps();
@@ -76,16 +77,22 @@ function matchCreditsHeight() {
     const credits = document.getElementById('credits');
     
     if (project && credits) {
-        // Get the actual height of the project section
-        const projectHeight = project.offsetHeight;
-        
-        // Set the credits height to match, but respect the max-height constraints
-        const maxHeight = Math.min(
-            projectHeight,
-            window.innerHeight - 200 // Same as the CSS max-height calculation
-        );
-        
-        credits.style.height = `${maxHeight}px`;
+        // Only apply height matching on desktop (768px and up)
+        if (window.innerWidth >= 768) {
+            // Get the actual height of the project section
+            const projectHeight = project.offsetHeight;
+            
+            // Set the credits height to match, but respect the max-height constraints
+            const maxHeight = Math.min(
+                projectHeight,
+                window.innerHeight - 200 // Same as the CSS max-height calculation
+            );
+            
+            credits.style.height = `${maxHeight}px`;
+        } else {
+            // Remove height constraint on mobile
+            credits.style.height = '';
+        }
     }
 }
 
@@ -344,3 +351,95 @@ projectStyles.textContent = `
     }
 `;
 document.head.appendChild(projectStyles);
+
+function setupMobileCredits() {
+    const mobileToggle = document.getElementById('mobile-credits-toggle');
+    const credits = document.getElementById('credits');
+    
+    if (!mobileToggle || !credits) return;
+    
+    // Create backdrop element
+    const backdrop = document.createElement('div');
+    backdrop.className = 'credits-backdrop';
+    document.body.appendChild(backdrop);
+    
+    // Check if we're in mobile view
+    function isMobileView() {
+        return window.innerWidth < 768;
+    }
+    
+    // Open credits drawer
+    function openCredits() {
+        if (!isMobileView()) return;
+        
+        credits.classList.add('open');
+        backdrop.classList.add('open');
+        mobileToggle.classList.add('active');
+        mobileToggle.setAttribute('aria-expanded', 'true');
+        
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+        
+        // Focus management
+        const firstFocusable = credits.querySelector('h2');
+        if (firstFocusable) {
+            setTimeout(() => firstFocusable.focus(), 300);
+        }
+    }
+    
+    // Close credits drawer
+    function closeCredits() {
+        credits.classList.remove('open');
+        backdrop.classList.remove('open');
+        mobileToggle.classList.remove('active');
+        mobileToggle.setAttribute('aria-expanded', 'false');
+        
+        // Restore body scroll
+        document.body.style.overflow = '';
+        
+        // Return focus to toggle button
+        mobileToggle.focus();
+    }
+    
+    // Toggle credits
+    function toggleCredits() {
+        if (!isMobileView()) return;
+        
+        const isOpen = credits.classList.contains('open');
+        if (isOpen) {
+            closeCredits();
+        } else {
+            openCredits();
+        }
+    }
+    
+    // Handle window resize
+    function handleResize() {
+        if (!isMobileView() && credits.classList.contains('open')) {
+            closeCredits();
+        }
+    }
+    
+    // Event listeners
+    mobileToggle.addEventListener('click', toggleCredits);
+    backdrop.addEventListener('click', closeCredits);
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && credits.classList.contains('open')) {
+            closeCredits();
+        }
+    });
+    
+    // Handle window resize
+    window.addEventListener('resize', handleResize);
+    
+    // Close credits when clicking outside (for touch devices)
+    document.addEventListener('touchstart', (e) => {
+        if (credits.classList.contains('open') && 
+            !credits.contains(e.target) && 
+            !mobileToggle.contains(e.target)) {
+            closeCredits();
+        }
+    }, { passive: true });
+}
