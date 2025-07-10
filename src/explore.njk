@@ -73,6 +73,18 @@ pagejs: <script src="/resources/js/explore.js" defer></script>
 
         <section id="results-section" class="pop-in">
             <div id="active-filters"></div>
+            
+            <!-- Mobile filter toggle button with hamburger icon -->
+            <button id="mobile-filter-toggle" class="mobile-only" aria-label="Toggle filters" aria-expanded="false">
+                <div class="mobile-filter-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <span>Filters</span>
+                <span id="filter-badge">0</span>
+            </button>
+            
             <div class="results-header">
                 <span id="results-count"></span>
                 <div class="sort">

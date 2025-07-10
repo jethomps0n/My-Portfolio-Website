@@ -295,6 +295,91 @@ function bindEvents(){
         document.getElementById('end-date').value='';
         currentPage=1;update();
     });
+
+    // Mobile filter toggle functionality
+    setupMobileFilterToggle();
+}
+
+// Enhanced mobile filter toggle setup
+function setupMobileFilterToggle() {
+    const filterSection = document.getElementById('filter-section');
+    const mobileToggle = document.getElementById('mobile-filter-toggle');
+    const filterBadge = document.getElementById('filter-badge');
+    
+    // Check if we're in mobile view
+    function isMobileView() {
+        return window.innerWidth < 768;
+    }
+    
+    // Update filter badge count
+    function updateFilterBadge() {
+        const activeFilters = selectedRoles.size + selectedTypes.size + (dateRange.start && dateRange.end ? 1 : 0) + (selectedDateRadio ? 1 : 0);
+        if (filterBadge) {
+            filterBadge.textContent = activeFilters > 0 ? activeFilters.toString() : '';
+        }
+    }
+    
+    // Initialize filter state based on screen size
+    function initializeFilterState() {
+        if (isMobileView()) {
+            filterSection.classList.add('collapsed');
+            if (mobileToggle) {
+                mobileToggle.classList.remove('active');
+                mobileToggle.setAttribute('aria-expanded', 'false');
+            }
+        } else {
+            filterSection.classList.remove('collapsed');
+            if (mobileToggle) {
+                mobileToggle.classList.remove('active');
+                mobileToggle.setAttribute('aria-expanded', 'false');
+            }
+        }
+        updateFilterBadge();
+    }
+    
+    // Handle mobile toggle click
+    function handleMobileToggleClick() {
+        if (!isMobileView()) return;
+        
+        const isCollapsed = filterSection.classList.contains('collapsed');
+        
+        if (isCollapsed) {
+            filterSection.classList.remove('collapsed');
+            mobileToggle.classList.add('active');
+            mobileToggle.setAttribute('aria-expanded', 'true');
+        } else {
+            filterSection.classList.add('collapsed');
+            mobileToggle.classList.remove('active');
+            mobileToggle.setAttribute('aria-expanded', 'false');
+        }
+    }
+    
+    // Handle window resize
+    function handleResize() {
+        initializeFilterState();
+    }
+    
+    // Add event listeners
+    if (mobileToggle) {
+        mobileToggle.addEventListener('click', handleMobileToggleClick);
+    }
+    
+    window.addEventListener('resize', handleResize);
+    
+    // Listen for filter changes to update badge
+    const filterInputs = document.querySelectorAll('#filter-section input[type="checkbox"], #filter-section input[type="radio"]');
+    filterInputs.forEach(input => {
+        input.addEventListener('change', updateFilterBadge);
+    });
+    
+    // Listen for custom date changes
+    const dateInputs = document.querySelectorAll('#start-date, #end-date');
+    dateInputs.forEach(input => {
+        input.addEventListener('change', updateFilterBadge);
+    });
+    
+    // Initialize on page load
+    initializeFilterState();
 }
 
 // Optimized update function with better scheduling for INP
