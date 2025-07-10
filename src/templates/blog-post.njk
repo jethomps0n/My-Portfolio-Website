@@ -7,10 +7,17 @@ pagejs: <script src="/resources/js/blog.js" defer></script>
 <article class="blog-post-single">
     <header class="post-header">
         <div class="post-meta">
-            {% for tag in tags %}
-            <a href="/blog/tags/{{ tag | slugify }}/" class="post-category {{ tag | slugify }}">{{ tag | titleCase }}</a>
-            {% endfor %}
-            <span class="post-date">{{ date | dateFormat }}</span>
+            <div class="post-meta-tags">
+                {% for tag in tags %}
+                <a href="/blog/tags/{{ tag | slugify }}/" class="post-category {{ tag | slugify }}">{{ tag | titleCase }}</a>
+                {% endfor %}
+            </div>
+            <div class="post-meta-info">
+                <span class="post-date">{{ date | dateFormat }}</span>
+                {% if updated and updated.trim() %}
+                <span class="post-updated">Updated <em>{{ updated | dateFormat }}</em></span>
+                {% endif %}
+            </div>
         </div>
         <h1 class="post-title">{{ title }}</h1>
         {% if excerpt %}

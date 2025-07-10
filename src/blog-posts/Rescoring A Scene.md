@@ -1,15 +1,16 @@
 ---
 title: "Rescoring A Scene"
-date: 2025-07-08
+date: "2025-07-08"
+updated: ""
 tags: ["Post-Production", "Sound Design", "Rescores"]
 excerpt: "My step-by-step guide in crafting a beautifully fitting rescore"
 permalink: "/blog/posts/{{ title | slugify }}/"
 layout: "blog-post.njk"
-addcss: >
-    <link rel="stylesheet" href="/resources/css/pdf-viewer.css">
-    <link rel="stylesheet" href="/resources/css/video-viewer.css">
-addjs: >
-    <script type="module" src="/resources/js/pdf-viewer.js" defer></script>
+# addcss: >
+#     <link rel="stylesheet" href="/resources/css/pdf-viewer.css">
+#     <link rel="stylesheet" href="/resources/css/video-viewer.css">
+# addjs: >
+#     <script type="module" src="/resources/js/pdf-viewer.js" defer></script>
 ---
 
 ## The Process - Part I
@@ -35,7 +36,7 @@ To give us some direction, I gathered up some main points from this scene that n
 
 Another point I’d like to add is a **sense of premonition** to the scene, but that relies on the context of the scene itself. The music will only take us halfway there.
 
-Now that we’ve narrowed down a series of points to look for, we need to find a scene that ideally fits all of these criteria. This is where the process becomes a little bit muddy. There’s no right or wrong way to find a scene like this. For me, it looks like endless scrolling through [my Letterboxd](https://letterboxd.com/Jonathan_T) until it jogs my memory of a scene I might be able to use. Fortunately, *Kill Bill: Vol. 2* crossed my mind.
+Now that we’ve narrowed down a series of points to look for, we need to find a scene that ideally fits all of these criteria. This is where the process becomes a little bit muddy. There’s no right or wrong way to find a scene like this. For me, it looks like endless scrolling through <a href="https://letterboxd.com/Jonathan_T" target="_blank">my Letterboxd</a> until it jogs my memory of a scene I might be able to use. Fortunately, *Kill Bill: Vol. 2* crossed my mind.
 
 <img src="/resources/images/assets/kill-bill-vol-2-banner.png">
 <small class="img-caption" style="font-style:italic;">image: Kill Bill: Vol. 2 Banner</small>
@@ -147,7 +148,7 @@ Once again, there’s no right or wrong way to find a piece of music for this. Y
 
 I listen to a lot of music, particularly from soundtracks. For this rescore a piece of music from *A Quiet Place Part II* came to mind.
 
-videoLink: [https://youtu.be/txC11lMCnMI]
+videoLink: [https://youtu.be/9FvqvSaQIKw]
 
 The music here is powerful, but most importantly it is **overwhelmingly positive**.
 

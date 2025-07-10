@@ -72,11 +72,25 @@ module.exports = function (eleventyConfig) {
 
     // Add date filter for blog posts
     eleventyConfig.addFilter("dateFormat", function(date) {
+        // Handle timezone issues by treating dates as local dates
+        let dateObj;
+        if (typeof date === 'string') {
+            // If it's a YYYY-MM-DD string, treat it as local date
+            if (date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                const [year, month, day] = date.split('-').map(Number);
+                dateObj = new Date(year, month - 1, day); // month is 0-indexed
+            } else {
+                dateObj = new Date(date);
+            }
+        } else {
+            dateObj = new Date(date);
+        }
+        
         return new Intl.DateTimeFormat("en-US", {
             year: "numeric",
             month: "long",
             day: "2-digit"
-        }).format(new Date(date));
+        }).format(dateObj);
     });
 
     // Add excerpt filter
