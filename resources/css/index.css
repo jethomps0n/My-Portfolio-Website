@@ -271,3 +271,80 @@
         padding: 0.865cqi 2.9cqi;
     }
 }
+
+@media (max-width: 1020px) {
+    #content {
+        margin: 32px 8px;
+    }
+
+    .contentContainer {
+        margin-bottom: 15px;
+    }
+
+    .frame {
+        border: none;
+    }
+
+    .info {
+        width: 85%;
+        top: 10%;
+        left: 5%;
+    }
+
+    @container contentBox (max-width: 100vw) {
+        .info {
+            font-size: 6.5cqi;
+        }
+
+        .info .contentTitle {
+            margin: 0;
+        }
+        
+        .info .date {
+            margin: 0 0 2.45cqi 0;
+        }
+        
+        .info .role {
+            margin: 0 0 2.45cqi 0;
+        }
+        
+        .info .credits {
+            margin: 0;
+            padding: 0.865cqi 2.9cqi;
+        }
+    }
+
+    @container loadBox (max-width: 100vw) {
+        .button {
+            font-size: 2.925cqi;
+            padding: 1.405625cqi 4.7125cqi;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .contentContainer {
+        flex-direction: column;
+        overflow: hidden;
+        border-radius: 25px;
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .frame {
+        border-radius: 25px 25px 0 0;
+    }
+
+    .info {
+        width: 90%;
+        position: relative;
+        top: 0;
+        left: 0;
+        padding: 20px;
+        font-size: 1rem;
+    }
+
+    .button {
+        font-size: 1rem;
+        padding: 0.480555556rem 1.611111111rem;
+    }
+}
