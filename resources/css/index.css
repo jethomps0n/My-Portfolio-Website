@@ -225,7 +225,7 @@
     display: flex;
     justify-content: center;
     text-align: center;
-    margin: 0 auto 42px auto;
+    margin: 0 auto 0 auto;
     max-width: 1284px;
     container-type: inline-size;
     container-name: loadBox;
@@ -272,6 +272,12 @@
     }
 }
 
+@media (max-width: 1280px) {
+    .thumbnail {
+        filter: blur(0px) brightness(1);
+    }
+}
+
 @media (max-width: 1020px) {
     #content {
         margin: 32px 8px;
@@ -293,7 +299,7 @@
 
     @container contentBox (max-width: 100vw) {
         .info {
-            font-size: 6.5cqi;
+            font-size: 5.5cqi;
         }
 
         .info .contentTitle {
@@ -316,8 +322,8 @@
 
     @container loadBox (max-width: 100vw) {
         .button {
-            font-size: 2.925cqi;
-            padding: 1.405625cqi 4.7125cqi;
+            font-size: 2.475cqi;
+            padding: 1.189375cqi 3.9875cqi;
         }
     }
 }
@@ -340,11 +346,15 @@
         top: 0;
         left: 0;
         padding: 20px;
-        font-size: 1rem;
+        font-size: 1.2rem;
     }
 
     .button {
         font-size: 1rem;
         padding: 0.480555556rem 1.611111111rem;
+    }
+
+    .roles {
+        font-size: 0.6em;
     }
 }
