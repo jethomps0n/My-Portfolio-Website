@@ -620,3 +620,60 @@ const createScrollObserver = () => {
 
 // Export for use in other scripts
 window.globalScrollObserver = createScrollObserver();
+
+//-------RESPONSIVE HAMBURGER MENU-------------//
+document.addEventListener('DOMContentLoaded', () => {
+    const hamburgerMenu = document.getElementById('hamburgerMenu');
+    const sidebarNav = document.getElementById('sidebarNav');
+    const blurOverlay = document.getElementById('blurOverlay');
+    
+    if (!hamburgerMenu || !sidebarNav || !blurOverlay) return;
+    
+    let isMenuOpen = false;
+    
+    const toggleMenu = () => {
+        isMenuOpen = !isMenuOpen;
+        
+        // Toggle classes
+        hamburgerMenu.classList.toggle('active', isMenuOpen);
+        sidebarNav.classList.toggle('active', isMenuOpen);
+        blurOverlay.classList.toggle('active', isMenuOpen);
+        
+        // Prevent body scroll when menu is open
+        document.body.style.overflow = isMenuOpen ? 'hidden' : '';
+    };
+    
+    const closeMenu = () => {
+        if (isMenuOpen) {
+            isMenuOpen = false;
+            hamburgerMenu.classList.remove('active');
+            sidebarNav.classList.remove('active');
+            blurOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    };
+    
+    // Event listeners
+    hamburgerMenu.addEventListener('click', toggleMenu);
+    blurOverlay.addEventListener('click', closeMenu);
+    
+    // Close menu when clicking sidebar nav links
+    const sidebarNavItems = sidebarNav.querySelectorAll('.sidebar-nav-item, .sidebar-webtitle');
+    sidebarNavItems.forEach(item => {
+        item.addEventListener('click', closeMenu);
+    });
+    
+    // Close menu on escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isMenuOpen) {
+            closeMenu();
+        }
+    });
+    
+    // Close menu on window resize if screen gets larger
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 1124 && isMenuOpen) {
+            closeMenu();
+        }
+    });
+});
