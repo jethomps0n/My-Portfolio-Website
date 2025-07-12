@@ -139,9 +139,29 @@
     <main>
         
 <div id="explore-page">
+    <!-- Main search bar - always visible -->
     <div id="search-container" class="pop-in">
         <input id="search-input" type="text" placeholder="Search..." />
         <button id="clear-search" aria-label="Clear search">&#x2715;</button>
+    </div>
+    
+    <!-- Mobile search and filters layout - only shown below 1020px -->
+    <div class="search-and-filters">
+        <div id="search-container" class="search-container">
+            <input id="search-input" type="text" placeholder="Search..." />
+            <button id="clear-search" aria-label="Clear search">&#x2715;</button>
+        </div>
+        <button class="filters-button" id="mobile-filters-btn" aria-label="Open filters">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48">
+                <defs>
+                    <mask id="ipTFilter0">
+                        <path fill="#555555" stroke="#fff" stroke-linejoin="round" stroke-width="4" d="m6 9l14.4 16.818v12.626L27.6 42V25.818L42 9z"/>
+                    </mask>
+                </defs>
+                <path fill="#fff" d="M0 0h48v48H0z" mask="url(#ipTFilter0)"/>
+            </svg>
+            Filters
+        </button>
     </div>
 
     <div id="query-interface">
@@ -224,6 +244,21 @@
             <div id="results-list"></div>
             <div id="pagination"></div>
         </section>
+    </div>
+    
+    <!-- Mobile Filter Popup -->
+    <div class="mobile-filter-overlay" id="mobile-filter-overlay"></div>
+    <div class="mobile-filter-popup" id="mobile-filter-popup">
+        <div class="mobile-filter-header">
+            <h2>Filters</h2>
+            <button class="mobile-filter-close" id="mobile-filter-close" aria-label="Close filters">&times;</button>
+        </div>
+        <div class="mobile-filter-content" id="mobile-filter-content">
+            <!-- Filter content will be copied here -->
+        </div>
+        <div class="mobile-filter-footer">
+            <button class="clear-filters" id="mobile-clear-filters">Clear All</button>
+        </div>
     </div>
 </div>
     </main>

@@ -124,6 +124,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     });
     
     bindEvents();
+    initMobileFilters();
+    initMobileSearch();
     applyURL();
     loadData();
 });
@@ -559,14 +561,37 @@ async function renderResults(){
                 const h4 = document.createElement('h4');
                 h4.textContent = item.title;
                 info.appendChild(h4);
-                const small = document.createElement('small');
-                const roles = (item.role || '').split('/').map(s => s.trim()).filter(Boolean);
-                roles.forEach(r => {
-                    small.appendChild(makeRoleTag(r));
-                });
-                if (roles.length > 0) small.appendChild(document.createTextNode(' · '));
-                small.appendChild(document.createTextNode(item.date));
-                info.appendChild(small);
+                
+                // Check if we're in mobile layout (870px and below)
+                const isMobileLayout = window.innerWidth <= 870;
+                
+                if (isMobileLayout) {
+                    // Mobile layout: separate date and roles elements
+                    const dateElement = document.createElement('small');
+                    dateElement.className = 'date';
+                    dateElement.textContent = item.date;
+                    info.appendChild(dateElement);
+                    
+                    // Create roles container
+                    const rolesContainer = document.createElement('div');
+                    rolesContainer.className = 'roles';
+                    const roles = (item.role || '').split('/').map(s => s.trim()).filter(Boolean);
+                    roles.forEach(r => {
+                        rolesContainer.appendChild(makeRoleTag(r));
+                    });
+                    info.appendChild(rolesContainer);
+                } else {
+                    // Desktop layout: inline date and roles with dot separator
+                    const small = document.createElement('small');
+                    const roles = (item.role || '').split('/').map(s => s.trim()).filter(Boolean);
+                    roles.forEach(r => {
+                        small.appendChild(makeRoleTag(r));
+                    });
+                    if (roles.length > 0) small.appendChild(document.createTextNode(' · '));
+                    small.appendChild(document.createTextNode(item.date));
+                    info.appendChild(small);
+                }
+                
                 const p = document.createElement('p');
                 
                 // Handle newlines in description
@@ -650,3 +675,251 @@ function renderPagination(total){
     });
     pag.appendChild(next);
 }
+
+// Mobile filter popup functionality
+function initMobileFilters() {
+    const mobileFiltersBtn = document.getElementById('mobile-filters-btn');
+    const mobileFilterPopup = document.getElementById('mobile-filter-popup');
+    const mobileFilterOverlay = document.getElementById('mobile-filter-overlay');
+    const mobileFilterClose = document.getElementById('mobile-filter-close');
+    const mobileFilterContent = document.getElementById('mobile-filter-content');
+    const mobileClearFilters = document.getElementById('mobile-clear-filters');
+    
+    // Clone desktop filter content to mobile popup
+    function populateMobileFilters() {
+        const desktopFilters = document.getElementById('filter-section');
+        const filterGroups = desktopFilters.querySelectorAll('.filter-group');
+        
+        // Clear existing content
+        mobileFilterContent.innerHTML = '';
+        
+        // Clone each filter group
+        filterGroups.forEach(group => {
+            const clonedGroup = group.cloneNode(true);
+            
+            // Update IDs to avoid conflicts
+            if (clonedGroup.id) {
+                clonedGroup.id = 'mobile-' + clonedGroup.id;
+            }
+            
+            const inputs = clonedGroup.querySelectorAll('input');
+            inputs.forEach(input => {
+                if (input.id) {
+                    input.id = 'mobile-' + input.id;
+                }
+            });
+            
+            const buttons = clonedGroup.querySelectorAll('button[id]');
+            buttons.forEach(button => {
+                if (button.id) {
+                    button.id = 'mobile-' + button.id;
+                }
+            });
+            
+            mobileFilterContent.appendChild(clonedGroup);
+        });
+        
+        // Bind events to cloned elements
+        bindMobileFilterEvents();
+    }
+    
+    // Bind events to mobile filter elements
+    function bindMobileFilterEvents() {
+        // Role checkboxes
+        mobileFilterContent.querySelectorAll('#mobile-filter-role input[type=checkbox]').forEach(cb => {
+            cb.addEventListener('change', () => {
+                const originalCb = document.querySelector(`#filter-role input[value="${cb.value}"]`);
+                if (originalCb) {
+                    originalCb.checked = cb.checked;
+                    originalCb.dispatchEvent(new Event('change'));
+                }
+            });
+        });
+        
+        // Type checkboxes
+        mobileFilterContent.querySelectorAll('#mobile-filter-type input[type=checkbox]').forEach(cb => {
+            cb.addEventListener('change', () => {
+                const originalCb = document.querySelector(`#filter-type input[value="${cb.value}"]`);
+                if (originalCb) {
+                    originalCb.checked = cb.checked;
+                    originalCb.dispatchEvent(new Event('change'));
+                }
+            });
+        });
+        
+        // Date radio buttons
+        mobileFilterContent.querySelectorAll('#mobile-filter-date input[type=radio]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                const originalRadio = document.querySelector(`#filter-date input[value="${radio.value}"]`);
+                if (originalRadio) {
+                    originalRadio.checked = radio.checked;
+                    originalRadio.dispatchEvent(new Event('change'));
+                }
+            });
+        });
+        
+        // Date range inputs
+        const mobileStartDate = mobileFilterContent.querySelector('#mobile-start-date');
+        const mobileEndDate = mobileFilterContent.querySelector('#mobile-end-date');
+        const mobileSetCustom = mobileFilterContent.querySelector('#mobile-set-custom');
+        
+        if (mobileSetCustom) {
+            mobileSetCustom.addEventListener('click', () => {
+                const originalStartDate = document.getElementById('start-date');
+                const originalEndDate = document.getElementById('end-date');
+                
+                if (originalStartDate && originalEndDate && mobileStartDate && mobileEndDate) {
+                    originalStartDate.value = mobileStartDate.value;
+                    originalEndDate.value = mobileEndDate.value;
+                    document.getElementById('set-custom').click();
+                }
+            });
+        }
+        
+        // Show more/less toggles
+        mobileFilterContent.querySelectorAll('.show-more').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const more = btn.parentElement.querySelector('.more');
+                const expanding = !more.classList.contains('expanded');
+                
+                if (expanding) {
+                    more.classList.add('expanded');
+                    btn.classList.add('expanded');
+                    btn.querySelector('.text').textContent = 'Show Less';
+                } else {
+                    more.classList.remove('expanded');
+                    btn.classList.remove('expanded');
+                    btn.querySelector('.text').textContent = 'Show More';
+                }
+            });
+        });
+        
+        // Filter group toggles
+        mobileFilterContent.querySelectorAll('.filter-group .toggle').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const group = btn.closest('.filter-group');
+                const opts = group.querySelector('.options');
+                const expanded = btn.classList.toggle('open');
+                
+                if (expanded) {
+                    opts.classList.add('expanded');
+                    btn.setAttribute('aria-expanded', 'true');
+                } else {
+                    opts.classList.remove('expanded');
+                    btn.setAttribute('aria-expanded', 'false');
+                }
+            });
+        });
+    }
+    
+    // Sync mobile filters with desktop state
+    function syncMobileFilters() {
+        // Sync checkboxes
+        document.querySelectorAll('#filter-section input[type=checkbox]').forEach(cb => {
+            const mobileCb = mobileFilterContent.querySelector(`#mobile-filter-role input[value="${cb.value}"], #mobile-filter-type input[value="${cb.value}"]`);
+            if (mobileCb) {
+                mobileCb.checked = cb.checked;
+            }
+        });
+        
+        // Sync radio buttons
+        document.querySelectorAll('#filter-section input[type=radio]:checked').forEach(radio => {
+            const mobileRadio = mobileFilterContent.querySelector(`#mobile-filter-date input[value="${radio.value}"]`);
+            if (mobileRadio) {
+                mobileRadio.checked = true;
+            }
+        });
+        
+        // Sync date inputs
+        const startDate = document.getElementById('start-date');
+        const endDate = document.getElementById('end-date');
+        const mobileStartDate = mobileFilterContent.querySelector('#mobile-start-date');
+        const mobileEndDate = mobileFilterContent.querySelector('#mobile-end-date');
+        
+        if (startDate && mobileStartDate) {
+            mobileStartDate.value = startDate.value;
+        }
+        if (endDate && mobileEndDate) {
+            mobileEndDate.value = endDate.value;
+        }
+    }
+    
+    // Open mobile filter popup
+    function openMobileFilters() {
+        populateMobileFilters();
+        syncMobileFilters();
+        mobileFilterOverlay.classList.add('active');
+        mobileFilterPopup.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    // Close mobile filter popup
+    function closeMobileFilters() {
+        mobileFilterOverlay.classList.remove('active');
+        mobileFilterPopup.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    // Event listeners
+    mobileFiltersBtn.addEventListener('click', openMobileFilters);
+    mobileFilterClose.addEventListener('click', closeMobileFilters);
+    mobileFilterOverlay.addEventListener('click', closeMobileFilters);
+    
+    // Clear all filters
+    mobileClearFilters.addEventListener('click', () => {
+        document.getElementById('clear-filters').click();
+        closeMobileFilters();
+    });
+    
+    // Handle escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && mobileFilterPopup.classList.contains('active')) {
+            closeMobileFilters();
+        }
+    });
+}
+
+// Mobile search synchronization
+function initMobileSearch() {
+    const mobileSearchInput = document.getElementById('mobile-search-input');
+    const mobileSearchClear = document.getElementById('mobile-clear-search');
+    const mainSearchInput = document.getElementById('search-input');
+    const mainSearchClear = document.getElementById('clear-search');
+    
+    if (!mobileSearchInput || !mainSearchInput) return;
+    
+    // Sync mobile search with main search
+    mobileSearchInput.addEventListener('input', () => {
+        mainSearchInput.value = mobileSearchInput.value;
+        mainSearchInput.dispatchEvent(new Event('input'));
+        
+        // Show/hide clear button
+        mobileSearchClear.style.display = mobileSearchInput.value ? 'block' : 'none';
+    });
+    
+    // Sync main search with mobile search
+    mainSearchInput.addEventListener('input', () => {
+        mobileSearchInput.value = mainSearchInput.value;
+        mobileSearchClear.style.display = mobileSearchInput.value ? 'block' : 'none';
+    });
+    
+    // Mobile clear search
+    mobileSearchClear.addEventListener('click', () => {
+        mobileSearchInput.value = '';
+        mainSearchInput.value = '';
+        mobileSearchClear.style.display = 'none';
+        mainSearchInput.dispatchEvent(new Event('input'));
+    });
+}
+
+// Handle window resize to re-render results when layout changes
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        // Re-render results if there's a layout change around 870px breakpoint
+        if (allData.length > 0) {
+            renderResults();
+        }
+    }, 250);
+});
