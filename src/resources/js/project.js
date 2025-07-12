@@ -1,74 +1,55 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Use scheduler for better prioritization of initialization tasks
-    scheduler.postTask(() => {
-        // Critical animations first
-        document.querySelectorAll('.pop-in').forEach(el => {
-            el.addEventListener('animationend', () => el.classList.remove('pop-in'), {once: true, passive: true});
-        });
-        
-        animatePageElements();
-    }, { priority: 'user-blocking' });
+    // Critical animations first
+    document.querySelectorAll('.pop-in').forEach(el => {
+        el.addEventListener('animationend', () => el.classList.remove('pop-in'), {once: true, passive: true});
+    });
     
-    // Secondary functionality with lower priority
-    scheduler.postTask(() => {
-        setupHoverEffects();
-        setupSmoothScroll();
-    }, { priority: 'user-visible' });
+    animatePageElements();
+    setupHoverEffects();
+    setupSmoothScroll();
+    setupScrollAnimations();
+    processCharacterRoles();
+    matchCreditsHeight();
+    setupVersionHistory();
+    setupMobileCredits();
+    setupMobileVersion();
     
-    // Background tasks with lowest priority
-    scheduler.postTask(() => {
-        setupScrollAnimations();
-        processCharacterRoles();
-        matchCreditsHeight();
-        setupVersionHistory();
-        
-        // Process timestamps in description for video projects
-        processDescriptionTimestamps();
-    }, { priority: 'background' });
+    // Process timestamps in description for video projects
+    processDescriptionTimestamps();
     
     // Setup resize handler with passive listener
     window.addEventListener('resize', () => {
-        scheduler.postTask(() => {
-            matchCreditsHeight();
-        }, { priority: 'user-visible' });
+        matchCreditsHeight();
     }, { passive: true });
 });
 
-async function processCharacterRoles() {
+function processCharacterRoles() {
     // Find all credit name elements
     const creditNames = document.querySelectorAll('.credit-name');
     
-    // Process in batches for better INP
-    const BATCH_SIZE = 5;
-    for (let i = 0; i < creditNames.length; i += BATCH_SIZE) {
-        const batch = Array.from(creditNames).slice(i, i + BATCH_SIZE);
+    creditNames.forEach(nameElement => {
+        const text = nameElement.textContent;
         
-        await scheduler.postTask(() => {
-            batch.forEach(nameElement => {
-                const text = nameElement.textContent;
-                
-                // Pattern to match " as [character name]" or " on [instrument/role]"
-                // Must start with " as " or " on " and be followed by characters
-                // This avoids matching names that end with "as" like "Matthias" or "on" like "Mason"
-                const characterPattern = /(\s+(?:as|on)\s+[^,]+(?:\s*\([^)]+\))?)/gi;
-                
-                const matches = text.match(characterPattern);
-                
-                if (matches) {
-                    let newHtml = text;
-                    
-                    // Replace each match with a styled span
-                    matches.forEach(match => {
-                        const trimmedMatch = match.trim(); // Remove extra whitespace
-                        const styledMatch = ` <span class="character-role">${trimmedMatch}</span>`;
-                        newHtml = newHtml.replace(match, styledMatch);
-                    });
-                    
-                    nameElement.innerHTML = newHtml;
-                }
+        // Pattern to match " as [character name]" or " on [instrument/role]"
+        // Must start with " as " or " on " and be followed by characters
+        // This avoids matching names that end with "as" like "Matthias" or "on" like "Mason"
+        const characterPattern = /(\s+(?:as|on)\s+[^,]+(?:\s*\([^)]+\))?)/gi;
+        
+        const matches = text.match(characterPattern);
+        
+        if (matches) {
+            let newHtml = text;
+            
+            // Replace each match with a styled span
+            matches.forEach(match => {
+                const trimmedMatch = match.trim(); // Remove extra whitespace
+                const styledMatch = ` <span class="character-role">${trimmedMatch}</span>`;
+                newHtml = newHtml.replace(match, styledMatch);
             });
-        }, { priority: 'background' });
-    }
+            
+            nameElement.innerHTML = newHtml;
+        }
+    });
 }
 
 function matchCreditsHeight() {
@@ -201,7 +182,7 @@ function setupScrollAnimations() {
 
 // Mouse cursor integration (if mouse-follower is available)
 if (typeof cursor !== 'undefined') {
-    const interactiveElements = document.querySelectorAll('.role-tag, .type-tag, #attachments');
+    const interactiveElements = document.querySelectorAll('.role-tag, .type-tag, #attachments, .credits-button, .credits-close, .view-screenplay-button, .version-button, .version-close');
     interactiveElements.forEach(element => {
         element.addEventListener('mouseenter', () => {
             cursor.addState('-pointer');
@@ -255,6 +236,140 @@ function setupVersionHistory() {
             } else {
                 versionList.style.maxHeight = '0';
             }
+        });
+    }
+}
+
+function setupMobileCredits() {
+    const creditsToggle = document.getElementById('credits-toggle');
+    const creditsOverlay = document.getElementById('mobile-credits-overlay');
+    const creditsClose = document.getElementById('credits-close');
+    const creditsPopup = document.querySelector('.mobile-credits-popup');
+    
+    if (!creditsToggle || !creditsOverlay || !creditsClose) return;
+    
+    // Open credits popup
+    creditsToggle.addEventListener('click', () => {
+        creditsOverlay.classList.add('active');
+        if (creditsPopup) {
+            creditsPopup.classList.add('active');
+        }
+        document.body.style.overflow = 'hidden';
+        
+        // Process character roles in mobile popup after it opens
+        processCharacterRolesInPopup();
+        
+        // Focus management for accessibility
+        creditsClose.focus();
+    });
+    
+    // Close credits popup
+    const closeCredits = () => {
+        creditsOverlay.classList.remove('active');
+        if (creditsPopup) {
+            creditsPopup.classList.remove('active');
+        }
+        document.body.style.overflow = '';
+        creditsToggle.focus(); // Return focus to the button
+    };
+    
+    creditsClose.addEventListener('click', closeCredits);
+    
+    // Close on overlay click (but not popup click)
+    creditsOverlay.addEventListener('click', (e) => {
+        if (e.target === creditsOverlay) {
+            closeCredits();
+        }
+    });
+    
+    // Close on escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && creditsOverlay.classList.contains('active')) {
+            closeCredits();
+        }
+    });
+    
+    // Prevent popup close when clicking inside popup
+    if (creditsPopup) {
+        creditsPopup.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    }
+}
+
+function processCharacterRolesInPopup() {
+    // Process character roles specifically in the mobile popup
+    const popupCreditNames = document.querySelectorAll('.mobile-credits-popup .credit-name');
+    
+    if (popupCreditNames.length === 0) return;
+    
+    popupCreditNames.forEach(nameElement => {
+        const text = nameElement.textContent;
+        const characterPattern = /(\s+(?:as|on)\s+[^,]+(?:\s*\([^)]+\))?)/gi;
+        const matches = text.match(characterPattern);
+        
+        if (matches) {
+            let newHtml = text;
+            matches.forEach(match => {
+                const trimmedMatch = match.trim();
+                const styledMatch = ` <span class="character-role">${trimmedMatch}</span>`;
+                newHtml = newHtml.replace(match, styledMatch);
+            });
+            nameElement.innerHTML = newHtml;
+        }
+    });
+}
+
+function setupMobileVersion() {
+    const versionToggle = document.getElementById('version-toggle');
+    const versionOverlay = document.getElementById('mobile-version-overlay');
+    const versionClose = document.getElementById('version-close');
+    const versionPopup = document.querySelector('.mobile-version-popup');
+    
+    if (!versionToggle || !versionOverlay || !versionClose) return;
+    
+    // Open version popup
+    versionToggle.addEventListener('click', () => {
+        versionOverlay.classList.add('active');
+        if (versionPopup) {
+            versionPopup.classList.add('active');
+        }
+        document.body.style.overflow = 'hidden';
+        
+        // Focus management for accessibility
+        versionClose.focus();
+    });
+    
+    // Close version popup
+    const closeVersion = () => {
+        versionOverlay.classList.remove('active');
+        if (versionPopup) {
+            versionPopup.classList.remove('active');
+        }
+        document.body.style.overflow = '';
+        versionToggle.focus(); // Return focus to the button
+    };
+    
+    versionClose.addEventListener('click', closeVersion);
+    
+    // Close on overlay click (but not popup click)
+    versionOverlay.addEventListener('click', (e) => {
+        if (e.target === versionOverlay) {
+            closeVersion();
+        }
+    });
+    
+    // Close on escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && versionOverlay.classList.contains('active')) {
+            closeVersion();
+        }
+    });
+    
+    // Prevent popup close when clicking inside popup
+    if (versionPopup) {
+        versionPopup.addEventListener('click', (e) => {
+            e.stopPropagation();
         });
     }
 }
