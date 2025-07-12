@@ -132,6 +132,24 @@ button:disabled {
     display: none;
 }
 
+/* Hide mobile elements on desktop */
+.filters-button {
+    display: none;
+}
+
+.mobile-filter-popup,
+.mobile-filter-overlay {
+    display: none;
+}
+
+/* Search and filters wrapper - hidden by default, shown on mobile */
+.search-and-filters {
+    display: none;
+    gap: 12px;
+    width: 100%;
+    align-items: center;
+}
+
 /* Layout */
 #query-interface {
     display: flex;
@@ -157,10 +175,10 @@ button:disabled {
 }
 
 /* Ensure filter section maintains scale after any animations */
-#filter-section:not(.pop-in) {
+/* #filter-section:not(.pop-in) {
     transform: scale(1) !important;
-    width: 350px !important; /* Ensure width is always maintained */
-}
+    width: 350px !important;
+} */
 
 .filter-header {
     display: flex;
@@ -644,4 +662,619 @@ button.show-more:hover {
 
 .result-item.fade-in {
     animation: fadeInUp 0.3s ease-out;
+}
+
+/* ----Responsive Styles---- */
+
+/* 1200px and below: Smaller result items and compact filters */
+@media (max-width: 1200px) {
+    /* Result item adjustments */
+    .result-item .thumb {
+        height: 170px;
+    }
+    
+    .result-info {
+        height: 170px;
+    }
+
+    .result-info h4 {
+        font-size: 0.85rem;
+    }
+    
+    /* Filter section adjustments */
+    #filter-section {
+        width: 295px;
+        padding: 40px 24px;
+        font-size: 0.9rem;
+    }
+    
+    .filter-header {
+        padding-bottom: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .filter-header h2 {
+        font-size: 1.4rem;
+    }
+    
+    #filter-count {
+        width: 1.3em;
+        height: 1.3em;
+        font-size: 0.8rem;
+    }
+    
+    #clear-filters {
+        font-size: 0.6rem;
+        padding: 5px 10px;
+    }
+    
+    .filter-group {
+        margin-bottom: 16px;
+        padding-bottom: 16px;
+    }
+    
+    .filter-group h3 {
+        font-size: 0.85rem;
+        margin-bottom: 6px;
+    }
+    
+    .filter-group .toggle {
+        width: 1em;
+        height: 1em;
+    }
+    
+    .filter-group label {
+        font-size: 0.72rem;
+        gap: 5px;
+    }
+    
+    .filter-group .options.expanded {
+        margin-top: 6px;
+    }
+    
+    .show-more {
+        font-size: 0.72rem;
+        margin-top: 3px;
+    }
+    
+    .show-more .arrow {
+        scale: 0.6;
+    }
+    
+    .custom-range input {
+        width: 80px;
+        font-size: 0.45rem;
+    }
+    
+    .custom-range span {
+        font-size: 0.55rem;
+    }
+    
+    #set-custom {
+        font-size: 0.52rem;
+        padding: 4px 8px;
+    }
+}
+
+/* 1020px and below: Mobile filter popup and larger result items */
+@media (max-width: 1020px) {
+    /* Hide desktop filter section */
+    #filter-section {
+        display: none;
+    }
+    
+    /* Show mobile search and filters layout */
+    .search-and-filters {
+        display: flex !important;
+    }
+    
+    /* Hide the original search container on mobile */
+    #explore-page > #search-container {
+        display: none;
+    }
+    
+    /* Adjust query interface layout */
+    #query-interface {
+        gap: 0;
+    }
+    
+    /* Results section takes full width */
+    #results-section {
+        margin-top: 0;
+    }
+    
+    /* Hide active filters on mobile */
+    #active-filters {
+        display: none !important;
+    }
+    
+    /* Search container in mobile layout */
+    .search-and-filters #search-container {
+        flex: 1;
+        display: flex;
+    }
+    
+    /* Filters button styling */
+    .filters-button {
+        display: flex !important;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.75rem;
+        background: hsla(228, 48%, 60%, 0.1);
+        border: 1px solid hsla(248, 9%, 45%, 0.5);
+        color: hsla(0, 0%, 80%, 1);
+        padding: 12px 16px;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 100ms ease-out;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    
+    .filters-button:hover {
+        border-color: hsla(0, 0%, 100%, 1);
+        color: hsla(242, 61%, 80%, 1);
+        backdrop-filter: blur(50px) brightness(2);
+    }
+    
+    .filters-button svg {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+    }
+    
+    /* Mobile filter popup */
+    .mobile-filter-popup {
+        position: fixed;
+        bottom: -100%;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 85vh;
+        background: hsla(201, 100%, 8%, 0.95);
+        border: 2px solid hsla(248, 9%, 45%, 0.3);
+        border-radius: 25px 25px 0 0;
+        box-shadow: 0 -4px 40px rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(15px) brightness(0.7);
+        transition: bottom 0.3s ease;
+        z-index: 1001;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .mobile-filter-popup.active {
+        bottom: 0;
+    }
+    
+    .mobile-filter-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    
+    .mobile-filter-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .mobile-filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 30px 30px 20px;
+        border-bottom: 1px solid hsla(248, 9%, 45%, 0.7);
+        flex-shrink: 0;
+    }
+    
+    .mobile-filter-header h2 {
+        font-size: 1.4rem;
+        margin: 0;
+        color: hsla(0, 0%, 100%, 1);
+    }
+    
+    .mobile-filter-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 4px;
+        color: hsla(0, 0%, 80%, 1);
+        border-radius: 4px;
+        transition: color 0.2s ease;
+    }
+    
+    .mobile-filter-close:hover {
+        color: hsla(242, 61%, 80%, 1);
+    }
+    
+    .mobile-filter-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px 30px;
+    }
+    
+    /* Mobile filter content should match desktop styling */
+    .mobile-filter-content .filter-header {
+        display: none; /* Hide duplicate header */
+    }
+    
+    .mobile-filter-content .filter-group {
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid hsla(248, 9%, 45%, 0.7);
+    }
+    
+    .mobile-filter-content .filter-group:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+    
+    .mobile-filter-content .filter-group h3 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0;
+        color: hsla(0, 0%, 100%, 1);
+    }
+    
+    .mobile-filter-content .filter-group .toggle {
+        position: relative;
+        width: 1.2em;
+        height: 1.2em;
+        padding: 0;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: hsla(242, 61%, 80%, 1);
+        transition: color 0.2s ease;
+    }
+    
+    .mobile-filter-content .filter-group .toggle::before,
+    .mobile-filter-content .filter-group .toggle::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 2px;
+        background: currentColor;
+        transform: translate(-50%, -50%);
+        transition: transform 0.25s ease;
+    }
+    
+    .mobile-filter-content .filter-group .toggle::after {
+        transform: translate(-50%, -50%) rotate(90deg);
+    }
+    
+    .mobile-filter-content .filter-group .toggle.open::after {
+        transform: translate(-50%, -50%) rotate(90deg) scaleX(0);
+    }
+    
+    .mobile-filter-content .filter-group .options {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
+    }
+    
+    .mobile-filter-content .filter-group .options.expanded {
+        max-height: 450px;
+        opacity: 1;
+        margin-top: 8px;
+    }
+    
+    .mobile-filter-content .filter-group label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        color: hsla(0, 0%, 100%, 1);
+    }
+    
+    .mobile-filter-content .filter-group input[type="checkbox"],
+    .mobile-filter-content .filter-group input[type="radio"] {
+        accent-color: hsla(228, 48%, 60%, 1);
+    }
+    
+    .mobile-filter-content .filter-group .more {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 0.35s cubic-bezier(.4,0,.2,1);
+    }
+    
+    .mobile-filter-content .filter-group .more.expanded {
+        max-height: 450px;
+    }
+    
+    .mobile-filter-content .show-more {
+        border: none;
+        background: none;
+        color: hsla(242, 61%, 80%, 1);
+        cursor: pointer;
+        padding: 0;
+        margin-top: 4px;
+        text-align: left;
+        width: 100%;
+        display: flex;
+        align-items: center;
+    }
+    
+    .mobile-filter-content .show-more .text {
+        line-height: 1em;
+        display: flex;
+    }
+    
+    .mobile-filter-content .show-more .arrow {
+        line-height: 0.75em;
+        scale: 0.7;
+        display: flex;
+        transition: all 0.4s ease;
+        margin-top: 2px;
+    }
+    
+    .mobile-filter-content .show-more.expanded .arrow {
+        transform: rotate(180deg);
+        margin-top: 3px;
+    }
+    
+    .mobile-filter-content .custom-range input {
+        width: 95px;
+        font-size: 0.5rem;
+        position: relative;
+        background: hsla(228, 48%, 60%, 0.1);
+        color: hsla(0, 0%, 80%, 1);
+        border: 1px solid hsla(248, 9%, 45%, 0.5);
+        padding: 6px 12px;
+        border-radius: 25px;
+        transition: all 100ms ease-out;
+    }
+    
+    .mobile-filter-content .custom-range span {
+        font-size: 0.6rem;
+        color: hsla(0, 0%, 100%, 1);
+    }
+    
+    .mobile-filter-content #mobile-set-custom {
+        font-size: 0.57rem;
+        padding: 5px 10px;
+        background: hsla(228, 48%, 60%, 0.1);
+        border: 1px solid hsla(248, 9%, 45%, 0.5);
+        color: hsla(0, 0%, 80%, 1);
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 100ms ease-out;
+    }
+    
+    .mobile-filter-content #mobile-set-custom:hover {
+        border-color: hsla(0, 0%, 100%, 1);
+        color: hsla(242, 61%, 80%, 1);
+        backdrop-filter: blur(50px) brightness(2);
+    }
+    
+    .mobile-filter-footer {
+        padding: 20px 30px;
+        border-top: 1px solid hsla(248, 9%, 45%, 0.7);
+        background: hsla(201, 100%, 8%, 0.95);
+        flex-shrink: 0;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .mobile-filter-footer button {
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 100ms ease-out;
+        background: hsla(228, 48%, 60%, 0.1);
+        color: hsla(0, 0%, 80%, 1);
+        border: 1px solid hsla(248, 9%, 45%, 0.5);
+    }
+    
+    .mobile-filter-footer button:hover {
+        border-color: hsla(0, 0%, 100%, 1);
+        color: hsla(242, 61%, 80%, 1);
+        backdrop-filter: blur(50px) brightness(2);
+    }
+    
+    /* Larger result items for mobile */
+    .result-item .thumb {
+        height: 210px;
+    }
+    
+    .result-info {
+        height: 210px;
+    }
+    
+    .result-info h4 {
+        font-size: 1.1rem;
+    }
+    
+    .result-info small {
+        font-size: 0.65rem;
+    }
+    
+    .result-info p {
+        font-size: 0.7rem;
+    }
+}
+
+/* 870px and below: Mobile layout similar to index page */
+@media (max-width: 870px) {
+    /* Result items stack vertically like index page */
+    .result-item > a {
+        flex-direction: column;
+        padding: 0;
+        gap: 0;
+        width: 100%;
+        border-radius: 25px;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+    }
+    
+    /* Thumbnail maintains 16/9 ratio */
+    .result-item .thumb {
+        width: 100%;
+        aspect-ratio: 16/9;
+        height: auto;
+        border-radius: 25px 25px 0 0;
+    }
+    
+    /* Result info positioned below thumbnail */
+    .result-info {
+        position: relative;
+        width: 100%;
+        height: auto;
+        padding: 20px;
+        box-sizing: border-box;
+        gap: 8px;
+        flex-direction: column;
+    }
+    
+    /* Title styling */
+    .result-info h4 {
+        font-size: 1.2rem;
+        margin: 0 0 8px 0;
+        font-weight: 800;
+    }
+    
+    /* Date as separate element - only for 870px and below */
+    .result-info small:not(.date) {
+        display: none; /* Hide the original small element that contains roles and date */
+    }
+    
+    .result-info .date {
+        font-size: 0.45rem;
+        color: hsla(0, 0%, 80%, 1);
+        margin: 0 0 12px 0;
+        display: block;
+        font-weight: normal;
+    }
+    
+    /* Roles container below date */
+    .result-info .roles {
+        margin-bottom: 12px;
+    }
+    
+    /* Role tags below date */
+    .result-info .role-tag {
+        font-size: 0.6em;
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+    
+    /* Hide description paragraph */
+    .result-info p {
+        display: none;
+    }
+    
+    /* Adjust margins between result items */
+    .result-item {
+        margin-bottom: 12px;
+    }
+    
+    #results-section {
+        gap: 12px;
+    }
+}
+
+/* 768px and below: Smaller search, filters, and results header */
+@media (max-width: 768px) {
+    /* Much smaller search container for mobile */
+    #search-container, .search-and-filters #search-container {
+        padding: 6px;
+        max-width: 100%;
+        border-radius: 25px;
+    }
+    
+    #search-input {
+        font-size: 0.65rem;
+        padding: 4px 25px 4px 8px;
+    }
+    
+    #clear-search {
+        right: 10px;
+        font-size: 0.65rem;
+    }
+    
+    /* Much smaller filters button */
+    .filters-button {
+        font-size: 0.55rem;
+        padding: 6px 10px;
+        gap: 3px;
+        border-radius: 18px;
+    }
+    
+    .filters-button svg {
+        width: 12px;
+        height: 12px;
+    }
+    
+    /* Smaller results header */
+    .results-header {
+        font-size: 0.7rem;
+        padding-bottom: 4px;
+        margin-bottom: 4px;
+    }
+    
+    .sort {
+        gap: 4px;
+    }
+    
+    .sort label {
+        font-size: 0.5rem;
+    }
+    
+    select {
+        font-size: 0.45rem;
+        padding: 3px 6px;
+        padding-right: 24px;
+        border-radius: 18px;
+    }
+    
+    .select-arrow {
+        font-size: 0.45em;
+        right: 6px;
+    }
+    
+    /* Reduce explore page padding for mobile */
+    #explore-page {
+        padding: 0 12px;
+        margin: 20px auto 0 auto;
+    }
+    
+    /* Adjust search and filters gap */
+    .search-and-filters {
+        gap: 6px;
+    }
+}
+
+/* 520px and below: Smaller pagination */
+@media (max-width: 520px) {
+    #pagination {
+        gap: 10px;
+    }
+    
+    #pagination button {
+        width: 36px;
+        height: 36px;
+        font-size: 0.75rem;
+    }
 }
