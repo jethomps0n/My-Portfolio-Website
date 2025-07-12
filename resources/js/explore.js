@@ -502,48 +502,19 @@ async function renderResults(){
                 if (hasScreenplay) {
                     const badgeWrapper = document.createElement('div');
                     badgeWrapper.className = 'badge-wrapper';
-                    badgeWrapper.style.cssText = `
-                        position: absolute;
-                        bottom: 8px;
-                        right: 8px;
-                        display: flex;
-                        pointer-events: none;
-                        z-index: 5;
-                    `;
                     
                     // Create screenplay badge
                     const screenplayBadge = document.createElement('span');
                     screenplayBadge.className = 'screenplay-badge';
                     screenplayBadge.textContent = 'Screenplay Attached';
-                    screenplayBadge.style.cssText = `
-                        background: hsla(214, 100%, 45%, 1);
-                        color: hsla(0, 0%, 100%, 1);
-                        padding: 2px 8px;
-                        border-radius: 8px;
-                        font-size: 0.65rem;
-                        white-space: nowrap;
-                    `;
                     
                     // Add version badge if versioned
                     if (item.versioning === 'Yes' || item.versioning === 'Completed') {
                         const version = (item.versionInfo && item.versionInfo.currentVersion) ? item.versionInfo.currentVersion : 1;
                         
-                        screenplayBadge.style.borderTopRightRadius = '0';
-                        screenplayBadge.style.borderBottomRightRadius = '0';
-                        
                         const versionBadge = document.createElement('span');
                         versionBadge.className = 'version-badge';
                         versionBadge.textContent = `v${version}`;
-                        versionBadge.style.cssText = `
-                            background: hsla(120, 60%, 45%, 1);
-                            color: white;
-                            padding: 2px 8px;
-                            border-radius: 8px;
-                            border-top-left-radius: 0;
-                            border-bottom-left-radius: 0;
-                            font-size: 0.65rem;
-                            font-weight: 500;
-                        `;
                         
                         badgeWrapper.appendChild(screenplayBadge);
                         badgeWrapper.appendChild(versionBadge);

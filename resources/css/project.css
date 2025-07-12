@@ -539,7 +539,10 @@ html {
 /* Focus states for accessibility */
 .role-tag:focus,
 .type-tag:focus,
-#attachments:focus {
+#attachments:focus,
+.credits-button:focus,
+.view-screenplay-button:focus,
+.version-button:focus {
     outline: 2px solid hsla(228,48%,60%,1);
     outline-offset: 2px;
 }
@@ -556,5 +559,825 @@ html {
     .type-tag:hover,
     #attachments:hover {
         transform: none;
+    }
+}
+
+/* Credits button for mobile (hidden by default) */
+.credits-button {
+    display: none;
+}
+
+/* Project buttons for mobile (hidden by default) */
+.project-buttons {
+    display: none;
+}
+
+/* ----Responsive Styles---- */
+
+.mobile-credits-overlay,
+.mobile-version-overlay {
+    display: none;
+}
+
+/* 1124px and below: Smaller credits section */
+@media (max-width: 1124px) {
+    #credits {
+        width: 220px;
+        padding: 18px 0;
+    }
+    
+    #credits #credits-container {
+        padding: 0 18px 0 18px;
+    }
+    
+    #credits-header {
+        padding: 0 18px;
+    }
+    
+    #credits h2 {
+        font-size: 1rem;
+        margin: 0 0 18px 0;
+        padding-bottom: 10px;
+        letter-spacing: 1.5px;
+    }
+    
+    #credits li {
+        font-size: 0.75rem;
+        gap: 10px;
+        padding: 6px 0;
+    }
+    
+    #credits li strong {
+        font-size: 0.65rem;
+        margin-bottom: 5px;
+        letter-spacing: 0.8px;
+    }
+    
+    .credit-name {
+        font-size: 0.7rem;
+        padding-left: 10px;
+    }
+    
+    .credit-name::before {
+        font-size: 0.55rem;
+    }
+    
+    .credit-name .character-role {
+        font-size: 0.6rem;
+    }
+}
+
+/* 1020px and below: Mobile credits popup and layout adjustments */
+@media (max-width: 1020px) {
+    #project-page {
+        margin-top: 32px;
+        padding: 0 8px;
+    }
+    
+    /* Hide desktop credits section */
+    #credits {
+        display: none;
+    }
+    
+    /* Show mobile overlays on mobile */
+    .mobile-credits-overlay {
+        display: block;
+    }
+    
+    /* Mobile credits overlay */
+    .mobile-credits-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        z-index: 10000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    
+    .mobile-credits-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    /* Mobile credits popup */
+    .mobile-credits-popup {
+        position: fixed;
+        bottom: -100%;
+        left: 10px;
+        right: 10px;
+        max-width: 100%;
+        height: 75vh;
+        max-height: calc(100vh - 40px);
+        background: hsla(201, 100%, 8%, 0.98);
+        border: 2px solid hsla(248, 9%, 45%, 0.7);
+        border-radius: 25px 25px 12px 12px;
+        padding: 0;
+        box-shadow: 0px -8px 50px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(20px) brightness(0.8);
+        transition: bottom 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        z-index: 10001;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .mobile-credits-popup.active {
+        bottom: 10px;
+    }
+    
+    .mobile-credits-popup .credits-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px 16px 24px;
+        border-bottom: 1px solid hsla(248, 9%, 45%, 0.4);
+        flex-shrink: 0;
+        background: hsla(201, 100%, 6%, 0.8);
+        border-radius: 23px 23px 0 0;
+    }
+    
+    .mobile-credits-popup .credits-header h2 {
+        font-size: 1.2rem;
+        color: hsla(0, 0%, 100%, 1);
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+    }
+    
+    .credits-close {
+        background: hsla(248, 9%, 20%, 0.8);
+        border: 1px solid hsla(248, 9%, 45%, 0.6);
+        color: hsla(0, 0%, 90%, 1);
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        transition: all 200ms ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+    }
+    
+    .credits-close:hover {
+        color: hsla(0, 0%, 100%, 1);
+        background: hsla(248, 9%, 35%, 0.9);
+        border-color: hsla(248, 9%, 60%, 0.8);
+        transform: scale(1.05);
+    }
+    
+    .credits-close svg {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .mobile-credits-popup ul {
+        list-style: none;
+        padding: 0 24px 24px 24px;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        overflow-y: auto;
+        flex: 1;
+        scrollbar-width: thin;
+        scrollbar-color: hsla(248, 9%, 45%, 0.6) transparent;
+    }
+    
+    .mobile-credits-popup ul::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .mobile-credits-popup ul::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    .mobile-credits-popup ul::-webkit-scrollbar-thumb {
+        background: hsla(248, 9%, 45%, 0.6);
+        border-radius: 3px;
+    }
+    
+    .mobile-credits-popup li {
+        font-size: 0.85rem;
+        color: hsla(0, 0%, 92%, 1);
+        padding: 12px 0;
+        border-bottom: 1px solid hsla(248, 9%, 45%, 0.25);
+        line-height: 1.4;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+    
+    .mobile-credits-popup li:last-child {
+        border-bottom: none;
+    }
+    
+    .mobile-credits-popup li strong {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: hsla(228, 48%, 75%, 1);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+    }
+    
+    .mobile-credits-popup .credit-names {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .mobile-credits-popup .credit-name {
+        display: block;
+        font-size: 0.8rem;
+        color: hsla(0, 0%, 88%, 1);
+        padding-left: 16px;
+        position: relative;
+        line-height: 1.4;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
+        margin-bottom: 2px;
+    }
+    
+    .mobile-credits-popup .credit-name::before {
+        content: '•';
+        position: absolute;
+        left: 6px;
+        color: hsla(228, 48%, 65%, 0.8);
+        font-size: 0.7rem;
+        top: 2px;
+    }
+    
+    .mobile-credits-popup .credit-name .character-role {
+        font-size: 0.7rem;
+        color: hsla(228, 48%, 70%, 0.9);
+        font-style: italic;
+        font-weight: 400;
+    }
+    
+    /* Show the credits button */
+    .credits-button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: hsla(228, 48%, 60%, 0.1);
+        border: 1px solid hsla(248, 9%, 45%, 0.5);
+        color: hsla(0, 0%, 80%, 1);
+        padding: 8px 14px;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 100ms ease-out;
+        font-size: 0.75rem;
+        line-height: 1;
+    }
+    
+    .credits-button:hover {
+        border-color: hsla(0, 0%, 100%, 1);
+        color: hsla(242, 61%, 80%, 1);
+        backdrop-filter: blur(50px) brightness(2);
+    }
+    
+    .credits-button svg {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+    }
+    
+    /* Show project buttons container for mobile layouts */
+    .project-buttons {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+    }
+    
+    .mobile-credits-popup ul {
+        list-style: none;
+        padding: 0 20px 20px 20px;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        overflow-y: auto;
+        flex: 1;
+    }
+    
+    .mobile-credits-popup li {
+        font-size: 0.8rem;
+        color: hsla(0, 0%, 90%, 1);
+        padding: 8px 0;
+        border-bottom: 1px solid hsla(248, 9%, 45%, 0.2);
+        line-height: 1.4;
+    }
+    
+    .mobile-credits-popup li:last-child {
+        border-bottom: none;
+    }
+    
+    .mobile-credits-popup li strong {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: hsla(228, 48%, 70%, 1);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 6px;
+    }
+    
+    .mobile-credits-popup .credit-names {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+    
+    .mobile-credits-popup .credit-name {
+        display: block;
+        font-size: 0.75rem;
+        color: hsla(0, 0%, 85%, 1);
+        padding-left: 12px;
+        position: relative;
+        line-height: 1.3;
+    }
+    
+    .mobile-credits-popup .credit-name::before {
+        content: '•';
+        position: absolute;
+        left: 0;
+        color: hsla(228, 48%, 60%, 0.6);
+        font-size: 0.6rem;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    
+    .mobile-credits-popup .credit-name .character-role {
+        font-size: 0.65rem;
+        color: hsla(228, 48%, 65%, 0.8);
+        font-style: italic;
+        font-weight: 400;
+    }
+
+    .view-screenplay-button, .version-button {
+        display: none;
+    }
+}
+
+/* 768px and below: Smaller elements for mobile screens */
+@media (max-width: 768px) {
+    #contentTitle {
+        font-size: 1.2rem;
+    }
+    
+    .version-badge {
+        font-size: 0.65rem;
+        padding: 1px 6px;
+    }
+    
+    #date {
+        font-size: 0.8rem;
+        line-height: 1.7rem;
+    }
+    
+    .role-tag, .type-tag {
+        font-size: 0.75rem;
+        padding: 1px 5px;
+        border-radius: 5px;
+    }
+    
+    #attachments {
+        width: 100px;
+        font-size: 75%;
+        margin-left: 15px;
+    }
+    
+    #description {
+        font-size: 0.8rem;
+        line-height: 1.4;
+    }
+    
+    #more {
+        padding: 15px;
+    }
+    
+    .credits-button {
+        font-size: 0.7rem;
+        padding: 6px 12px;
+    }
+    
+    .credits-button svg {
+        width: 14px;
+        height: 14px;
+    }
+    
+    /* Version history adjustments */
+    .version-header h3 {
+        font-size: 0.85rem;
+        padding: 14px 18px;
+    }
+    
+    .version-toggle {
+        padding: 0 18px;
+    }
+    
+    .version-summary {
+        font-size: 0.75rem;
+    }
+    
+    .version-item {
+        padding: 6px 18px;
+        gap: 10px;
+    }
+    
+    .version-number {
+        min-width: 25px;
+        font-size: 0.85rem;
+    }
+    
+    .version-date {
+        font-size: 0.75rem;
+    }
+    
+    .current-badge {
+        font-size: 0.65rem;
+        padding: 1px 6px;
+    }
+}
+
+/* 640px and below: New button layout and version history popup */
+@media (max-width: 640px) {
+    /* Show mobile overlays on smaller mobile */
+    .mobile-version-overlay {
+        display: block;
+    }
+    
+    /* Move date below title and allow title to use full width */
+    #specs {
+        flex-direction: column;
+        gap: 6px;
+        align-items: flex-start;
+        margin: 0 0 10px 0;
+    }
+    
+    #contentTitle {
+        max-width: 100%;
+        font-size: 1.15rem;
+    }
+    
+    #date {
+        font-size: 0.8rem;
+        align-self: flex-start;
+        margin: 0;
+    }
+    
+    /* Hide attachments section */
+    #attachments {
+        display: none;
+    }
+
+    #version-history {
+        display: none;
+    }
+
+    .version-badge {
+        display: none;
+    }
+    
+    /* Button container for Credits, View Screenplay, and Version buttons */
+    .project-buttons {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+    }
+
+        /* View Screenplay button for 1020px and below */
+    .view-screenplay-button {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: hsla(214, 100%, 45%, 0.9);
+        border: 1px solid hsla(214, 100%, 55%, 0.8);
+        color: white;
+        padding: 8px 14px;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 100ms ease-out;
+        font-size: 0.75rem;
+        text-decoration: none;
+        font-weight: 500;
+        line-height: 1;
+    }
+    
+    .view-screenplay-button:hover {
+        background: hsla(214, 100%, 55%, 1);
+        border-color: hsla(214, 100%, 65%, 1);
+        transform: translateY(-1px);
+    }
+    
+    /* Version button for 1020px and below */
+    .version-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: hsla(120, 60%, 45%, 0.9);
+        border: 1px solid hsla(120, 60%, 55%, 0.8);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 100ms ease-out;
+        font-size: 0.75rem;
+        font-weight: 600;
+        line-height: 1;
+        min-width: 40px;
+    }
+    
+    .version-button:hover {
+        background: hsla(120, 60%, 55%, 1);
+        border-color: hsla(120, 60%, 65%, 1);
+        transform: translateY(-1px);
+    }
+    
+    /* Version history mobile popup */
+    .mobile-version-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        z-index: 10002;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    
+    .mobile-version-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .mobile-version-popup {
+        position: fixed;
+        bottom: -100%;
+        left: 10px;
+        right: 10px;
+        max-width: 100%;
+        height: 65vh;
+        max-height: calc(100vh - 40px);
+        background: hsla(201, 100%, 8%, 0.98);
+        border: 2px solid hsla(248, 9%, 45%, 0.7);
+        border-radius: 25px 25px 12px 12px;
+        padding: 0;
+        box-shadow: 0px -8px 50px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(20px) brightness(0.8);
+        transition: bottom 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        z-index: 10003;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .mobile-version-popup.active {
+        bottom: 10px;
+    }
+    
+    .mobile-version-popup .version-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px 16px 24px;
+        border-bottom: 1px solid hsla(248, 9%, 45%, 0.4);
+        flex-shrink: 0;
+        background: hsla(201, 100%, 6%, 0.8);
+        border-radius: 23px 23px 0 0;
+    }
+    
+    .mobile-version-popup .version-header h3 {
+        font-size: 1.1rem;
+        color: hsla(0, 0%, 100%, 1);
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+    
+    .version-close {
+        background: hsla(248, 9%, 20%, 0.8);
+        border: 1px solid hsla(248, 9%, 45%, 0.6);
+        color: hsla(0, 0%, 90%, 1);
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        transition: all 200ms ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+    }
+    
+    .version-close:hover {
+        color: hsla(0, 0%, 100%, 1);
+        background: hsla(248, 9%, 35%, 0.9);
+        border-color: hsla(248, 9%, 60%, 0.8);
+        transform: scale(1.05);
+    }
+    
+    .version-close svg {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .mobile-version-popup .version-list {
+        background: none;
+        max-height: none;
+        overflow: visible;
+        transition: none;
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px 24px 24px 24px;
+        scrollbar-width: thin;
+        scrollbar-color: hsla(248, 9%, 45%, 0.6) transparent;
+    }
+    
+    .mobile-version-popup .version-list::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .mobile-version-popup .version-list::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    .mobile-version-popup .version-list::-webkit-scrollbar-thumb {
+        background: hsla(248, 9%, 45%, 0.6);
+        border-radius: 3px;
+    }
+    
+    .mobile-version-popup .version-list ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .mobile-version-popup .version-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 16px 18px;
+        background: hsla(228, 48%, 8%, 0.7);
+        border: 1px solid hsla(248, 9%, 45%, 0.3);
+        border-radius: 16px;
+        transition: all 200ms ease;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+    
+    .mobile-version-popup .version-item:hover {
+        background: hsla(228, 48%, 12%, 0.8);
+        border-color: hsla(248, 9%, 55%, 0.5);
+        transform: translateY(-1px);
+    }
+    
+    .mobile-version-popup .version-item.current {
+        background: hsla(120, 45%, 50%, 0.15);
+        border-color: hsla(120, 45%, 50%, 0.5);
+    }
+    
+    .mobile-version-popup .version-number {
+        font-weight: 600;
+        color: hsla(120, 45%, 75%, 1);
+        min-width: 35px;
+        font-size: 0.95rem;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+    
+    .mobile-version-popup .version-date {
+        color: hsla(0, 0%, 75%, 1);
+        font-size: 0.85rem;
+        flex: 1;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+    
+    .mobile-version-popup .current-badge {
+        background: hsla(120, 45%, 50%, 1);
+        color: white;
+        padding: 6px 10px;
+        border-radius: 14px;
+        font-size: 0.7rem;
+        font-weight: 500;
+        flex-shrink: 0;
+        white-space: nowrap;
+        margin-top: 2px;
+        align-self: flex-start;
+    }
+}
+
+/* 520px and below: Further mobile optimizations */
+@media (max-width: 520px) {
+    #contentTitle {
+        font-size: 1.1rem;
+        max-width: 85%;
+    }
+    
+    #specs {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+    
+    #date {
+        font-size: 0.75rem;
+        align-self: flex-start;
+    }
+    
+    .role-tag, .type-tag {
+        font-size: 0.7rem;
+    }
+    
+    #description {
+        font-size: 0.75rem;
+    }
+    
+    /* Mobile popup adjustments for very small screens */
+    .mobile-credits-popup,
+    .mobile-version-popup {
+        left: 5px;
+        right: 5px;
+        border-radius: 20px 20px 8px 8px;
+    }
+    
+    .mobile-credits-popup.active,
+    .mobile-version-popup.active {
+        bottom: 5px;
+    }
+    
+    .mobile-credits-popup .credits-header,
+    .mobile-version-popup .version-header {
+        padding: 16px 20px 12px 20px;
+    }
+    
+    .mobile-credits-popup .credits-header h2,
+    .mobile-version-popup .version-header h3 {
+        font-size: 1rem;
+        letter-spacing: 1px;
+    }
+    
+    .mobile-credits-popup ul {
+        gap: 14px;
+    }
+    
+    .mobile-credits-popup li {
+        font-size: 0.8rem;
+        padding: 10px 0;
+    }
+    
+    .mobile-credits-popup li strong {
+        font-size: 0.7rem;
+        margin-bottom: 6px;
+    }
+    
+    .mobile-credits-popup .credit-name {
+        font-size: 0.75rem;
+        padding-left: 16px;
+    }
+    
+    .mobile-version-popup .version-list {
+        padding: 16px 20px 20px 20px;
+    }
+    
+    .mobile-version-popup .version-item {
+        padding: 14px 16px;
+        gap: 12px;
+    }
+    
+    .mobile-version-popup .version-number {
+        min-width: 30px;
+        font-size: 0.9rem;
+    }
+    
+    .mobile-version-popup .version-date {
+        font-size: 0.8rem;
+    }
+    
+    .mobile-version-popup .current-badge {
+        padding: 4px 8px;
+        font-size: 0.65rem;
     }
 }

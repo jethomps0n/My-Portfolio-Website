@@ -341,11 +341,11 @@
     }
 
     .info {
-        width: 90%;
+        width: 100%;
         position: relative;
         top: 0;
         left: 0;
-        padding: 20px;
+        padding: 15px;
         font-size: 1.2rem;
     }
 
