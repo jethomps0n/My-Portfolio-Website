@@ -11,12 +11,12 @@
 }
 
 #explore-page * {
-    z-index: 5;
+    z-index: 505;
 }
 
 /* Ensure header/navbar maintains proper stacking */
 body > header {
-    z-index: 500 !important;
+    z-index: 510 !important;
 }
 
 button {
@@ -763,12 +763,13 @@ button.show-more:hover {
         display: none;
     }
     
-    /* Show mobile search and filters layout */
+    /* Show the filters button next to search bar */
     .search-and-filters {
         display: flex !important;
+        margin-bottom: 42px;
     }
     
-    /* Hide the original search container on mobile */
+    /* Keep the original search container hidden above mobile, show mobile version */
     #explore-page > #search-container {
         display: none;
     }
@@ -776,6 +777,7 @@ button.show-more:hover {
     /* Adjust query interface layout */
     #query-interface {
         gap: 0;
+        margin-top: 0;
     }
     
     /* Results section takes full width */
@@ -837,7 +839,7 @@ button.show-more:hover {
         box-shadow: 0 -4px 40px rgba(0, 0, 0, 0.4);
         backdrop-filter: blur(15px) brightness(0.7);
         transition: bottom 0.3s ease;
-        z-index: 1001;
+        z-index: 5001;
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -855,7 +857,7 @@ button.show-more:hover {
         bottom: 0;
         background: rgba(0, 0, 0, 0.5);
         backdrop-filter: blur(4px);
-        z-index: 1000;
+        z-index: 5000;
         opacity: 0;
         visibility: hidden;
         transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -1142,17 +1144,25 @@ button.show-more:hover {
         position: relative;
         width: 100%;
         height: auto;
-        padding: 20px;
+        padding: 15px;
         box-sizing: border-box;
-        gap: 8px;
         flex-direction: column;
+        font-size: 1.2rem;
+    }
+
+    .roles {
+        display: inline-flex;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: 0;
+        margin: 0;
+        line-height: 1;
     }
     
     /* Title styling */
     .result-info h4 {
-        font-size: 1.2rem;
-        margin: 0 0 8px 0;
-        font-weight: 800;
+        font-size: 1em;
+        margin-bottom: 0;
     }
     
     /* Date as separate element - only for 870px and below */
@@ -1161,16 +1171,11 @@ button.show-more:hover {
     }
     
     .result-info .date {
-        font-size: 0.45rem;
+        font-size: 0.45em;
         color: hsla(0, 0%, 80%, 1);
-        margin: 0 0 12px 0;
+        margin: 0 0 2.45cqi 0;
         display: block;
         font-weight: normal;
-    }
-    
-    /* Roles container below date */
-    .result-info .roles {
-        margin-bottom: 12px;
     }
     
     /* Role tags below date */
@@ -1239,13 +1244,13 @@ button.show-more:hover {
     }
     
     .sort label {
-        font-size: 0.5rem;
+        font-size: 0.6rem;
     }
     
-    select {
-        font-size: 0.45rem;
-        padding: 3px 6px;
-        padding-right: 24px;
+    .sort-wrapper select {
+        font-size: 0.6rem;
+        padding: 4px 7px;
+        padding-right: 20px;
         border-radius: 18px;
     }
     
@@ -1277,4 +1282,45 @@ button.show-more:hover {
         height: 36px;
         font-size: 0.75rem;
     }
+}
+
+/* Screenplay and version badges */
+.badge-wrapper {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    display: flex;
+    pointer-events: none;
+    z-index: 520 !important; /* Higher than #explore-page * z-index */
+}
+
+.screenplay-badge {
+    background: hsla(214, 100%, 45%, 1);
+    color: hsla(0, 0%, 100%, 1);
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-size: 0.65rem;
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+.version-badge {
+    background: hsla(120, 60%, 45%, 1);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 8px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    font-size: 0.65rem;
+    font-weight: 500;
+}
+
+.screenplay-badge + .version-badge {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.screenplay-badge:has(+ .version-badge) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
 }
