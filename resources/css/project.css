@@ -960,10 +960,10 @@ html {
         line-height: 1.7rem;
     } */
     
-    .version-badge {
+    /* .version-badge {
         font-size: 0.65rem;
         padding: 1px 6px;
-    }
+    } */
     
     .role-tag, .type-tag {
         font-size: 0.75rem;
