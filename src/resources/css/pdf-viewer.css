@@ -202,10 +202,10 @@ position: absolute;
 #pdf-modal {
     position: fixed;
     pointer-events: auto;
-    top: 5vh;
-    left: 5vw;
-    right: 5vw;
-    bottom: 5vh;
+    top: 1vh;
+    left: 1vw;
+    right: 1vw;
+    bottom: 1vh;
     z-index: 1000;
     background: rgba(0, 0, 0, 0.9);
     box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7);
@@ -237,4 +237,348 @@ body.no-scroll {
   color: hsla(0,0%,80%,1);
   margin-top: 2px;
   text-align: center;
+}
+
+/* Mobile placeholder for PDF viewer */
+.pdf-mobile-placeholder {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  background: hsla(201, 100%, 10%, 1); /* Clean off-white background */
+  overflow: hidden;
+  position: relative;
+}
+
+.pdf-mobile-open-btn {
+  background: linear-gradient(135deg, 
+    hsla(0, 0%, 100%, 0.87) 0%, 
+    hsla(0, 0%, 100%, 0.87) 100%);
+  color: hsla(0, 0%, 45%, 1);
+  border: 1px solid hsla(0, 0%, 100%, 0.15);
+  padding: 48px 64px;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 20px; /* Modern rounded corners */
+  cursor: pointer;
+  transition: all 300ms ease;
+  box-shadow: 
+    inset 0 1px 0 hsla(0, 0%, 100%, 0.2),
+    0 8px 32px hsla(0, 0%, 0%, 0.08);
+  position: relative;
+  overflow: hidden;
+  min-width: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  letter-spacing: 0.025em;
+  backdrop-filter: blur(10px);
+}
+
+.pdf-mobile-open-btn:hover {
+  background: linear-gradient(135deg, 
+    hsla(242, 61%, 80%, 0.12) 0%, 
+    hsla(242, 61%, 80%, 0.06) 100%);
+  border-color: hsla(242, 61%, 80%, 0.3);
+  color: hsla(242, 61%, 60%, 1);
+  transform: translateY(-2px);
+  box-shadow: 
+    inset 0 1px 0 hsla(0, 0%, 100%, 0.3),
+    0 12px 40px hsla(0, 0%, 0%, 0.12),
+    0 4px 16px hsla(242, 61%, 80%, 0.1);
+}
+
+.pdf-mobile-open-btn:active {
+  transform: translateY(0px);
+  box-shadow: 
+    inset 0 1px 0 hsla(0, 0%, 100%, 0.2),
+    0 4px 16px hsla(0, 0%, 0%, 0.08);
+}
+
+.pdf-mobile-btn-text {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.2;
+  color: inherit;
+}
+
+.pdf-mobile-btn-icon {
+  width: 32px;
+  height: 32px;
+  color: hsla(0, 0%, 60%, 1);
+  transition: color 300ms ease;
+}
+
+.pdf-mobile-open-btn:hover .pdf-mobile-btn-icon {
+  color: hsla(242, 61%, 70%, 1);
+}
+
+/* Responsive Styles */
+
+/* Large tablets and small desktops (1200px and down) */
+@media (max-width: 1200px) {
+  #pdf-controls {
+    padding: 8px 12px;
+  }
+  
+  #pdf-controls button,
+  #pdf-controls select,
+  #pdf-controls input {
+    height: 30px;
+    min-width: 30px;
+    padding: 6px;
+    font-size: 0.7rem;
+  }
+  
+  #pdf-controls button svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  #pdf-sidebar.open {
+    width: 200px;
+  }
+}
+
+/* Tablets (1020px and down) - Main mobile breakpoint */
+@media (max-width: 1020px) {
+  /* Hide regular PDF viewer components */
+  #pdf-pages,
+  #pdf-controls {
+    display: none !important;
+  }
+  
+  /* Show mobile placeholder */
+  .pdf-mobile-placeholder {
+    display: flex;
+  }
+  
+  /* Show limited controls in modal */
+  #pdf-modal #pdf-controls {
+    display: flex !important;
+    padding: 8px 12px;
+  }
+  
+  /* Hide unwanted controls in modal */
+  #pdf-modal .pdf-zoom-group select {
+    display: none !important;
+  }
+  
+  /* Keep only specific controls visible in modal */
+  #pdf-modal .pdf-nav-group,
+  #pdf-modal #pdf-zoom-in,
+  #pdf-modal #pdf-zoom-out,
+  #pdf-modal #pdf-download,
+  #pdf-modal .pdf-controls-left,
+  #pdf-modal #pdf-sidebar-toggle,
+  #pdf-modal #pdf-print,
+  #pdf-modal #pdf-expand {
+    display: flex !important;
+  }
+  
+  /* Make sure PDF pages and container show in modal */
+  #pdf-modal #pdf-pages,
+  #pdf-modal #pdf-canvas-container {
+    display: flex !important;
+  }
+  
+  /* Hide mobile placeholder in modal */
+  #pdf-modal .pdf-mobile-placeholder {
+    display: none !important;
+  }
+  
+  /* Adjust button sizes for mobile modal */
+  #pdf-modal #pdf-controls button,
+  #pdf-modal #pdf-controls input {
+    height: 36px;
+    min-width: 36px;
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+  
+  #pdf-modal #pdf-controls button svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  /* Adjust page input width for mobile */
+  #pdf-modal #pdf-controls input,
+  #pdf-modal #pdf-page-num {
+    width: 50px;
+  }
+}
+
+/* Small tablets and large phones (768px and down) */
+@media (max-width: 768px) {
+  #pdf-modal .pdf-controls-left,
+  #pdf-modal #pdf-sidebar-toggle,
+  #pdf-sidebar {
+    display: none !important;
+  }
+
+  .pdf-mobile-placeholder {
+    padding: 0;
+  }
+  
+  .pdf-mobile-open-btn {
+    padding: 40px 60px;
+    font-size: 0.95rem;
+    min-width: 260px;
+  }
+  
+  .pdf-mobile-btn-text {
+    font-size: 0.95rem;
+  }
+  
+  .pdf-mobile-btn-icon {
+    font-size: 1.8rem;
+  }
+  
+  /* Further reduce modal controls */
+  #pdf-modal #pdf-controls {
+    padding: 6px 8px;
+    flex-direction: row-reverse;
+  }
+  
+  #pdf-modal #pdf-controls button,
+  #pdf-modal #pdf-controls input {
+    height: 32px;
+    min-width: 32px;
+    padding: 6px;
+    font-size: 0.75rem;
+  }
+  
+  #pdf-modal #pdf-controls button svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  #pdf-modal .pdf-controls-center {
+    gap: 15px;
+  }
+  
+  #pdf-modal .pdf-nav-group,
+  #pdf-modal .pdf-zoom-group,
+  #pdf-modal .pdf-controls-right {
+    gap: 4px;
+  }
+}
+
+@media (max-width: 640px) {
+  .pdf-mobile-placeholder {
+    padding: 0;
+  }
+  
+  .pdf-mobile-open-btn {
+    padding: 36px 56px;
+    font-size: 0.9rem;
+    min-width: 240px;
+  }
+  
+  .pdf-mobile-btn-text {
+    font-size: 0.9rem;
+  }
+  
+  .pdf-mobile-btn-icon {
+    font-size: 1.7rem;
+  }
+  
+  /* Compact modal controls */
+  #pdf-modal #pdf-controls {
+    padding: 5px 8px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  
+  #pdf-modal .pdf-controls-center {
+    position: static;
+    transform: none;
+    gap: 12px;
+    order: 2;
+    width: auto;
+    justify-content: center;
+  }
+  
+  #pdf-modal .pdf-controls-right {
+    order: 1;
+  }
+  
+  #pdf-modal #pdf-controls button,
+  #pdf-modal #pdf-controls input {
+    height: 30px;
+    min-width: 30px;
+    padding: 5px;
+    font-size: 0.7rem;
+  }
+  
+  #pdf-modal #pdf-controls button svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  #pdf-modal #pdf-controls input,
+  #pdf-modal #pdf-page-num {
+    width: 45px;
+  }
+}
+
+/* Mobile phones (480px and down) */
+@media (max-width: 480px) {
+  .pdf-mobile-placeholder {
+    padding: 0;
+  }
+  
+  .pdf-mobile-open-btn {
+    padding: 32px 48px;
+    font-size: 0.85rem;
+    min-width: 220px;
+  }
+  
+  .pdf-mobile-btn-text {
+    font-size: 0.85rem;
+  }
+  
+  .pdf-mobile-btn-icon {
+    font-size: 1.6rem;
+  }
+}
+
+/* Very small phones (360px and down) */
+@media (max-width: 360px) {
+  .pdf-mobile-open-btn {
+    padding: 28px 40px;
+    font-size: 0.8rem;
+    min-width: 200px;
+  }
+  
+  .pdf-mobile-btn-text {
+    font-size: 0.8rem;
+  }
+  
+  .pdf-mobile-btn-icon {
+    font-size: 1.5rem;
+  }
+  
+  #pdf-modal #pdf-controls button,
+  #pdf-modal #pdf-controls input {
+    height: 28px;
+    min-width: 28px;
+    padding: 4px;
+    font-size: 0.65rem;
+  }
+  
+  #pdf-modal #pdf-controls button svg {
+    width: 14px;
+    height: 14px;
+  }
+  
+  #pdf-modal #pdf-controls input,
+  #pdf-modal #pdf-page-num {
+    width: 40px;
+  }
 }
