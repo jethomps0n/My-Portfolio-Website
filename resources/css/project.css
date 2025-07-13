@@ -824,6 +824,15 @@ html {
     }
     
     /* Show the credits button */
+    .project-buttons {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+        font-size: 0.75rem;
+    }
+
     .credits-button {
         display: flex;
         align-items: center;
@@ -835,8 +844,8 @@ html {
         border-radius: 25px;
         cursor: pointer;
         transition: all 100ms ease-out;
-        font-size: 0.75rem;
         line-height: 1;
+        font-size: 0.75rem;
     }
     
     .credits-button:hover {
@@ -849,15 +858,6 @@ html {
         width: 16px;
         height: 16px;
         flex-shrink: 0;
-    }
-    
-    /* Show project buttons container for mobile layouts */
-    .project-buttons {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-top: 12px;
-        flex-wrap: wrap;
     }
     
     .mobile-credits-popup ul {
@@ -1057,6 +1057,7 @@ html {
         gap: 10px;
         margin-top: 12px;
         flex-wrap: wrap;
+        font-size: 0.7rem;
     }
 
         /* View Screenplay button for 1020px and below */
@@ -1067,11 +1068,10 @@ html {
         background: hsla(214, 100%, 45%, 0.9);
         border: 1px solid hsla(214, 100%, 55%, 0.8);
         color: white;
-        padding: 8px 14px;
+        padding: 6px 14px;
         border-radius: 25px;
         cursor: pointer;
         transition: all 100ms ease-out;
-        font-size: 0.75rem;
         text-decoration: none;
         font-weight: 500;
         line-height: 1;
@@ -1091,14 +1091,13 @@ html {
         background: hsla(120, 60%, 45%, 0.9);
         border: 1px solid hsla(120, 60%, 55%, 0.8);
         color: white;
-        padding: 8px 12px;
+        padding: 6px 9px;
         border-radius: 25px;
         cursor: pointer;
         transition: all 100ms ease-out;
-        font-size: 0.75rem;
-        font-weight: 600;
+        font-weight: 500;
         line-height: 1;
-        min-width: 40px;
+        /* min-width: 40px; */
     }
     
     .version-button:hover {
@@ -1379,5 +1378,27 @@ html {
     .mobile-version-popup .current-badge {
         padding: 4px 8px;
         font-size: 0.65rem;
+    }
+}
+
+@media (max-width: 440px) {
+    .project-buttons {
+        font-size: 0.6rem;
+        gap: 5px;
+    }
+
+    .credits-button {
+        font-size: 0.6rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .project-buttons {
+        font-size: 0.52rem;
+        gap: 4px;
+    }
+
+    .credits-button {
+        font-size: 0.52rem;
     }
 }
