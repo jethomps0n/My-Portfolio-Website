@@ -833,6 +833,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   expandBtn.addEventListener('click', () => {
+      console.log('Expand button clicked', { modal: !!modal, pdfDoc: !!pdfDoc }); // Debug log
+      
+      // Ensure PDF is loaded before creating modal
+      if (!pdfDoc) {
+        console.warn('PDF not loaded yet, cannot create modal');
+        return;
+      }
+      
       if (!modal) {
           // Store current frame state
           const frameState = {
@@ -929,10 +937,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const scale = calculateModalZoom(base);
                 const viewport = page.getViewport({ scale });
                 
-                canvas.width = Math.floor(viewport.width);
-                canvas.height = Math.floor(viewport.height);
+                // Apply device pixel ratio for high-DPI displays (important for mobile)
+                const modalDevicePixelRatio = window.devicePixelRatio || 1;
+                
+                canvas.width = Math.floor(viewport.width * modalDevicePixelRatio);
+                canvas.height = Math.floor(viewport.height * modalDevicePixelRatio);
                 canvas.style.width = Math.floor(viewport.width) + 'px';
                 canvas.style.height = Math.floor(viewport.height) + 'px';
+                
+                // Scale the context to match device pixel ratio
+                const context = canvas.getContext('2d');
+                context.scale(modalDevicePixelRatio, modalDevicePixelRatio);
                 
                 modalVirtualPageManager.addPage(pageNum, canvas, page, viewport);
               } catch (error) {
