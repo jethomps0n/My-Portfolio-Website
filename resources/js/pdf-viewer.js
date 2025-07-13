@@ -301,10 +301,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function shouldShowMobilePlaceholder() {
-    const isMobile = isMobileDevice();
+    const viewportWidth = window.innerWidth;
     const screenWidth = window.screen.width;
     const screenHeight = window.screen.height;
-    const viewportWidth = window.innerWidth;
     const hasTouchSupport = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     
     // Debug logging
@@ -316,14 +315,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       devicePixelRatio: window.devicePixelRatio,
       touchSupport: hasTouchSupport,
       orientation: screenWidth > screenHeight ? 'Landscape' : 'Portrait',
-      isMobileDevice: isMobile,
-      shouldShowPlaceholder: isMobile || (hasTouchSupport && viewportWidth <= 1024)
+      isMobileDevice: isMobileDevice(),
+      shouldShowPlaceholder: viewportWidth <= 1020
     });
     
-    // Show placeholder for:
-    // 1. Detected mobile devices
-    // 2. Touch-enabled devices with viewport width <= 1024px (covers iPad in both orientations)
-    return isMobile || (hasTouchSupport && viewportWidth <= 1024);
+    // Show placeholder for any device with viewport width <= 1020px (matches CSS breakpoint)
+    return viewportWidth <= 1020;
   }
 
   function updateMobilePlaceholderVisibility() {
