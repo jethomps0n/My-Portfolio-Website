@@ -785,11 +785,6 @@ button.show-more:hover {
         margin-top: 0;
     }
     
-    /* Hide active filters on mobile */
-    #active-filters {
-        display: none !important;
-    }
-    
     /* Search container in mobile layout */
     .search-and-filters #search-container {
         flex: 1;

@@ -8,3 +8,13 @@ iframe {
     height: 100%;
     border: none;
 }
+
+@media (max-width: 640px) {
+    #frame {
+        width: 100vw;
+        overflow: visible;
+        /* margin-left: calc(-50vw + 50%); */
+        left: calc(-50vw + 50%);
+        position: relative;
+    }
+}
