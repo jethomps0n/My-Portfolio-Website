@@ -282,6 +282,62 @@ document.addEventListener('DOMContentLoaded', async () => {
   const frameParent = frame.parentElement;
   const frameNextSibling = frame.nextElementSibling;
 
+  // Enhanced mobile detection that works properly with iPad Safari
+  function isMobileDevice() {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const hasTouchSupport = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    
+    // Check for explicit mobile indicators in user agent
+    const mobileIndicators = /mobile|iphone|ipod|android|blackberry|opera|mini|windows\sce|palm|smartphone|iemobile/i;
+    const tabletIndicators = /ipad|tablet|kindle|silk|playbook/i;
+    
+    // For iPad: Safari reports as Mac, but Chrome reports as iPad
+    const isTablet = tabletIndicators.test(userAgent) || 
+                    (hasTouchSupport && /macintosh/i.test(userAgent));
+    
+    const isMobile = mobileIndicators.test(userAgent);
+    
+    return isMobile || isTablet;
+  }
+
+  function shouldShowMobilePlaceholder() {
+    const isMobile = isMobileDevice();
+    const screenWidth = window.screen.width;
+    const screenHeight = window.screen.height;
+    const viewportWidth = window.innerWidth;
+    const hasTouchSupport = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    
+    // Debug logging
+    console.log('Mobile detection debug:', {
+      userAgent: navigator.userAgent,
+      screenWidth,
+      screenHeight,
+      viewportWidth,
+      devicePixelRatio: window.devicePixelRatio,
+      touchSupport: hasTouchSupport,
+      orientation: screenWidth > screenHeight ? 'Landscape' : 'Portrait',
+      isMobileDevice: isMobile,
+      shouldShowPlaceholder: isMobile || (hasTouchSupport && viewportWidth <= 1024)
+    });
+    
+    // Show placeholder for:
+    // 1. Detected mobile devices
+    // 2. Touch-enabled devices with viewport width <= 1024px (covers iPad in both orientations)
+    return isMobile || (hasTouchSupport && viewportWidth <= 1024);
+  }
+
+  function updateMobilePlaceholderVisibility() {
+    const shouldShow = shouldShowMobilePlaceholder();
+    
+    if (shouldShow) {
+      mobilePlaceholder.style.display = 'flex';
+      pagesContainer.style.display = 'none';
+    } else {
+      mobilePlaceholder.style.display = 'none';
+      pagesContainer.style.display = 'block';
+    }
+  }
+
   // Create mobile placeholder
   const createMobilePlaceholder = () => {
     const placeholder = document.createElement('div');
@@ -295,15 +351,41 @@ document.addEventListener('DOMContentLoaded', async () => {
       </button>
     `;
     
-    // Add click handler to open modal in page width zoom mode
+    // Add enhanced click handler with error handling and debugging
     const openBtn = placeholder.querySelector('.pdf-mobile-open-btn');
     openBtn.addEventListener('click', () => {
-      // Set zoom mode to width before opening modal
-      zoomMode = 'width';
-      zoomSelect.value = 'width';
+      console.log('Mobile open button clicked', { pdfDoc: !!pdfDoc, modal: !!modal });
       
-      // Trigger the expand button click to open modal
-      expandBtn.click();
+      try {
+        // Ensure PDF is loaded before opening modal
+        if (!pdfDoc) {
+          console.warn('PDF not loaded yet, cannot open modal');
+          openBtn.textContent = 'Loading PDF...';
+          setTimeout(() => {
+            openBtn.innerHTML = `
+              <span class="pdf-mobile-btn-text">Open PDF</span>
+              <svg class="pdf-mobile-btn-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M9.79 12.79L4 18.59V17a1 1 0 0 0-2 0v4a1 1 0 0 0 .08.38a1 1 0 0 0 .54.54A1 1 0 0 0 3 22h4a1 1 0 0 0 0-2H5.41l5.8-5.79a1 1 0 0 0-1.42-1.42M21.92 2.62a1 1 0 0 0-.54-.54A1 1 0 0 0 21 2h-4a1 1 0 0 0 0 2h1.59l-5.8 5.79a1 1 0 0 0 0 1.42a1 1 0 0 0 1.42 0L20 5.41V7a1 1 0 0 0 2 0V3a1 1 0 0 0-.08-.38"></path>
+              </svg>
+            `;
+          }, 2000);
+          return;
+        }
+        
+        // Set zoom mode to width for optimal mobile viewing
+        zoomMode = 'width';
+        zoomSelect.value = 'width';
+        
+        // Directly trigger expand button functionality with safety check
+        if (expandBtn && typeof expandBtn.click === 'function') {
+          expandBtn.click();
+        } else {
+          console.error('Expand button not available');
+        }
+      } catch (error) {
+        console.error('Failed to open PDF modal:', error);
+        alert('Unable to open PDF viewer. Please try refreshing the page.');
+      }
     });
     
     return placeholder;
@@ -375,9 +457,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         const viewport = page.getViewport({ scale });
         
         // Use integer coordinates for better performance and avoid sub-pixel rendering
-        canvas.width = Math.floor(viewport.width);
-        canvas.height = Math.floor(viewport.height);
+        // Apply device pixel ratio for high-DPI displays (important for mobile quality)
+        const devicePixelRatio = window.devicePixelRatio || 1;
+        
+        canvas.width = Math.floor(viewport.width * devicePixelRatio);
+        canvas.height = Math.floor(viewport.height * devicePixelRatio);
         canvas.style.width = Math.floor(viewport.width) + 'px';
+        canvas.style.height = Math.floor(viewport.height) + 'px';
+        
+        // Scale the context to match device pixel ratio
+        const context = canvas.getContext('2d');
+        context.scale(devicePixelRatio, devicePixelRatio);
         canvas.style.height = Math.floor(viewport.height) + 'px';
         
         // Add to virtual page manager
@@ -601,6 +691,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   pdfjsLib.getDocument(url).promise.then(async (pdf) => {
     pdfDoc = pdf;
     pageCountSpan.textContent = pdfDoc.numPages;
+    
+    // Update mobile placeholder visibility after PDF loads
+    updateMobilePlaceholderVisibility();
     
     await yieldToMain();
     
@@ -1367,6 +1460,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     
     resizeTimeout = setTimeout(async () => {
+      // Update mobile placeholder visibility on resize
+      updateMobilePlaceholderVisibility();
+      
       // Use scheduler.postTask for resize handling if available
       const resizeTask = async () => {
         await yieldToMain();
@@ -1392,4 +1488,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       cancelAnimationFrame(updatePageTimeout);
     }
   });
+
+  // Initial mobile placeholder visibility check
+  updateMobilePlaceholderVisibility();
 });
