@@ -2,6 +2,13 @@ import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.3.31/
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.3.31/pdf.worker.min.mjs';
 
+// PDF Resolution Configuration
+// Adjust this value to change the base resolution quality for all PDF pages
+// Higher values = better quality but larger file sizes and slower rendering
+// Standard desktop scale (1.5-3.0 works well for most cases)
+// 2.5 provides excellent quality for both desktop and mobile displays
+const PDF_RESOLUTION_SCALE = 2.5;
+
 // Enhanced yielding utility using the latest scheduler.yield() API for optimal INP
 function yieldToMain() {
   if (globalThis.scheduler?.yield) {
@@ -52,7 +59,7 @@ async function runTasksBatched(tasks, initialBatchSize = 3, targetFrameTime = 16
   }
 }
 
-// Enhanced virtual page manager with optimized intersection observer and memory management
+  // Enhanced virtual page manager with optimized intersection observer and memory management
 class VirtualPageManager {
   constructor(pagesContainer, canvasContainer) {
     this.pagesContainer = pagesContainer;
@@ -63,6 +70,8 @@ class VirtualPageManager {
     this.observer = null;
     this.initialized = false;
     this.renderTimeoutId = null;
+    this.preloadedPages = new Set(); // Track preloaded pages for instant display
+    this.priorityPages = new Set(); // Track pages that should render with high priority
   }
 
   async initialize() {
@@ -132,6 +141,12 @@ class VirtualPageManager {
       return;
     }
 
+    // Immediate rendering for preloaded pages
+    if (this.preloadedPages.has(pageNum) || priority === 'immediate') {
+      await this.performPageRender(pageNum);
+      return;
+    }
+
     // Use scheduler.postTask when available for proper priority scheduling
     const renderTask = () => this.performPageRender(pageNum);
     
@@ -158,6 +173,27 @@ class VirtualPageManager {
     }
   }
 
+  // Pre-load specific pages for instant display (used for mobile optimization)
+  async preloadPage(pageNum) {
+    const pageData = this.pages.get(pageNum);
+    if (!pageData || pageData.rendered || this.preloadedPages.has(pageNum)) return;
+    
+    this.preloadedPages.add(pageNum);
+    this.priorityPages.add(pageNum); // Mark as priority for immediate rendering
+    await this.renderPageWithPriority(pageNum, 'immediate');
+  }
+
+  // Preload first few pages for instant mobile experience
+  async preloadInitialPages(count = 3) {
+    const preloadTasks = [];
+    for (let i = 1; i <= Math.min(count, this.pages.size); i++) {
+      preloadTasks.push(() => this.preloadPage(i));
+    }
+    
+    // Run preload tasks in parallel for fastest loading
+    await Promise.all(preloadTasks.map(task => task()));
+  }
+
   async performPageRender(pageNum) {
     const pageData = this.pages.get(pageNum);
     if (!pageData || pageData.rendered) {
@@ -182,8 +218,14 @@ class VirtualPageManager {
       
       pageData.rendered = true;
       this.renderQueue.delete(pageNum);
+      
+      // If this was a priority page, remove from priority set
+      this.priorityPages.delete(pageNum);
+      
     } catch (error) {
       console.warn(`Failed to render page ${pageNum}:`, error);
+      this.preloadedPages.delete(pageNum);
+      this.priorityPages.delete(pageNum);
       this.renderQueue.delete(pageNum);
     }
   }
@@ -228,6 +270,7 @@ class VirtualPageManager {
     this.pages.clear();
     this.visiblePages.clear();
     this.renderQueue.clear();
+    this.preloadedPages.clear();
   }
 }
 
@@ -287,8 +330,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const placeholder = document.createElement('div');
     placeholder.className = 'pdf-mobile-placeholder';
     placeholder.innerHTML = `
-      <button class="pdf-mobile-open-btn" type="button">
-        <span class="pdf-mobile-btn-text">Open PDF</span>
+      <button class="pdf-mobile-open-btn" type="button" disabled>
+        <span class="pdf-mobile-btn-text">Loading PDF...</span>
         <svg class="pdf-mobile-btn-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
           <path fill="currentColor" d="M9.79 12.79L4 18.59V17a1 1 0 0 0-2 0v4a1 1 0 0 0 .08.38a1 1 0 0 0 .54.54A1 1 0 0 0 3 22h4a1 1 0 0 0 0-2H5.41l5.8-5.79a1 1 0 0 0-1.42-1.42M21.92 2.62a1 1 0 0 0-.54-.54A1 1 0 0 0 21 2h-4a1 1 0 0 0 0 2h1.59l-5.8 5.79a1 1 0 0 0 0 1.42a1 1 0 0 0 1.42 0L20 5.41V7a1 1 0 0 0 2 0V3a1 1 0 0 0-.08-.38"></path>
         </svg>
@@ -297,13 +340,56 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Add click handler to open modal in page width zoom mode
     const openBtn = placeholder.querySelector('.pdf-mobile-open-btn');
-    openBtn.addEventListener('click', () => {
-      // Set zoom mode to width before opening modal
-      zoomMode = 'width';
-      zoomSelect.value = 'width';
-      
-      // Trigger the expand button click to open modal
-      expandBtn.click();
+    openBtn.addEventListener('click', async () => {
+      try {
+        // Show loading state
+        const btnText = openBtn.querySelector('.pdf-mobile-btn-text');
+        const originalText = btnText.textContent;
+        btnText.textContent = 'Loading...';
+        openBtn.disabled = true;
+        
+        // If PDF is not loaded yet, wait for it
+        if (!pdfDoc) {
+          const loadingPromise = new Promise((resolve) => {
+            const checkPdfDoc = () => {
+              if (pdfDoc) {
+                resolve();
+              } else {
+                setTimeout(checkPdfDoc, 50);
+              }
+            };
+            checkPdfDoc();
+          });
+          await loadingPromise;
+        }
+        
+        // Preload first few pages for instant display
+        await virtualPageManager.preloadInitialPages(3);
+        
+        // Set zoom mode to width before opening modal for optimal mobile viewing
+        zoomMode = 'width';
+        zoomSelect.value = 'width';
+        
+        // Reset button state
+        btnText.textContent = originalText;
+        openBtn.disabled = false;
+        
+        // Trigger the expand button click to open modal
+        expandBtn.click();
+        
+      } catch (error) {
+        console.error('Failed to open PDF modal:', error);
+        const btnText = openBtn.querySelector('.pdf-mobile-btn-text');
+        btnText.textContent = 'Error - Tap to retry';
+        openBtn.disabled = false;
+        
+        // Reset after 2 seconds
+        setTimeout(() => {
+          btnText.innerHTML = `
+            Open PDF
+          `;
+        }, 2000);
+      }
     });
     
     return placeholder;
@@ -313,21 +399,35 @@ document.addEventListener('DOMContentLoaded', async () => {
   const mobilePlaceholder = createMobilePlaceholder();
   canvasContainer.appendChild(mobilePlaceholder);
 
+  // Function to enable mobile button once PDF is ready
+  function enableMobileButton() {
+    const openBtn = mobilePlaceholder.querySelector('.pdf-mobile-open-btn');
+    const btnText = openBtn.querySelector('.pdf-mobile-btn-text');
+    
+    openBtn.disabled = false;
+    btnText.textContent = 'Open PDF';
+  }
+
   function calculateScale(base) {
+    // Use the configurable resolution scale as the base, then apply zoom
+    let baseScale = PDF_RESOLUTION_SCALE;
+    
     if (zoomMode === 'fit') {
-      zoom = canvasContainer.clientHeight / base.height;
+      const fitScale = canvasContainer.clientHeight / base.height;
+      zoom = fitScale;
       currentZoom = zoom;
-      return zoom;
+      return baseScale * fitScale;
     } else if (zoomMode === 'width') {
-      zoom = canvasContainer.clientWidth / base.width;
+      const widthScale = canvasContainer.clientWidth / base.width;
+      zoom = widthScale;
       currentZoom = zoom;
-      return zoom;
+      return baseScale * widthScale;
     } else if (zoomMode === 'auto') {
       zoom = 1.1;
       currentZoom = zoom;
-      return zoom;
+      return baseScale * 1.1;
     }
-    return zoom;
+    return baseScale * zoom;
   }
 
   // Optimized rendering with enhanced virtual scrolling and priority-based yielding
@@ -371,14 +471,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         await yieldToMain();
         const page = await pdfDoc.getPage(pageNum);
         const base = page.getViewport({ scale: 1 });
-        const scale = calculateScale(base);
-        const viewport = page.getViewport({ scale });
+        const actualScale = calculateScale(base);
+        const viewport = page.getViewport({ scale: actualScale });
         
         // Use integer coordinates for better performance and avoid sub-pixel rendering
+        const displayScale = actualScale / PDF_RESOLUTION_SCALE; // Separate display scale from render scale
+        
         canvas.width = Math.floor(viewport.width);
         canvas.height = Math.floor(viewport.height);
-        canvas.style.width = Math.floor(viewport.width) + 'px';
-        canvas.style.height = Math.floor(viewport.height) + 'px';
+        // Display size is scaled down to maintain visual zoom while keeping high resolution
+        canvas.style.width = Math.floor(viewport.width * displayScale / actualScale) + 'px';
+        canvas.style.height = Math.floor(viewport.height * displayScale / actualScale) + 'px';
         
         // Add to virtual page manager
         virtualPageManager.addPage(pageNum, canvas, page, viewport);
@@ -609,7 +712,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     const renderSidebarPromise = renderSidebar();
     
     await Promise.all([renderPagesPromise, renderSidebarPromise]);
-  }).catch(err => console.error('Failed to load PDF:', err));
+    
+    // Pre-render first few pages in background for instant mobile loading
+    // This runs after initial page setup is complete to avoid blocking UI
+    if (globalThis.scheduler?.postTask) {
+      scheduler.postTask(async () => {
+        await virtualPageManager.preloadInitialPages(5);
+        // Enable mobile button after preloading is complete
+        enableMobileButton();
+      }, { priority: 'background' });
+    } else {
+      setTimeout(async () => {
+        await virtualPageManager.preloadInitialPages(5);
+        // Enable mobile button after preloading is complete
+        enableMobileButton();
+      }, 1000);
+    }
+    
+  }).catch(err => {
+    console.error('Failed to load PDF:', err);
+    // Enable button even on error so user can try to open modal
+    enableMobileButton();
+  });
 
   // Enhanced event handlers with priority-based yielding and better user interaction feedback
   prevBtn.addEventListener('click', async () => {
@@ -888,18 +1012,23 @@ document.addEventListener('DOMContentLoaded', async () => {
           const modalVirtualPageManager = new VirtualPageManager(modalPagesContainer, modalCanvasContainer);
 
           function calculateModalZoom(base) {
+            // Use the same configurable resolution scale for consistent quality
+            let baseScale = PDF_RESOLUTION_SCALE;
+            
             if (modalZoomMode === 'fit') {
-                modalZoom = modalCanvasContainer.clientHeight / base.height;
-                return modalZoom;
+                const fitScale = modalCanvasContainer.clientHeight / base.height;
+                modalZoom = fitScale;
+                return baseScale * fitScale;
             } else if (modalZoomMode === 'width') {
                 const availableWidth = modalCanvasContainer.clientWidth;
-                modalZoom = availableWidth / base.width;
-                return modalZoom;
+                const widthScale = availableWidth / base.width;
+                modalZoom = widthScale;
+                return baseScale * widthScale;
             } else if (modalZoomMode === 'auto') {
                 modalZoom = 1.1;
-                return modalZoom;
+                return baseScale * 1.1;
             }
-            return modalZoom;
+            return baseScale * modalZoom;
           }
 
           // Optimized modal rendering with virtual scrolling
@@ -926,13 +1055,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 
                 const page = await pdfDoc.getPage(pageNum);
                 const base = page.getViewport({ scale: 1 });
-                const scale = calculateModalZoom(base);
-                const viewport = page.getViewport({ scale });
+                const actualScale = calculateModalZoom(base);
+                const displayScale = actualScale / PDF_RESOLUTION_SCALE;
+                const viewport = page.getViewport({ scale: actualScale });
                 
                 canvas.width = Math.floor(viewport.width);
                 canvas.height = Math.floor(viewport.height);
-                canvas.style.width = Math.floor(viewport.width) + 'px';
-                canvas.style.height = Math.floor(viewport.height) + 'px';
+                // Display size accounts for resolution scaling
+                canvas.style.width = Math.floor(viewport.width * displayScale / actualScale) + 'px';
+                canvas.style.height = Math.floor(viewport.height * displayScale / actualScale) + 'px';
                 
                 modalVirtualPageManager.addPage(pageNum, canvas, page, viewport);
               } catch (error) {
