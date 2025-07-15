@@ -1465,7 +1465,6 @@ img:hover + .img-caption {
 
 @media (max-width: 480px) {
     .categories-strip {
-        justify-content: flex-start;
         overflow-x: auto;
         padding: 16px 0;
         gap: 6px;
@@ -1557,6 +1556,9 @@ img:hover + .img-caption {
         padding: 12px 20px;
         font-size: 0.9rem;
         width: 100%;
+        width: -moz-available;          /* WebKit-based browsers will ignore this. */
+        width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
+        width: stretch;
         justify-content: center;
     }
     
