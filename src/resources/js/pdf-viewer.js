@@ -286,25 +286,35 @@ document.addEventListener('DOMContentLoaded', async () => {
   const createMobilePlaceholder = () => {
     const placeholder = document.createElement('div');
     placeholder.className = 'pdf-mobile-placeholder';
+    // placeholder.innerHTML = `
+    //   <button class="pdf-mobile-open-btn" type="button">
+    //     <span class="pdf-mobile-btn-text">Open PDF</span>
+    //     <svg class="pdf-mobile-btn-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+    //       <path fill="currentColor" d="M9.79 12.79L4 18.59V17a1 1 0 0 0-2 0v4a1 1 0 0 0 .08.38a1 1 0 0 0 .54.54A1 1 0 0 0 3 22h4a1 1 0 0 0 0-2H5.41l5.8-5.79a1 1 0 0 0-1.42-1.42M21.92 2.62a1 1 0 0 0-.54-.54A1 1 0 0 0 21 2h-4a1 1 0 0 0 0 2h1.59l-5.8 5.79a1 1 0 0 0 0 1.42a1 1 0 0 0 1.42 0L20 5.41V7a1 1 0 0 0 2 0V3a1 1 0 0 0-.08-.38"></path>
+    //     </svg>
+    //   </button>
+    // `;
+
+    // Temp fix for mobile placeholder
     placeholder.innerHTML = `
-      <button class="pdf-mobile-open-btn" type="button">
+      <a href="${url}" target="_blank" class="pdf-mobile-open-btn" style="display: flex; text-decoration: none;">
         <span class="pdf-mobile-btn-text">Open PDF</span>
         <svg class="pdf-mobile-btn-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
           <path fill="currentColor" d="M9.79 12.79L4 18.59V17a1 1 0 0 0-2 0v4a1 1 0 0 0 .08.38a1 1 0 0 0 .54.54A1 1 0 0 0 3 22h4a1 1 0 0 0 0-2H5.41l5.8-5.79a1 1 0 0 0-1.42-1.42M21.92 2.62a1 1 0 0 0-.54-.54A1 1 0 0 0 21 2h-4a1 1 0 0 0 0 2h1.59l-5.8 5.79a1 1 0 0 0 0 1.42a1 1 0 0 0 1.42 0L20 5.41V7a1 1 0 0 0 2 0V3a1 1 0 0 0-.08-.38"></path>
         </svg>
-      </button>
+      </a>
     `;
-    
+
     // Add click handler to open modal in page width zoom mode
-    const openBtn = placeholder.querySelector('.pdf-mobile-open-btn');
-    openBtn.addEventListener('click', () => {
-      // Set zoom mode to width before opening modal
-      zoomMode = 'width';
-      zoomSelect.value = 'width';
+    // const openBtn = placeholder.querySelector('.pdf-mobile-open-btn');
+    // openBtn.addEventListener('click', () => {
+    //   // Set zoom mode to width before opening modal
+    //   zoomMode = 'width';
+    //   zoomSelect.value = 'width';
       
-      // Trigger the expand button click to open modal
-      expandBtn.click();
-    });
+    //   // Trigger the expand button click to open modal
+    //   expandBtn.click();
+    // });
     
     return placeholder;
   };
