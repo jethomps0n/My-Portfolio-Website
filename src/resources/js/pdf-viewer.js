@@ -788,29 +788,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     oldZoom = zoom;
     oldScrollLeft = canvasContainer.scrollLeft;
     oldScrollTop = canvasContainer.scrollTop;
-    if (sidebar.classList.contains('open')) {
-      const selectedThumb = sidebar.querySelector('.pdf-thumb.active')?.parentElement;
-      if (selectedThumb) {
-        if (isElementInView(sidebar, selectedThumb)) {
-          sidebarScrollState.scrollTop = sidebar.scrollTop;
-          sidebarScrollState.mode = 'restore';
-        } else {
-          sidebarScrollState.mode = 'focus';
-        }
-      }
-    }
+    const wasOpen = sidebar.classList.contains('open');
     sidebar.classList.toggle('open');
-    // Only update sidebar scroll state and thumb focus, not the main pages, on sidebar toggle
+    // Always scroll to the current page's thumbnail on open
     sidebar.addEventListener(
       'transitionend',
       () => {
         const selectedThumb = sidebar.querySelector('.pdf-thumb.active')?.parentElement;
-        if (selectedThumb) {
-          if (sidebarScrollState.mode === 'restore') {
-            sidebar.scrollTop = sidebarScrollState.scrollTop;
-          } else if (sidebarScrollState.mode === 'focus') {
-            sidebar.scrollTop = selectedThumb.offsetTop - selectedThumb.offsetHeight / 2;
-          }
+        if (selectedThumb && sidebar.classList.contains('open')) {
+          // Always focus the current page's thumbnail on open
+          sidebar.scrollTop = selectedThumb.offsetTop - selectedThumb.offsetHeight / 2;
         }
         // Do NOT call renderPages here; only reposition scroll if needed
         repositionScroll();
@@ -1209,38 +1196,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
               modalSidebarToggle.addEventListener('click', () => {
                   const currentPage = modalPageNum;
-                  
-                  if (modalSidebar.classList.contains('open')) {
-                      const selectedThumb = modalSidebar.querySelector('.pdf-thumb.active')?.parentElement;
-                      if (selectedThumb) {
-                          if (isElementInView(modalSidebar, selectedThumb)) {
-                              modalSidebarScrollState = {
-                                  scrollTop: modalSidebar.scrollTop,
-                                  mode: 'restore'
-                              };
-                          } else {
-                              modalSidebarScrollState = {
-                                  mode: 'focus'
-                              };
-                          }
-                      }
-                  }
-                  
+                  const wasOpen = modalSidebar.classList.contains('open');
                   modalSidebar.classList.toggle('open');
-                  
                   modalSidebar.addEventListener('transitionend', () => {
                       if (modalSidebar.classList.contains('open')) {
                           const selectedThumb = modalSidebar.querySelector('.pdf-thumb.active')?.parentElement;
                           if (selectedThumb) {
-                              if (modalSidebarScrollState?.mode === 'restore') {
-                                  modalSidebar.scrollTop = modalSidebarScrollState.scrollTop;
-                              } else {
-                                  modalSidebar.scrollTop = selectedThumb.offsetTop - 
-                                      (modalSidebar.clientHeight / 2) + (selectedThumb.clientHeight / 2);
-                              }
+                              // Always focus the current page's thumbnail on open
+                              modalSidebar.scrollTop = selectedThumb.offsetTop - (modalSidebar.clientHeight / 2) + (selectedThumb.clientHeight / 2);
                           }
                       }
-                      
                       if (modalZoomMode === 'width') {
                           pdfDoc.getPage(1).then(async page => {
                               const base = page.getViewport({ scale: 1 });
@@ -1308,16 +1273,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                   if (zoomMode !== 'custom') {
                       zoom = calculateScale(base);
                   }
-                  
                   await renderPages(true); // Skip auto-scroll to page 1
-                  
-                  // Use requestAnimationFrame to ensure DOM is updated before setting scroll position
+                  // Use double requestAnimationFrame to ensure DOM/layout is fully updated before setting scroll position (fixes Firefox/Safari delay)
                   requestAnimationFrame(() => {
-                      // Set the precise scroll position instead of scrolling to page
+                    requestAnimationFrame(() => {
                       canvasContainer.scrollLeft = finalState.scrollLeft;
                       canvasContainer.scrollTop = finalState.scrollTop;
                       updatePageDisplay(finalState.pageNum);
                       scrollSidebarThumbIntoView(finalState.pageNum);
+                    });
                   });
               });
           });
