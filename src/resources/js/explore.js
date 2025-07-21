@@ -21,14 +21,7 @@ const BATCH_SIZE = 3; // Process items in batches
 const FRAME_BUDGET = 16; // 16ms per frame (60fps)
 
 // Video preview functions (simplified from original working version)
-// Utility to detect touch devices
-const isTouchDevice = () => {
-    return (('ontouchstart' in window) || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0);
-};
-
-// Video preview functions (disable on touch devices)
 const previewStart = event => {
-    if (isTouchDevice()) return; // Disable preview on touch devices
     const video = event.currentTarget.querySelector('.thumbnail.passive');
     if (video && video.checkVisibility({visibilityProperty: false})) {
         hoverTimeout = setTimeout(() => {
@@ -39,7 +32,6 @@ const previewStart = event => {
 };
 
 const previewStop = event => {
-    if (isTouchDevice()) return;
     const video = event.currentTarget.querySelector('.thumbnail.passive');
     if (video) {
         clearTimeout(hoverTimeout);
@@ -457,133 +449,157 @@ function makeRoleTag(text){
 }
 
 // Optimized results rendering with requestAnimationFrame and lazy loading
-let lastScrollTop = 0;
-let renderResultsTimeout = null;
 async function renderResults(){
-    // Debounce rendering to avoid layout thrashing
-    if (renderResultsTimeout) clearTimeout(renderResultsTimeout);
-    renderResultsTimeout = setTimeout(async () => {
-        const results = document.getElementById('results-list');
-        // Save scroll position
-        lastScrollTop = window.scrollY || document.documentElement.scrollTop;
-        results.innerHTML = '';
-        const total = filtered.length;
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = Math.min(startIndex + itemsPerPage, total);
-        const slice = filtered.slice(startIndex, endIndex);
-        // Use requestAnimationFrame for DOM updates and batch processing
-        await new Promise(resolve => {
-            requestAnimationFrame(async () => {
-                for (let i = 0; i < slice.length; i++) {
-                    const item = slice[i];
-                    const div = document.createElement('div');
-                    div.className = 'result-item ' + (firstRender ? 'pop-in' : 'fade-in');
-                    const a = document.createElement('a');
-                    a.href = `/explore/${item.slug}` || '#';
-                    const hasScreenplay = item.Screenplay === 'Yes' || item.Screenplay === 'Sole';
-                    let thumbClass = hasScreenplay ? 'thumb screenplay-attached' : 'thumb';
-                    if (hasScreenplay && (item.versioning === 'Yes' || item.versioning === 'Completed')) {
-                        const version = (item.versionInfo && item.versionInfo.currentVersion) ? item.versionInfo.currentVersion : 1;
-                        thumbClass += ` versioned v${version}`;
-                    }
-                    const disablePreview = item.Screenplay === 'Sole';
-                    const thumbDiv = document.createElement('div');
-                    thumbDiv.className = thumbClass;
-                    if (disablePreview) {
-                        thumbDiv.innerHTML = `<img class="thumbnail active" src="${item.imgSrc}" alt="" loading="lazy">`;
-                        a.classList.add('no-preview');
-                    } else {
-                        thumbDiv.innerHTML = `<img class="thumbnail active" src="${item.imgSrc}" alt="" loading="lazy"><video class="thumbnail passive" src="${item.previewSrc}" muted loop preload="none"></video>`;
-                    }
-                    // Add video preview event listeners ONLY if preview is not disabled
-                    // Attach to the <a> element so hovering anywhere on the result item triggers preview
-                    if (!disablePreview) {
-                        a.addEventListener('mouseenter', previewStart);
-                        a.addEventListener('mouseleave', previewStop);
-                    }
-                    if (hasScreenplay) {
-                        const badgeWrapper = document.createElement('div');
-                        badgeWrapper.className = 'badge-wrapper';
-                        const screenplayBadge = document.createElement('span');
-                        screenplayBadge.className = 'screenplay-badge';
-                        screenplayBadge.textContent = 'Screenplay Attached';
-                        if (item.versioning === 'Yes' || item.versioning === 'Completed') {
-                            const version = (item.versionInfo && item.versionInfo.currentVersion) ? item.versionInfo.currentVersion : 1;
-                            const versionBadge = document.createElement('span');
-                            versionBadge.className = 'version-badge';
-                            versionBadge.textContent = `v${version}`;
-                            badgeWrapper.appendChild(screenplayBadge);
-                            badgeWrapper.appendChild(versionBadge);
-                        } else {
-                            badgeWrapper.appendChild(screenplayBadge);
-                        }
-                        thumbDiv.appendChild(badgeWrapper);
-                    }
-                    a.appendChild(thumbDiv);
-                    const info = document.createElement('div');
-                    info.className = 'result-info';
-                    const h4 = document.createElement('h4');
-                    h4.textContent = item.title;
-                    info.appendChild(h4);
-                    const isMobileLayout = window.innerWidth <= 870;
-                    if (isMobileLayout) {
-                        const dateElement = document.createElement('small');
-                        dateElement.className = 'date';
-                        dateElement.textContent = item.date;
-                        info.appendChild(dateElement);
-                        const rolesContainer = document.createElement('div');
-                        rolesContainer.className = 'roles';
-                        const roles = (item.role || '').split('/').map(s => s.trim()).filter(Boolean);
-                        roles.forEach(r => {
-                            rolesContainer.appendChild(makeRoleTag(r));
-                        });
-                        info.appendChild(rolesContainer);
-                    } else {
-                        const small = document.createElement('small');
-                        const roles = (item.role || '').split('/').map(s => s.trim()).filter(Boolean);
-                        roles.forEach(r => {
-                            small.appendChild(makeRoleTag(r));
-                        });
-                        if (roles.length > 0) small.appendChild(document.createTextNode(' · '));
-                        small.appendChild(document.createTextNode(item.date));
-                        info.appendChild(small);
-                    }
-                    const p = document.createElement('p');
-                    const description = item.description || '';
-                    if (description.includes('\n')) {
-                        const lines = description.split('\n');
-                        lines.forEach((line, index) => {
-                            if (index > 0) {
-                                p.appendChild(document.createElement('br'));
-                            }
-                            p.appendChild(document.createTextNode(line));
-                        });
-                    } else {
-                        p.textContent = description;
-                    }
-                    info.appendChild(p);
-                    a.appendChild(info);
-                    div.appendChild(a);
-                    div.addEventListener('animationend', () => {
-                        div.classList.remove('pop-in', 'fade-in');
-                    }, { once: true });
-                    results.appendChild(div);
-                    if (i % 2 === 1 && i < slice.length - 1) {
-                        await new Promise(resolve => setTimeout(resolve, 0));
-                    }
+    const results = document.getElementById('results-list');
+    results.innerHTML = '';
+    const total = filtered.length;
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, total);
+    const slice = filtered.slice(startIndex, endIndex);
+    
+    // Use requestAnimationFrame for DOM updates and batch processing
+    await new Promise(resolve => {
+        requestAnimationFrame(async () => {
+            for (let i = 0; i < slice.length; i++) {
+                const item = slice[i];
+                const div = document.createElement('div');
+                div.className = 'result-item ' + (firstRender ? 'pop-in' : 'fade-in');
+                
+                const a = document.createElement('a');
+                a.href = `/explore/${item.slug}` || '#';
+                const hasScreenplay = item.Screenplay === 'Yes' || item.Screenplay === 'Sole';
+                let thumbClass = hasScreenplay ? 'thumb screenplay-attached' : 'thumb';
+                
+                // Add version badge to screenplay-attached class if versioning is enabled
+                if (hasScreenplay && (item.versioning === 'Yes' || item.versioning === 'Completed')) {
+                    const version = (item.versionInfo && item.versionInfo.currentVersion) ? item.versionInfo.currentVersion : 1;
+                    thumbClass += ` versioned v${version}`;
                 }
-                document.getElementById('results-count').innerHTML = `Results <b>${startIndex + 1}</b>-<b>${endIndex}</b> of <b>${total}</b>`;
-                renderPagination(total);
-                updateURL();
-                firstRender = false;
-                resolve();
-            });
+                
+                const disablePreview = item.Screenplay === 'Sole';
+                
+                // Create the thumbnail HTML with lazy loading optimization
+                const thumbDiv = document.createElement('div');
+                thumbDiv.className = thumbClass;
+                
+                // For items with Screenplay === "Sole", only create img element
+                // For all others, create both img and video elements
+                if (disablePreview) {
+                    thumbDiv.innerHTML = `<img class="thumbnail active" src="${item.imgSrc}" alt="" loading="lazy">`;
+                    a.classList.add('no-preview');
+                } else {
+                    thumbDiv.innerHTML = `<img class="thumbnail active" src="${item.imgSrc}" alt="" loading="lazy"><video class="thumbnail passive" src="${item.previewSrc}" muted loop preload="none"></video>`;
+                }
+                
+                // Add video preview event listeners ONLY if preview is not disabled
+                // Attach to the <a> element so hovering anywhere on the result item triggers preview
+                if (!disablePreview) {
+                    a.addEventListener('mouseenter', previewStart);
+                    a.addEventListener('mouseleave', previewStop);
+                }
+                
+                // Add screenplay/version badges if needed
+                if (hasScreenplay) {
+                    const badgeWrapper = document.createElement('div');
+                    badgeWrapper.className = 'badge-wrapper';
+                    
+                    // Create screenplay badge
+                    const screenplayBadge = document.createElement('span');
+                    screenplayBadge.className = 'screenplay-badge';
+                    screenplayBadge.textContent = 'Screenplay Attached';
+                    
+                    // Add version badge if versioned
+                    if (item.versioning === 'Yes' || item.versioning === 'Completed') {
+                        const version = (item.versionInfo && item.versionInfo.currentVersion) ? item.versionInfo.currentVersion : 1;
+                        
+                        const versionBadge = document.createElement('span');
+                        versionBadge.className = 'version-badge';
+                        versionBadge.textContent = `v${version}`;
+                        
+                        badgeWrapper.appendChild(screenplayBadge);
+                        badgeWrapper.appendChild(versionBadge);
+                    } else {
+                        badgeWrapper.appendChild(screenplayBadge);
+                    }
+                    
+                    thumbDiv.appendChild(badgeWrapper);
+                }
+                
+                a.appendChild(thumbDiv);
+
+                const info = document.createElement('div');
+                info.className = 'result-info';
+                const h4 = document.createElement('h4');
+                h4.textContent = item.title;
+                info.appendChild(h4);
+                
+                // Check if we're in mobile layout (870px and below)
+                const isMobileLayout = window.innerWidth <= 870;
+                
+                if (isMobileLayout) {
+                    // Mobile layout: separate date and roles elements
+                    const dateElement = document.createElement('small');
+                    dateElement.className = 'date';
+                    dateElement.textContent = item.date;
+                    info.appendChild(dateElement);
+                    
+                    // Create roles container
+                    const rolesContainer = document.createElement('div');
+                    rolesContainer.className = 'roles';
+                    const roles = (item.role || '').split('/').map(s => s.trim()).filter(Boolean);
+                    roles.forEach(r => {
+                        rolesContainer.appendChild(makeRoleTag(r));
+                    });
+                    info.appendChild(rolesContainer);
+                } else {
+                    // Desktop layout: inline date and roles with dot separator
+                    const small = document.createElement('small');
+                    const roles = (item.role || '').split('/').map(s => s.trim()).filter(Boolean);
+                    roles.forEach(r => {
+                        small.appendChild(makeRoleTag(r));
+                    });
+                    if (roles.length > 0) small.appendChild(document.createTextNode(' · '));
+                    small.appendChild(document.createTextNode(item.date));
+                    info.appendChild(small);
+                }
+                
+                const p = document.createElement('p');
+                
+                // Handle newlines in description
+                const description = item.description || '';
+                if (description.includes('\n')) {
+                    const lines = description.split('\n');
+                    lines.forEach((line, index) => {
+                        if (index > 0) {
+                            p.appendChild(document.createElement('br'));
+                        }
+                        p.appendChild(document.createTextNode(line));
+                    });
+                } else {
+                    p.textContent = description;
+                }
+                info.appendChild(p);
+                a.appendChild(info);
+
+                div.appendChild(a);
+                div.addEventListener('animationend', () => {
+                    div.classList.remove('pop-in', 'fade-in');
+                }, { once: true });
+                results.appendChild(div);
+                
+                // Yield control every 2 items to prevent blocking
+                if (i % 2 === 1 && i < slice.length - 1) {
+                    await new Promise(resolve => setTimeout(resolve, 0));
+                }
+            }
+            
+            document.getElementById('results-count').innerHTML = `Results <b>${startIndex + 1}</b>-<b>${endIndex}</b> of <b>${total}</b>`;
+            renderPagination(total);
+            updateURL();
+            firstRender = false;
+            resolve();
         });
-        // Restore scroll position after rendering
-        setTimeout(() => {
-            window.scrollTo({top: lastScrollTop, behavior: 'auto'});
-        }, 0);
-    }, 50); // 50ms debounce
+    });
 }
 
 function scrollToTop(){
