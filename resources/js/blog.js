@@ -27,6 +27,9 @@ function initializeBlogPage() {
     
     // Stagger animations for blog sections with batching
     staggerAnimations();
+    
+    // Handle smart grid positioning for blog navigation
+    handleBlogNavigationPositioning();
 }
 
 async function staggerAnimations() {
@@ -348,6 +351,59 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// Handle smart positioning of blog navigation within grid
+function handleBlogNavigationPositioning() {
+    const blogGrid = document.querySelector('.blog-grid');
+    const blogNavigation = document.querySelector('.blog-navigation');
+    
+    if (!blogGrid || !blogNavigation) return;
+    
+    const positionNavigation = () => {
+        const posts = blogGrid.querySelectorAll('.blog-post');
+        const gridComputedStyle = window.getComputedStyle(blogGrid);
+        const gridTemplateColumns = gridComputedStyle.gridTemplateColumns;
+        const columns = gridTemplateColumns.split(' ').length;
+        
+        // Calculate if there's space in the grid
+        const totalPosts = posts.length;
+        const fullRows = Math.floor(totalPosts / columns);
+        const remainingSpots = totalPosts % columns;
+        const availableSpots = columns - remainingSpots;
+        
+        // If there are available spots in the last row and we have at least 2 columns
+        if (availableSpots > 0 && availableSpots < columns && columns >= 2) {
+            // Move navigation into the grid
+            blogNavigation.classList.add('in-grid');
+            blogNavigation.classList.remove('outside-grid');
+            
+            // Insert navigation after the last post in the grid
+            const lastPost = posts[posts.length - 1];
+            if (lastPost && lastPost.parentNode === blogGrid) {
+                blogGrid.insertBefore(blogNavigation, lastPost.nextSibling);
+            }
+        } else {
+            // Keep navigation outside the grid
+            blogNavigation.classList.remove('in-grid');
+            blogNavigation.classList.add('outside-grid');
+            
+            // Move navigation after the grid
+            if (blogNavigation.parentNode === blogGrid) {
+                blogGrid.parentNode.insertBefore(blogNavigation, blogGrid.nextSibling);
+            }
+        }
+    };
+    
+    // Position on load
+    positionNavigation();
+    
+    // Reposition on window resize (debounced)
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(positionNavigation, 250);
+    });
+}
 
 // Initialize enhanced features after page load
 window.addEventListener('load', () => {

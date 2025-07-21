@@ -407,6 +407,434 @@
 }
 
 /* Responsive Design */
+
+/* Horizontal topbar layout for wider screens with constrained viewport height */
+@media (min-width: 769px) {
+    /* Use CSS container queries and viewport height to determine layout */
+    @supports (height: 100dvh) {
+        /* When viewport height is less than approximately sidebar height + distance from top (700px + 165px) */
+        @media (max-height: 865px) {
+            #about-page {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+                gap: 20px;
+            }
+            
+            .about-sidebar {
+                position: static;
+                display: grid;
+                grid-template-columns: auto 1fr auto;
+                grid-template-areas: "profile stats actions";
+                align-items: center;
+                gap: 30px;
+                padding: 20px 30px;
+                height: auto;
+                border-radius: 15px;
+            }
+            
+            /* Profile section (left) */
+            .profile-section {
+                grid-area: profile;
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                min-width: 0;
+            }
+            
+            .profile-info {
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+                min-width: 0;
+            }
+            
+            .profile-window-frame {
+                width: 120px;
+                height: 120px;
+                margin: 0;
+                flex-shrink: 0;
+            }
+            
+            .profile-name {
+                margin: 0;
+                text-align: center;
+                font-size: 1.1rem;
+            }
+            
+            .profile-title {
+                margin: 0;
+                text-align: center;
+                font-size: 0.8rem;
+            }
+            
+            /* Stats section (middle) */
+            .quick-stats {
+                grid-area: stats;
+                border-left: 1px solid hsla(0, 0%, 100%, 0.1);
+                border-right: 1px solid hsla(0, 0%, 100%, 0.1);
+                border-top: none;
+                padding: 0 25px;
+                margin: 0;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px 12px;
+                justify-content: center;
+                align-items: center;
+            }
+            
+            .stat-item {
+                border: none;
+                padding: 8px 12px;
+                flex-direction: column;
+                align-items: center;
+                gap: 2px;
+                background: hsla(0, 0%, 100%, 0.05);
+                border-radius: 8px;
+                min-width: 80px;
+            }
+            
+            /* Actions section (right) */
+            .actions-section {
+                grid-area: actions;
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+                min-width: 200px;
+            }
+            
+            .resume-section {
+                margin: 0;
+                padding: 0;
+                border: none;
+            }
+            
+            .resume-btn {
+                margin: 0;
+            }
+            
+            .social-tiles {
+                margin: 0;
+                padding: 0;
+                border: none;
+                justify-content: flex-start;
+            }
+        }
+        
+        /* Move stats and actions below profile for smaller topbar screens */
+        @media (max-height: 865px) and (max-width: 1200px) {
+            .about-sidebar {
+                grid-template-columns: 1fr;
+                grid-template-areas: "profile" "stats" "actions";
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .profile-section {
+                justify-content: center;
+            }
+            
+            .quick-stats {
+                border-left: none;
+                border-right: none;
+                border-top: 1px solid hsla(0, 0%, 100%, 0.1);
+                border-bottom: 1px solid hsla(0, 0%, 100%, 0.1);
+                padding: 15px 0;
+            }
+            
+            .actions-section {
+                flex-direction: row;
+                justify-content: center;
+                gap: 20px;
+                min-width: auto;
+            }
+        }
+        
+        /* Responsive adjustments for horizontal layout at smaller widths */
+        @media (max-height: 800px) and (max-width: 1200px) {
+            .about-sidebar {
+                gap: 20px;
+                padding: 15px 25px;
+            }
+            
+            .actions-section {
+                min-width: 180px;
+            }
+            
+            .quick-stats {
+                gap: 10px 20px;
+            }
+        }
+        
+        @media (max-height: 800px) and (max-width: 900px) {
+            .profile-section {
+                gap: 15px;
+            }
+            
+            .profile-window-frame {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .profile-name {
+                font-size: 1rem;
+            }
+            
+            .profile-title {
+                font-size: 0.75rem;
+            }
+        }
+    }
+    
+    /* Fallback for browsers without dvh support */
+    @supports not (height: 100dvh) {
+        @media (max-height: 750px) {
+            #about-page {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+                gap: 20px;
+            }
+            
+            .about-sidebar {
+                position: static;
+                display: grid;
+                grid-template-columns: auto 1fr auto;
+                grid-template-areas: "profile stats actions";
+                align-items: center;
+                gap: 30px;
+                padding: 20px 30px;
+                height: auto;
+                border-radius: 15px;
+            }
+            
+            .profile-section {
+                grid-area: profile;
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                min-width: 0;
+            }
+            
+            .profile-info {
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+                min-width: 0;
+            }
+            
+            .profile-window-frame {
+                width: 120px;
+                height: 120px;
+                margin: 0;
+                flex-shrink: 0;
+            }
+            
+            .profile-name {
+                margin: 0;
+                text-align: center;
+                font-size: 1.1rem;
+            }
+            
+            .profile-title {
+                margin: 0;
+                text-align: center;
+                font-size: 0.8rem;
+            }
+            
+            .quick-stats {
+                grid-area: stats;
+                border-left: 1px solid hsla(0, 0%, 100%, 0.1);
+                border-right: 1px solid hsla(0, 0%, 100%, 0.1);
+                padding: 0 25px;
+                margin: 0;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px 12px;
+                justify-content: center;
+                align-items: center;
+            }
+            
+            .stat-item {
+                border: none;
+                padding: 8px 12px;
+                flex-direction: column;
+                align-items: center;
+                gap: 2px;
+                background: hsla(0, 0%, 100%, 0.05);
+                border-radius: 8px;
+                min-width: 80px;
+            }
+            
+            .actions-section {
+                grid-area: actions;
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+                min-width: 200px;
+            }
+            
+            .resume-section {
+                margin: 0;
+                padding: 0;
+                border: none;
+            }
+            
+            .resume-btn {
+                margin: 0;
+            }
+            
+            .social-tiles {
+                margin: 0;
+                padding: 0;
+                border: none;
+                justify-content: flex-start;
+            }
+        }
+        
+        /* Move stats and actions below profile for smaller topbar screens */
+        @media (max-height: 750px) and (max-width: 1124px) {
+            .about-sidebar {
+                grid-template-columns: 1fr;
+                grid-template-areas: "profile" "stats" "actions";
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .profile-section {
+                justify-content: center;
+            }
+            
+            .quick-stats {
+                border-left: none;
+                border-right: none;
+                border-top: 1px solid hsla(0, 0%, 100%, 0.1);
+                border-bottom: 1px solid hsla(0, 0%, 100%, 0.1);
+                padding: 15px 0;
+            }
+            
+            .actions-section {
+                flex-direction: row;
+                justify-content: center;
+                gap: 20px;
+                min-width: auto;
+            }
+        }
+        
+        /* Similar responsive adjustments for fallback */
+        @media (max-height: 750px) and (max-width: 1200px) {
+            .about-sidebar {
+                gap: 20px;
+                padding: 15px 25px;
+            }
+            
+            .actions-section {
+                min-width: 180px;
+            }
+            
+            .quick-stats {
+                gap: 10px 20px;
+            }
+        }
+        
+        @media (max-height: 750px) and (max-width: 1020px) {
+            .about-sidebar {
+                grid-template-columns: auto 1fr;
+                grid-template-areas: "profile stats" "actions actions";
+                gap: 15px;
+            }
+            
+            .actions-section {
+                grid-area: actions;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                min-width: auto;
+            }
+            
+            .resume-section {
+                flex: 0 0 auto;
+            }
+            
+            .social-tiles {
+                flex: 0 0 auto;
+            }
+        }
+        
+        @media (max-height: 750px) and (max-width: 900px) {
+            .profile-section {
+                gap: 15px;
+            }
+            
+            .profile-window-frame {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .profile-name {
+                font-size: 1rem;
+            }
+            
+            .profile-title {
+                font-size: 0.75rem;
+            }
+        }
+    }
+}
+
+/* Text scaling for about-main starting from 1020px and below */
+@media (max-width: 1020px) {
+    .intro-title {
+        font-size: 2.2rem;
+    }
+    
+    .intro-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .intro-description {
+        font-size: 1rem;
+    }
+    
+    .section-header h2 {
+        font-size: 1.6rem;
+    }
+    
+    .content-card h3 {
+        font-size: 1.2rem;
+    }
+    
+    .content-card p {
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 900px) {
+    .intro-title {
+        font-size: 2rem;
+    }
+    
+    .intro-subtitle {
+        font-size: 1rem;
+    }
+    
+    .intro-description {
+        font-size: 0.95rem;
+    }
+    
+    .section-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .content-card h3 {
+        font-size: 1.1rem;
+    }
+    
+    .content-card p {
+        font-size: 0.9rem;
+    }
+}
+
 @media (max-width: 768px) {
     #about-page {
         grid-template-columns: 1fr;
@@ -418,10 +846,79 @@
     .about-sidebar {
         position: static;
         padding: 25px;
+        /* Reset any horizontal layout styles */
+        display: block;
+        grid-template-columns: none;
+        grid-template-areas: none;
+    }
+    
+    /* Reset profile section for mobile */
+    .profile-section {
+        display: block;
+    }
+    
+    .profile-info {
+        display: block;
+    }
+    
+    .profile-window-frame {
+        width: 240px; /* 4:3 aspect ratio: height 180px * (4/3) = 240px */
+        height: 180px;
+        margin: 0 auto 15px auto;
+        max-width: 100%; /* Ensure it doesn't overflow on very small screens */
+    }
+    
+    .profile-name {
+        text-align: center;
+        margin-bottom: 15px;
+        font-size: 1.3rem;
+    }
+    
+    .profile-title {
+        text-align: center;
+        margin-bottom: 25px;
+        font-size: 0.9rem;
+    }
+    
+    /* Reset stats for mobile */
+    .quick-stats {
+        border-top: 1px solid hsla(0, 0%, 100%, 0.1);
+        padding-top: 20px;
+        margin: 0;
+        display: block;
+    }
+    
+    .stat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid hsla(0, 0%, 100%, 0.05);
+    }
+    
+    .stat-item:last-child {
+        border-bottom: none;
+    }
+    
+    /* Reset actions section for mobile */
+    .actions-section {
+        display: block;
+    }
+    
+    .resume-section {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid hsla(0, 0%, 100%, 0.1);
+        display: flex;
+        justify-content: center;
     }
     
     .social-tiles {
         gap: 10px;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid hsla(0, 0%, 100%, 0.1);
+        justify-content: center;
     }
     
     .social-tile {
@@ -460,6 +957,47 @@
     }
 }
 
+/* Maintain image aspect ratio for screens between 768px and 520px */
+@media (max-width: 768px) and (min-width: 521px) {
+    .profile-window-frame {
+        width: 240px; /* 4:3 aspect ratio: height 180px * (4/3) = 240px */
+        height: 180px; /* Keep original height */
+        margin: 0 auto 15px auto;
+        max-width: 100%; /* Ensure it doesn't overflow on smaller screens */
+    }
+}
+
+@media (max-width: 520px) {
+    .intro-title {
+        font-size: 1.8rem;
+    }
+    
+    .intro-subtitle {
+        font-size: 1rem;
+    }
+    
+    .intro-description {
+        font-size: 0.9rem;
+    }
+    
+    .section-header h2 {
+        font-size: 1.4rem;
+    }
+    
+    .content-card h3 {
+        font-size: 1rem;
+    }
+    
+    .content-card p {
+        font-size: 0.85rem;
+    }
+
+    .skill-tag {
+        font-size: 0.8rem;
+        padding: 10px 14px;
+    }
+}
+
 @media (max-width: 480px) {
     #about-page {
         padding: 0 15px;
@@ -470,7 +1008,7 @@
         padding: 20px;
     }
     
-    .social-tiles {
+    /* .social-tiles {
         gap: 8px;
     }
     
@@ -482,18 +1020,38 @@
     .social-tile img {
         width: 16px;
         height: 16px;
-    }
+    } */
     
     .intro-title {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
+    }
+    
+    .intro-subtitle {
+        font-size: 0.95rem;
+    }
+    
+    .intro-description {
+        font-size: 0.85rem;
     }
     
     .section-header {
         padding-left: 15px;
     }
     
+    .section-header h2 {
+        font-size: 1.3rem;
+    }
+    
     .content-card {
         padding: 18px;
+    }
+    
+    .content-card h3 {
+        font-size: 0.95rem;
+    }
+    
+    .content-card p {
+        font-size: 0.8rem;
     }
     
     .skills-grid {
