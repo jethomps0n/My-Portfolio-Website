@@ -2,36 +2,56 @@ const contentContainer = document.querySelectorAll('.contentContainer');
 let hoverDelay = 600; //ms
 let timeout;
 
-// Optimized video handling with requestAnimationFrame for better INP
-const vidStart = event => {
-    const video = event.currentTarget.querySelector('.passive');
-    if (video && video.checkVisibility({visibilityProperty: false})) {
-        timeout = setTimeout(() => {
-            // Use scheduler.postTask for better prioritization
+// Detect touch device
+const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
+
+// Only enable video preview hover for non-touch devices
+if (!isTouchDevice) {
+    // Optimized video handling with requestAnimationFrame for better INP
+    const vidStart = event => {
+        const video = event.currentTarget.querySelector('.passive');
+        if (video && video.checkVisibility({visibilityProperty: false})) {
+            timeout = setTimeout(() => {
+                // Use scheduler.postTask for better prioritization
+                scheduler.postTask(() => {
+                    video.currentTime = 0;
+                    video.play().catch(() => {}); // Silently handle play failures
+                }, { priority: 'user-visible' });
+            }, hoverDelay);
+        }
+    };
+
+    // Optimized video pause with scheduler
+    const vidStop = event => {
+        const video = event.currentTarget.querySelector('.passive');
+        if (video && video.checkVisibility({visibilityProperty: false})) {
+            clearTimeout(timeout);
             scheduler.postTask(() => {
-                video.currentTime = 0;
-                video.play().catch(() => {}); // Silently handle play failures
+                video.pause();
             }, { priority: 'user-visible' });
-        }, hoverDelay);
-    }
-};
+        }
+    };
 
-// Optimized video pause with scheduler
-const vidStop = event => {
-    const video = event.currentTarget.querySelector('.passive');
-    if (video && video.checkVisibility({visibilityProperty: false})) {
-        clearTimeout(timeout);
-        scheduler.postTask(() => {
-            video.pause();
-        }, { priority: 'user-visible' });
-    }
-};
-
-// Use passive listeners for better scroll performance and batch event listener setup
-contentContainer.forEach(element => {
-    element.addEventListener('mouseenter', vidStart, { passive: true });
-    element.addEventListener('mouseleave', vidStop, { passive: true });
-});
+    // Use passive listeners for better scroll performance and batch event listener setup
+    contentContainer.forEach(element => {
+        element.addEventListener('mouseenter', vidStart, { passive: true });
+        element.addEventListener('mouseleave', vidStop, { passive: true });
+    });
+} else {
+    // On touch devices, ensure video previews are always hidden and thumbnails are always visible
+    contentContainer.forEach(element => {
+        const activeThumb = element.querySelector('.thumbnail.active');
+        const passiveThumb = element.querySelector('.thumbnail.passive');
+        if (activeThumb) {
+            activeThumb.style.opacity = '1';
+            activeThumb.style.visibility = 'visible';
+        }
+        if (passiveThumb) {
+            passiveThumb.style.opacity = '0';
+            passiveThumb.style.visibility = 'hidden';
+        }
+    });
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     // Optimized animation cleanup with passive listeners and batching

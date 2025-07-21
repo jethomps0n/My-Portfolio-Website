@@ -63,6 +63,19 @@
     opacity: 1; */
 }
 
+/* Responsive override for touch devices */
+@media (pointer: coarse) {
+  .thumbnail.passive {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transition: none !important;
+  }
+  .thumbnail {
+    filter: none !important;
+    transition: none !important;
+  }
+}
+
 .info {
     display: flex;
     justify-content: start;
