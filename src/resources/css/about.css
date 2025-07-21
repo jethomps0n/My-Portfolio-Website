@@ -407,7 +407,277 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+
+/* Profile frame visibility controls */
+.profile-frames-container {
+    display: none;
+}
+
+.single-frame {
+    display: block;
+}
+
+/* For screens wider than 768px but with limited height - Horizontal topbar layout */
+@media (min-width: 769px) and (max-height: calc(100vh - 140px)) {
+    #about-page {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .about-sidebar {
+        position: static;
+        display: grid;
+        grid-template-columns: 200px 1fr 200px;
+        gap: 20px;
+        align-items: center;
+        height: auto;
+        padding: 20px 30px;
+        border-radius: 15px;
+        top: auto;
+    }
+    
+    .profile-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .profile-window-frame {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 10px;
+    }
+    
+    .profile-name {
+        margin-bottom: 5px;
+        font-size: 1.1rem;
+    }
+    
+    .profile-title {
+        margin-bottom: 0;
+        font-size: 0.8rem;
+    }
+    
+    .quick-stats {
+        border: none;
+        padding: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px 15px;
+        justify-content: center;
+    }
+    
+    .stat-item {
+        border: none;
+        padding: 5px 0;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 2px;
+    }
+    
+    .sidebar-right {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .resume-section {
+        margin: 0;
+        padding: 0;
+        border: none;
+        width: 100%;
+    }
+    
+    .resume-btn {
+        padding: 8px 12px;
+        font-size: 0.75rem;
+    }
+    
+    .social-tiles {
+        margin: 0;
+        padding: 0;
+        border: none;
+        gap: 6px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .social-tile {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .social-tile img {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+/* Text scaling for screens 1020px and below */
+@media (max-width: 1020px) {
+    .intro-title {
+        font-size: 2.2rem;
+    }
+    
+    .intro-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .intro-description {
+        font-size: 1rem;
+    }
+    
+    .section-header h2 {
+        font-size: 1.6rem;
+    }
+    
+    .content-card h3 {
+        font-size: 1.2rem;
+    }
+    
+    .content-card p {
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 920px) {
+    .intro-title {
+        font-size: 2rem;
+    }
+    
+    .intro-subtitle {
+        font-size: 1rem;
+    }
+    
+    .intro-description {
+        font-size: 0.95rem;
+    }
+    
+    .section-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .content-card h3 {
+        font-size: 1.1rem;
+    }
+    
+    .content-card p {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 820px) {
+    .intro-title {
+        font-size: 1.8rem;
+    }
+    
+    .intro-subtitle {
+        font-size: 0.95rem;
+    }
+    
+    .intro-description {
+        font-size: 0.9rem;
+    }
+    
+    .section-header h2 {
+        font-size: 1.4rem;
+    }
+    
+    .content-card h3 {
+        font-size: 1rem;
+    }
+    
+    .content-card p {
+        font-size: 0.85rem;
+    }
+}
+
+/* Split profile frames for screens between 768px and 520px */
+@media (max-width: 768px) and (min-width: 521px) {
+    #about-page {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        padding: 0 20px;
+        margin-top: 30px;
+    }
+    
+    .about-sidebar {
+        position: static;
+        padding: 25px;
+    }
+    
+    .profile-frames-container {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .single-frame {
+        display: none;
+    }
+    
+    .profile-window-frame {
+        width: calc(50% - 5px);
+        height: 140px;
+        margin: 0;
+    }
+    
+    .social-tiles {
+        gap: 10px;
+    }
+    
+    .social-tile {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .social-tile img {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .intro-title {
+        font-size: 1.7rem;
+    }
+    
+    .intro-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .intro-description {
+        font-size: 0.85rem;
+    }
+    
+    .content-card {
+        padding: 20px;
+    }
+    
+    .skills-grid {
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .about-main {
+        gap: 30px;
+    }
+    
+    .section-header h2 {
+        font-size: 1.3rem;
+    }
+    
+    .content-card h3 {
+        font-size: 0.95rem;
+    }
+    
+    .content-card p {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 520px) {
     #about-page {
         grid-template-columns: 1fr;
         gap: 30px;
@@ -435,15 +705,15 @@
     }
     
     .intro-title {
-        font-size: 2rem;
+        font-size: 1.6rem;
     }
     
     .intro-subtitle {
-        font-size: 1.1rem;
+        font-size: 0.85rem;
     }
     
     .intro-description {
-        font-size: 1rem;
+        font-size: 0.8rem;
     }
     
     .content-card {
@@ -457,6 +727,18 @@
     
     .about-main {
         gap: 30px;
+    }
+    
+    .section-header h2 {
+        font-size: 1.2rem;
+    }
+    
+    .content-card h3 {
+        font-size: 0.9rem;
+    }
+    
+    .content-card p {
+        font-size: 0.75rem;
     }
 }
 
@@ -485,15 +767,35 @@
     }
     
     .intro-title {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
+    }
+    
+    .intro-subtitle {
+        font-size: 0.8rem;
+    }
+    
+    .intro-description {
+        font-size: 0.75rem;
     }
     
     .section-header {
         padding-left: 15px;
     }
     
+    .section-header h2 {
+        font-size: 1.1rem;
+    }
+    
     .content-card {
         padding: 18px;
+    }
+    
+    .content-card h3 {
+        font-size: 0.85rem;
+    }
+    
+    .content-card p {
+        font-size: 0.7rem;
     }
     
     .skills-grid {

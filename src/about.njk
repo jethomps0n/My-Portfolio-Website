@@ -7,14 +7,27 @@ pagejs: <script src="/resources/js/about.js" defer></script>
 
 <div id="about-page">
     <aside class="about-sidebar pop-in">
-        <div class="profile-name">Jonathan Thompson</div>
-        <div class="profile-window-frame" id="profile-frame">
-            <img src="/resources/images/avatars/about-img1.webp" alt="Jonathan Thompson" class="profile-image active" id="profile-img-1">
-            <img src="/resources/images/avatars/about-img2.webp" alt="Jonathan Thompson" class="profile-image" id="profile-img-2">
-            <img src="/resources/images/avatars/about-img3.webp" alt="Jonathan Thompson" class="profile-image" id="profile-img-3">
-            <img src="/resources/images/avatars/about-img4.webp" alt="Jonathan Thompson" class="profile-image" id="profile-img-4">
+        <div class="profile-info">
+            <div class="profile-name">Jonathan Thompson</div>
+            <div class="profile-frames-container">
+                <div class="profile-window-frame" id="profile-frame-1">
+                    <img src="/resources/images/avatars/about-img1.webp" alt="Jonathan Thompson" class="profile-image active" id="profile-img-1">
+                    <img src="/resources/images/avatars/about-img3.webp" alt="Jonathan Thompson" class="profile-image" id="profile-img-3">
+                </div>
+                <div class="profile-window-frame" id="profile-frame-2">
+                    <img src="/resources/images/avatars/about-img2.webp" alt="Jonathan Thompson" class="profile-image active" id="profile-img-2">
+                    <img src="/resources/images/avatars/about-img4.webp" alt="Jonathan Thompson" class="profile-image" id="profile-img-4">
+                </div>
+            </div>
+            <div class="profile-window-frame single-frame" id="profile-frame">
+                <img src="/resources/images/avatars/about-img1.webp" alt="Jonathan Thompson" class="profile-image active" id="profile-img-1-single">
+                <img src="/resources/images/avatars/about-img2.webp" alt="Jonathan Thompson" class="profile-image" id="profile-img-2-single">
+                <img src="/resources/images/avatars/about-img3.webp" alt="Jonathan Thompson" class="profile-image" id="profile-img-3-single">
+                <img src="/resources/images/avatars/about-img4.webp" alt="Jonathan Thompson" class="profile-image" id="profile-img-4-single">
+            </div>
+            <div class="profile-title">Writer | Editor | Director</div>
         </div>
-        <div class="profile-title">Writer | Editor | Director</div>
+        
         <div class="quick-stats">
             <div class="stat-item">
                 <span class="stat-label">Experience</span>
@@ -34,29 +47,31 @@ pagejs: <script src="/resources/js/about.js" defer></script>
             </div>
         </div>
 
-        <div class="resume-section">
-            <a href="https://files.itsjonathanthompson.com/Jonathan+Thompson+-+Resume.pdf" target="_blank" class="resume-btn" title="Download Resume">
-                <img src="/resources/images/icons/document.png" alt="Resume" />
-                <span class="resume-text">Download Resume</span>
-            </a>
-        </div>
+        <div class="sidebar-right">
+            <div class="resume-section">
+                <a href="https://files.itsjonathanthompson.com/Jonathan+Thompson+-+Resume.pdf" target="_blank" class="resume-btn" title="Download Resume">
+                    <img src="/resources/images/icons/document.png" alt="Resume" />
+                    <span class="resume-text">Download Resume</span>
+                </a>
+            </div>
 
-        <div class="social-tiles">
-            <a href="https://www.youtube.com/@jethompsn" target="_blank" class="social-tile" title="YouTube">
-                <img src="/resources/images/icons/YouTube-alt1.png" alt="YouTube">
-            </a>
-            <a href="https://www.instagram.com/jethompsn/" target="_blank" class="social-tile" title="Instagram">
-                <img src="/resources/images/icons/Instagram-alt1.png" alt="Instagram">
-            </a>
-            <a href="https://www.linkedin.com/in/jethompsn/" target="_blank" class="social-tile" title="LinkedIn">
-                <img src="/resources/images/icons/LinkedIn-alt1.png" alt="LinkedIn">
-            </a>
-            <a href="https://github.com/jethomps0n" target="_blank" class="social-tile" title="GitHub">
-                <img src="/resources/images/icons/GitHub-alt1.png" alt="GitHub">
-            </a>
-            <a href="https://letterboxd.com/Jonathan_T/" target="_blank" class="social-tile" title="Letterboxd">
-                <img src="/resources/images/icons/Letterboxd-alt1.png" alt="Letterboxd">
-            </a>
+            <div class="social-tiles">
+                <a href="https://www.youtube.com/@jethompsn" target="_blank" class="social-tile" title="YouTube">
+                    <img src="/resources/images/icons/YouTube-alt1.png" alt="YouTube">
+                </a>
+                <a href="https://www.instagram.com/jethompsn/" target="_blank" class="social-tile" title="Instagram">
+                    <img src="/resources/images/icons/Instagram-alt1.png" alt="Instagram">
+                </a>
+                <a href="https://www.linkedin.com/in/jethompsn/" target="_blank" class="social-tile" title="LinkedIn">
+                    <img src="/resources/images/icons/LinkedIn-alt1.png" alt="LinkedIn">
+                </a>
+                <a href="https://github.com/jethomps0n" target="_blank" class="social-tile" title="GitHub">
+                    <img src="/resources/images/icons/GitHub-alt1.png" alt="GitHub">
+                </a>
+                <a href="https://letterboxd.com/Jonathan_T/" target="_blank" class="social-tile" title="Letterboxd">
+                    <img src="/resources/images/icons/Letterboxd-alt1.png" alt="Letterboxd">
+                </a>
+            </div>
         </div>
     </aside>
 
