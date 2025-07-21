@@ -20,24 +20,30 @@ let renderTimeout = null;
 const BATCH_SIZE = 3; // Process items in batches
 const FRAME_BUDGET = 16; // 16ms per frame (60fps)
 
-// Video preview functions (simplified from original working version)
-const previewStart = event => {
-    const video = event.currentTarget.querySelector('.thumbnail.passive');
-    if (video && video.checkVisibility({visibilityProperty: false})) {
-        hoverTimeout = setTimeout(() => {
-            video.currentTime = 0;
-            video.play().catch(() => {}); // Handle play failures silently
-        }, hoverDelay);
-    }
-};
+// Device detection (robust)
+const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-const previewStop = event => {
-    const video = event.currentTarget.querySelector('.thumbnail.passive');
-    if (video) {
-        clearTimeout(hoverTimeout);
-        video.pause();
-    }
-};
+// Video preview functions (desktop only)
+let previewStart = null;
+let previewStop = null;
+if (!isTouchDevice) {
+    previewStart = event => {
+        const video = event.currentTarget.querySelector('.thumbnail.passive');
+        if (video && video.checkVisibility({visibilityProperty: false})) {
+            hoverTimeout = setTimeout(() => {
+                video.currentTime = 0;
+                video.play().catch(() => {}); // Handle play failures silently
+            }, hoverDelay);
+        }
+    };
+    previewStop = event => {
+        const video = event.currentTarget.querySelector('.thumbnail.passive');
+        if (video) {
+            clearTimeout(hoverTimeout);
+            video.pause();
+        }
+    };
+}
 
 function parseDate(str){
     const d = new Date(str);
@@ -137,24 +143,14 @@ function bindEvents(){
     
     // Debounced search for better INP
     let searchTimeout;
-    searchInput.addEventListener('input', () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            searchText = searchInput.value.trim().toLowerCase();
-            clearSearch.style.display = searchText ? 'block' : 'none';
-            currentPage = 1;
-            update();
-        }, 150); // 150ms debounce
-    }, { passive: true });
-    
-    clearSearch.addEventListener('click', () => {
-        searchInput.value = '';
-        searchText = '';
-        clearSearch.style.display = 'none';
-        currentPage = 1;
-        update();
+// Only enable video preview hover for non-touch devices
+if (!isTouchDevice) {
+    // Attach event listeners for hover only on non-touch devices
+    document.querySelectorAll('.thumbnail').forEach(el => {
+        el.addEventListener('mouseenter', previewStart, { passive: true });
+        el.addEventListener('mouseleave', previewStop, { passive: true });
     });
-
+}
     // Optimized focus handlers
     searchInput.addEventListener('focus', () => {
         requestAnimationFrame(() => {
@@ -464,67 +460,65 @@ async function renderResults(){
                 const item = slice[i];
                 const div = document.createElement('div');
                 div.className = 'result-item ' + (firstRender ? 'pop-in' : 'fade-in');
-                
+
                 const a = document.createElement('a');
                 a.href = `/explore/${item.slug}` || '#';
                 const hasScreenplay = item.Screenplay === 'Yes' || item.Screenplay === 'Sole';
                 let thumbClass = hasScreenplay ? 'thumb screenplay-attached' : 'thumb';
-                
+
                 // Add version badge to screenplay-attached class if versioning is enabled
                 if (hasScreenplay && (item.versioning === 'Yes' || item.versioning === 'Completed')) {
                     const version = (item.versionInfo && item.versionInfo.currentVersion) ? item.versionInfo.currentVersion : 1;
                     thumbClass += ` versioned v${version}`;
                 }
-                
+
                 const disablePreview = item.Screenplay === 'Sole';
-                
+
                 // Create the thumbnail HTML with lazy loading optimization
                 const thumbDiv = document.createElement('div');
                 thumbDiv.className = thumbClass;
-                
-                // For items with Screenplay === "Sole", only create img element
-                // For all others, create both img and video elements
-                if (disablePreview) {
+
+                // On touch devices, always render only the <img> and never the <video>
+                if (isTouchDevice || disablePreview) {
                     thumbDiv.innerHTML = `<img class="thumbnail active" src="${item.imgSrc}" alt="" loading="lazy">`;
                     a.classList.add('no-preview');
                 } else {
                     thumbDiv.innerHTML = `<img class="thumbnail active" src="${item.imgSrc}" alt="" loading="lazy"><video class="thumbnail passive" src="${item.previewSrc}" muted loop preload="none"></video>`;
                 }
-                
-                // Add video preview event listeners ONLY if preview is not disabled
-                // Attach to the <a> element so hovering anywhere on the result item triggers preview
-                if (!disablePreview) {
+
+                // Add video preview event listeners ONLY if preview is not disabled and not touch device
+                if (!disablePreview && !isTouchDevice && previewStart && previewStop) {
                     a.addEventListener('mouseenter', previewStart);
                     a.addEventListener('mouseleave', previewStop);
                 }
-                
+
                 // Add screenplay/version badges if needed
                 if (hasScreenplay) {
                     const badgeWrapper = document.createElement('div');
                     badgeWrapper.className = 'badge-wrapper';
-                    
+
                     // Create screenplay badge
                     const screenplayBadge = document.createElement('span');
                     screenplayBadge.className = 'screenplay-badge';
                     screenplayBadge.textContent = 'Screenplay Attached';
-                    
+
                     // Add version badge if versioned
                     if (item.versioning === 'Yes' || item.versioning === 'Completed') {
                         const version = (item.versionInfo && item.versionInfo.currentVersion) ? item.versionInfo.currentVersion : 1;
-                        
+
                         const versionBadge = document.createElement('span');
                         versionBadge.className = 'version-badge';
                         versionBadge.textContent = `v${version}`;
-                        
+
                         badgeWrapper.appendChild(screenplayBadge);
                         badgeWrapper.appendChild(versionBadge);
                     } else {
                         badgeWrapper.appendChild(screenplayBadge);
                     }
-                    
+
                     thumbDiv.appendChild(badgeWrapper);
                 }
-                
+
                 a.appendChild(thumbDiv);
 
                 const info = document.createElement('div');
@@ -532,17 +526,17 @@ async function renderResults(){
                 const h4 = document.createElement('h4');
                 h4.textContent = item.title;
                 info.appendChild(h4);
-                
+
                 // Check if we're in mobile layout (870px and below)
                 const isMobileLayout = window.innerWidth <= 870;
-                
+
                 if (isMobileLayout) {
                     // Mobile layout: separate date and roles elements
                     const dateElement = document.createElement('small');
                     dateElement.className = 'date';
                     dateElement.textContent = item.date;
                     info.appendChild(dateElement);
-                    
+
                     // Create roles container
                     const rolesContainer = document.createElement('div');
                     rolesContainer.className = 'roles';
@@ -562,9 +556,9 @@ async function renderResults(){
                     small.appendChild(document.createTextNode(item.date));
                     info.appendChild(small);
                 }
-                
+
                 const p = document.createElement('p');
-                
+
                 // Handle newlines in description
                 const description = item.description || '';
                 if (description.includes('\n')) {
@@ -586,13 +580,13 @@ async function renderResults(){
                     div.classList.remove('pop-in', 'fade-in');
                 }, { once: true });
                 results.appendChild(div);
-                
+
                 // Yield control every 2 items to prevent blocking
                 if (i % 2 === 1 && i < slice.length - 1) {
                     await new Promise(resolve => setTimeout(resolve, 0));
                 }
             }
-            
+
             document.getElementById('results-count').innerHTML = `Results <b>${startIndex + 1}</b>-<b>${endIndex}</b> of <b>${total}</b>`;
             renderPagination(total);
             updateURL();
@@ -883,14 +877,4 @@ function initMobileSearch() {
     });
 }
 
-// Handle window resize to re-render results when layout changes
-let resizeTimeout;
-window.addEventListener('resize', () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-        // Re-render results if there's a layout change around 870px breakpoint
-        if (allData.length > 0) {
-            renderResults();
-        }
-    }, 250);
-});
+// Removed window resize event handler to prevent results from refreshing on resize

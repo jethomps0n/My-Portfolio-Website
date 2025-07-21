@@ -1,3 +1,22 @@
+/* For touch devices, prevent fade/hide on hover */
+@media (pointer: coarse) {
+    .result-item .thumbnail.active {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transition: none !important;
+    }
+    .result-item .thumbnail.passive {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        transition: none !important;
+    }
+    .result-item > a:hover .thumbnail.active,
+    .result-item > a:hover .thumbnail.passive {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transition: none !important;
+    }
+}
 /* Explore Page Styles - inspired by global and index */
 
 #explore-page {

@@ -2,36 +2,51 @@ const contentContainer = document.querySelectorAll('.contentContainer');
 let hoverDelay = 600; //ms
 let timeout;
 
-// Optimized video handling with requestAnimationFrame for better INP
-const vidStart = event => {
-    const video = event.currentTarget.querySelector('.passive');
-    if (video && video.checkVisibility({visibilityProperty: false})) {
-        timeout = setTimeout(() => {
-            // Use scheduler.postTask for better prioritization
+// Robust touch device detection
+const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+// Only enable video preview hover for non-touch devices
+if (!isTouchDevice) {
+    // Optimized video handling with requestAnimationFrame for better INP
+    const vidStart = event => {
+        const video = event.currentTarget.querySelector('.passive');
+        if (video && video.checkVisibility({visibilityProperty: false})) {
+            timeout = setTimeout(() => {
+                // Use scheduler.postTask for better prioritization
+                scheduler.postTask(() => {
+                    video.currentTime = 0;
+                    video.play().catch(() => {}); // Silently handle play failures
+                }, { priority: 'user-visible' });
+            }, hoverDelay);
+        }
+    };
+
+    // Optimized video pause with scheduler
+    const vidStop = event => {
+        const video = event.currentTarget.querySelector('.passive');
+        if (video && video.checkVisibility({visibilityProperty: false})) {
+            clearTimeout(timeout);
             scheduler.postTask(() => {
-                video.currentTime = 0;
-                video.play().catch(() => {}); // Silently handle play failures
+                video.pause();
             }, { priority: 'user-visible' });
-        }, hoverDelay);
-    }
-};
+        }
+    };
 
-// Optimized video pause with scheduler
-const vidStop = event => {
-    const video = event.currentTarget.querySelector('.passive');
-    if (video && video.checkVisibility({visibilityProperty: false})) {
-        clearTimeout(timeout);
-        scheduler.postTask(() => {
-            video.pause();
-        }, { priority: 'user-visible' });
-    }
-};
-
-// Use passive listeners for better scroll performance and batch event listener setup
-contentContainer.forEach(element => {
-    element.addEventListener('mouseenter', vidStart, { passive: true });
-    element.addEventListener('mouseleave', vidStop, { passive: true });
-});
+    // Use passive listeners for better scroll performance and batch event listener setup
+    contentContainer.forEach(element => {
+        element.addEventListener('mouseenter', vidStart, { passive: true });
+        element.addEventListener('mouseleave', vidStop, { passive: true });
+    });
+} else {
+    // On touch devices, ensure all thumbnails are always visible (initial load)
+    contentContainer.forEach(element => {
+        const activeThumb = element.querySelector('.thumbnail.active');
+        if (activeThumb) {
+            activeThumb.style.opacity = '1';
+            activeThumb.style.visibility = 'visible';
+        }
+    });
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     // Optimized animation cleanup with passive listeners and batching
@@ -109,15 +124,24 @@ document.addEventListener('DOMContentLoaded', () => {
             newContentContainer.classList.add('contentContainer', 'pop-in');
 
             const rolesArray = data.role ? data.role.split('/') : [];
-            
             const rolesHTML = rolesArray.map((r) =>
                 `<a class="role-tag" href="/explore/?roles=${encodeURIComponent(r)}">${r}</a>`).join('');
 
-            newContentContainer.innerHTML = `
-                <a class="frame" href="/explore/${data.slug}">
+            // On touch devices, only render the thumbnail <img>, never the <video>
+            let frameHTML = '';
+            if (isTouchDevice) {
+                frameHTML = `<a class="frame" href="/explore/${data.slug}">
+                    <img class="thumbnail active" src="${data.imgSrc}" alt="" loading="lazy">
+                </a>`;
+            } else {
+                frameHTML = `<a class="frame" href="/explore/${data.slug}">
                     <img class="thumbnail active" src="${data.imgSrc}" alt="" loading="lazy">
                     <video class="thumbnail passive" src="${data.previewSrc}" muted loop preload="none"></video>
-                </a>
+                </a>`;
+            }
+
+            newContentContainer.innerHTML = `
+                ${frameHTML}
                 <div class="info">
                     <a class="expand" href="/explore/${data.slug}"></a>
                     <h2 class="contentTitle">${data.title}</h2>
@@ -128,14 +152,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
             contentWrapper.appendChild(newContentContainer);
 
+            // On touch devices, ensure the thumbnail is always visible for dynamically loaded items
+            if (isTouchDevice) {
+                const activeThumb = newContentContainer.querySelector('.thumbnail.active');
+                if (activeThumb) {
+                    activeThumb.style.opacity = '1';
+                    activeThumb.style.visibility = 'visible';
+                }
+            }
+
             // Clean up animation class after it runs
             setTimeout(() => {
                 newContentContainer.classList.remove('pop-in');
             }, 400);
 
-            // Add optimized event listeners with passive options
-            newContentContainer.addEventListener('mouseenter', vidStart, { passive: true });
-            newContentContainer.addEventListener('mouseleave', vidStop, { passive: true });
+            // Add optimized event listeners with passive options (desktop only)
+            if (!isTouchDevice) {
+                newContentContainer.addEventListener('mouseenter', vidStart, { passive: true });
+                newContentContainer.addEventListener('mouseleave', vidStop, { passive: true });
+            }
         });
     };
     
