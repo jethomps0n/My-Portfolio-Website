@@ -1,3 +1,4 @@
+let lastKnownPageNum = 1;
 import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.3.31/pdf.min.mjs';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.3.31/pdf.worker.min.mjs';
@@ -343,72 +344,60 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Optimized rendering with enhanced virtual scrolling and priority-based yielding
   async function renderPages(skipScrollToPage = false) {
     if (!pdfDoc) return;
-    
     // Yield immediately to ensure UI responsiveness during page setup
     await yieldToMain();
-    
     // Clear existing pages and reset virtual manager
     pagesContainer.innerHTML = '';
     virtualPageManager.destroy();
     await virtualPageManager.initialize();
-    
     // Track rendering completion
     let createdPages = 0;
     const totalPages = pdfDoc.numPages;
-    
     // Split canvas creation into micro-tasks for better INP
     const canvasCreationTasks = [];
     for (let i = 1; i <= totalPages; i++) {
       canvasCreationTasks.push(() => createPageCanvas(i));
     }
-    
     // Process canvas creation with optimized batching (smaller batches, more frequent yields)
     await runTasksBatched(canvasCreationTasks, 2, 8);
-    
     async function createPageCanvas(pageNum) {
       try {
         // Yield before DOM manipulation for heavy documents
         if (pageNum % 5 === 0) {
           await yieldToMain();
         }
-        
         const canvas = document.createElement('canvas');
         canvas.dataset.page = pageNum;
         canvas.classList.add('pdf-page');
         pagesContainer.appendChild(canvas);
-        
         // Get page and calculate viewport - yield before heavy computation
         await yieldToMain();
         const page = await pdfDoc.getPage(pageNum);
         const base = page.getViewport({ scale: 1 });
         const scale = calculateScale(base);
         const viewport = page.getViewport({ scale });
-        
         // Use integer coordinates for better performance and avoid sub-pixel rendering
         canvas.width = Math.floor(viewport.width);
         canvas.height = Math.floor(viewport.height);
         canvas.style.width = Math.floor(viewport.width) + 'px';
         canvas.style.height = Math.floor(viewport.height) + 'px';
-        
         // Add to virtual page manager
         virtualPageManager.addPage(pageNum, canvas, page, viewport);
-        
         createdPages++;
-        if (createdPages === totalPages && !skipScrollToPage) {
-          // All pages created - use scheduler.postTask for scroll positioning if available
-          const scrollTask = () => scrollToPage(1); // Always scroll to first page on initial load
-          if (globalThis.scheduler?.postTask) {
-            scheduler.postTask(scrollTask, { priority: 'user-visible' });
-          } else {
-            requestAnimationFrame(scrollTask);
-          }
-        }
       } catch (error) {
         console.warn(`Failed to create page ${pageNum}:`, error);
       }
     }
-    
+    // After all canvases are created, set scroll position robustly
     pageCountSpan.textContent = totalPages;
+    if (!skipScrollToPage) {
+      // Use double requestAnimationFrame to ensure layout is flushed (fixes Firefox/Safari bugs)
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          scrollToPage(pageNum); // Always scroll to current page on initial load
+        });
+      });
+    }
   }
 
   function repositionScroll() {
@@ -451,12 +440,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function scrollToPage(num) {
-    const target = pagesContainer.querySelector(`canvas[data-page="${num}"]`);
-    if (target) {
-      canvasContainer.scrollTop = (target.height * (num - 1)) + (12 * (num - 1));
-    }
-    updatePageDisplay(num);
-    scrollSidebarThumbIntoView(num);
+    // Use double requestAnimationFrame to ensure layout is flushed before setting scrollTop
+    const doScroll = () => {
+      const target = pagesContainer.querySelector(`canvas[data-page="${num}"]`);
+      if (target) {
+        canvasContainer.scrollTop = (target.height * (num - 1)) + (12 * (num - 1));
+      }
+      // Always force update page display and sidebar thumb after scroll
+      updatePageDisplay(num);
+      scrollSidebarThumbIntoView(num);
+      lastKnownPageNum = num;
+    };
+    requestAnimationFrame(() => {
+      requestAnimationFrame(doScroll);
+    });
   }
 
   function isElementInView(container, element) {
@@ -501,35 +498,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (updatePageTimeout) {
       cancelAnimationFrame(updatePageTimeout);
     }
-    
     updatePageTimeout = requestAnimationFrame(async () => {
-      // Yield to main thread before heavy DOM queries
       await yieldToMain();
-      
       const pages = pagesContainer.querySelectorAll('.pdf-page');
       let current = pageNum;
-      
-      // Optimized page detection with early exit
       for (const p of pages) {
         const pageTop = p.offsetTop;
         const pageHeight = p.clientHeight;
         const scrollPosition = canvasContainer.scrollTop;
         const containerHeight = canvasContainer.clientHeight;
-        
-        // Check if page center is visible in viewport
         if (pageTop + pageHeight / 2 > scrollPosition && 
             pageTop < scrollPosition + containerHeight) {
           current = parseInt(p.dataset.page, 10);
           break;
         }
       }
-      
-      if (current !== pageNum) {
-        // Batch UI updates to avoid layout thrashing
-        requestAnimationFrame(() => {
-          updatePageDisplay(current);
-          scrollSidebarThumbIntoView(current);
-        });
+      if (current !== pageNum || current !== lastKnownPageNum) {
+        lastKnownPageNum = current;
+        updatePageDisplay(current);
+        scrollSidebarThumbIntoView(current);
       }
     });
   }
@@ -813,33 +800,23 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
     sidebar.classList.toggle('open');
-    if (sidebar.classList.contains('open')) {
-      sidebar.addEventListener(
-        'transitionend',
-        () => {
-          const selectedThumb = sidebar.querySelector('.pdf-thumb.active')?.parentElement;
-          if (selectedThumb) {
-            if (sidebarScrollState.mode === 'restore') {
-              sidebar.scrollTop = sidebarScrollState.scrollTop;
-            } else if (sidebarScrollState.mode === 'focus') {
-              sidebar.scrollTop = selectedThumb.offsetTop - selectedThumb.offsetHeight / 2;
-            }
+    // Only update sidebar scroll state and thumb focus, not the main pages, on sidebar toggle
+    sidebar.addEventListener(
+      'transitionend',
+      () => {
+        const selectedThumb = sidebar.querySelector('.pdf-thumb.active')?.parentElement;
+        if (selectedThumb) {
+          if (sidebarScrollState.mode === 'restore') {
+            sidebar.scrollTop = sidebarScrollState.scrollTop;
+          } else if (sidebarScrollState.mode === 'focus') {
+            sidebar.scrollTop = selectedThumb.offsetTop - selectedThumb.offsetHeight / 2;
           }
-          renderPages(true);
-          repositionScroll();
-        },
-        { once: true }
-      );
-    } else {
-      sidebar.addEventListener(
-        'transitionend',
-        () => {
-          renderPages(true);
-          repositionScroll();
-        },
-        { once: true }
-      );
-    }
+        }
+        // Do NOT call renderPages here; only reposition scroll if needed
+        repositionScroll();
+      },
+      { once: true }
+    );
   });
 
   expandBtn.addEventListener('click', () => {
