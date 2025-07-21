@@ -877,14 +877,4 @@ function initMobileSearch() {
     });
 }
 
-// Handle window resize to re-render results when layout changes
-let resizeTimeout;
-window.addEventListener('resize', () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-        // Re-render results if there's a layout change around 870px breakpoint
-        if (allData.length > 0) {
-            renderResults();
-        }
-    }, 250);
-});
+// Removed window resize event handler to prevent results from refreshing on resize
