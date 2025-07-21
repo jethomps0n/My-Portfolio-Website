@@ -214,77 +214,13 @@ function setupAvailabilityToggle() {
 
 // Profile Image Cycling Functionality
 function setupProfileImageCycling() {
-    // Check if we're in split frame mode
-    const isSplitFrameMode = window.innerWidth <= 768 && window.innerWidth >= 521;
-    
-    if (isSplitFrameMode) {
-        setupSplitFrameCycling();
-    } else {
-        setupSingleFrameCycling();
-    }
-    
-    // Listen for resize events to switch between modes
-    window.addEventListener('resize', () => {
-        const newIsSplitFrameMode = window.innerWidth <= 768 && window.innerWidth >= 521;
-        if (newIsSplitFrameMode !== isSplitFrameMode) {
-            // Clear existing intervals and restart
-            clearAllIntervals();
-            if (newIsSplitFrameMode) {
-                setupSplitFrameCycling();
-            } else {
-                setupSingleFrameCycling();
-            }
-        }
-    });
-}
-
-let frameIntervals = [];
-
-function clearAllIntervals() {
-    frameIntervals.forEach(interval => clearInterval(interval));
-    frameIntervals = [];
-}
-
-function setupSplitFrameCycling() {
-    const frame1Images = document.querySelectorAll('#profile-frame-1 .profile-image');
-    const frame2Images = document.querySelectorAll('#profile-frame-2 .profile-image');
-    
-    if (frame1Images.length === 0 || frame2Images.length === 0) return;
-    
-    let frame1Index = 0;
-    let frame2Index = 0;
-    const cycleInterval = 9500; // 9.5 seconds between images
-    
-    function cycleFrame1() {
-        frame1Images[frame1Index].classList.remove('active');
-        frame1Index = (frame1Index + 1) % frame1Images.length;
-        frame1Images[frame1Index].classList.add('active');
-    }
-    
-    function cycleFrame2() {
-        frame2Images[frame2Index].classList.remove('active');
-        frame2Index = (frame2Index + 1) % frame2Images.length;
-        frame2Images[frame2Index].classList.add('active');
-    }
-    
-    // Start cycling for both frames with slight offset
-    const interval1 = setInterval(cycleFrame1, cycleInterval);
-    const interval2 = setInterval(cycleFrame2, cycleInterval);
-    
-    frameIntervals.push(interval1, interval2);
-    
-    // Optional: Add click handlers for manual cycling
-    document.getElementById('profile-frame-1')?.addEventListener('click', cycleFrame1);
-    document.getElementById('profile-frame-2')?.addEventListener('click', cycleFrame2);
-}
-
-function setupSingleFrameCycling() {
-    const images = document.querySelectorAll('.single-frame .profile-image');
+    const images = document.querySelectorAll('.profile-image');
     const profileFrame = document.getElementById('profile-frame');
     
     if (images.length === 0) return;
     
     let currentImageIndex = 0;
+    let intervalId = null;
     const cycleInterval = 9500; // 9.5 seconds between images
     let isPaused = false;
     
@@ -302,13 +238,15 @@ function setupSingleFrameCycling() {
     }
     
     function startCycling() {
-        clearAllIntervals();
-        const intervalId = setInterval(cycleToNextImage, cycleInterval);
-        frameIntervals.push(intervalId);
+        if (intervalId) clearInterval(intervalId);
+        intervalId = setInterval(cycleToNextImage, cycleInterval);
     }
     
     function stopCycling() {
-        clearAllIntervals();
+        if (intervalId) {
+            clearInterval(intervalId);
+            intervalId = null;
+        }
     }
     
     // Start the cycling
