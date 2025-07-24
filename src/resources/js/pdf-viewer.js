@@ -207,6 +207,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const zoomInBtn = document.getElementById('pdf-zoom-in');
   const zoomOutBtn = document.getElementById('pdf-zoom-out');
   const zoomSelect = document.getElementById('pdf-zoom-select');
+  zoomSelect.value = '1'; // Explicitly set to 100% on page load
   const downloadBtn = document.getElementById('pdf-download');
   const printBtn = document.getElementById('pdf-print');
   const sidebar = document.getElementById('pdf-sidebar');
@@ -538,6 +539,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       pdfDoc = pdf;
       pageCountSpan.textContent = pdfDoc.numPages;
       
+      // Reset zoom selection to 100% after PDF loads
+      zoomSelect.value = '1';
+      
       await yieldToMain();
       
       const renderPagesPromise = renderPages();
@@ -799,6 +803,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const modalZoomInBtn = modalFrame.querySelector('#pdf-zoom-in');
             const modalZoomOutBtn = modalFrame.querySelector('#pdf-zoom-out');
             const modalZoomSelect = modalFrame.querySelector('#pdf-zoom-select');
+            modalZoomSelect.value = '1'; // Reset modal zoom to 100%
             const modalDownloadBtn = modalFrame.querySelector('#pdf-download');
             const modalPrintBtn = modalFrame.querySelector('#pdf-print');
             const modalSidebar = modalFrame.querySelector('#pdf-sidebar');
