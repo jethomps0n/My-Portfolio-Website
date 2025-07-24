@@ -877,4 +877,19 @@ function initMobileSearch() {
     });
 }
 
-// Removed window resize event handler to prevent results from refreshing on resize
+// Only trigger re-render on horizontal (width) resizes, not vertical
+let resizeTimeout;
+let prevWindowWidth = window.innerWidth;
+window.addEventListener('resize', () => {
+    const currentWidth = window.innerWidth;
+    if (currentWidth !== prevWindowWidth) {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            // Re-render results if there's a layout change around 870px breakpoint
+            if (allData.length > 0) {
+                renderResults();
+            }
+        }, 250);
+        prevWindowWidth = currentWidth;
+    }
+});
