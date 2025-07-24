@@ -727,30 +727,23 @@ document.addEventListener('DOMContentLoaded', async () => {
       oldZoom = zoom;
       oldScrollLeft = canvasContainer.scrollLeft;
       oldScrollTop = canvasContainer.scrollTop;
-      if (sidebar.classList.contains('open')) {
-        const selectedThumb = sidebar.querySelector('.pdf-thumb.active')?.parentElement;
-        if (selectedThumb) {
-          if (isElementInView(sidebar, selectedThumb)) {
-            sidebarScrollState.scrollTop = sidebar.scrollTop;
-            sidebarScrollState.mode = 'restore';
-          } else {
-            sidebarScrollState.mode = 'focus';
-          }
-        }
-      }
+      
+      // REMOVED: The scroll state capture logic that was causing issues
+      
       sidebar.classList.toggle('open');
+      
       if (sidebar.classList.contains('open')) {
         sidebar.addEventListener(
           'transitionend',
           () => {
+            // ALWAYS focus on the active thumbnail when opening
             const selectedThumb = sidebar.querySelector('.pdf-thumb.active')?.parentElement;
             if (selectedThumb) {
-              if (sidebarScrollState.mode === 'restore') {
-                sidebar.scrollTop = sidebarScrollState.scrollTop;
-              } else if (sidebarScrollState.mode === 'focus') {
-                sidebar.scrollTop = selectedThumb.offsetTop - selectedThumb.offsetHeight / 2;
-              }
+              // Always scroll to center the active thumbnail
+              sidebar.scrollTop = selectedThumb.offsetTop - 
+                (sidebar.clientHeight / 2) + (selectedThumb.clientHeight / 2);
             }
+            
             renderPages(true);
             repositionScroll();
           },
@@ -1157,49 +1150,33 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
   
                 modalSidebarToggle.addEventListener('click', () => {
-                    const currentPage = modalPageNum;
-                    
-                    if (modalSidebar.classList.contains('open')) {
-                        const selectedThumb = modalSidebar.querySelector('.pdf-thumb.active')?.parentElement;
-                        if (selectedThumb) {
-                            if (isElementInView(modalSidebar, selectedThumb)) {
-                                modalSidebarScrollState = {
-                                    scrollTop: modalSidebar.scrollTop,
-                                    mode: 'restore'
-                                };
-                            } else {
-                                modalSidebarScrollState = {
-                                    mode: 'focus'
-                                };
-                            }
-                        }
-                    }
-                    
-                    modalSidebar.classList.toggle('open');
-                    
-                    modalSidebar.addEventListener('transitionend', () => {
-                        if (modalSidebar.classList.contains('open')) {
-                            const selectedThumb = modalSidebar.querySelector('.pdf-thumb.active')?.parentElement;
-                            if (selectedThumb) {
-                                if (modalSidebarScrollState?.mode === 'restore') {
-                                    modalSidebar.scrollTop = modalSidebarScrollState.scrollTop;
-                                } else {
-                                    modalSidebar.scrollTop = selectedThumb.offsetTop - 
-                                        (modalSidebar.clientHeight / 2) + (selectedThumb.clientHeight / 2);
-                                }
-                            }
-                        }
-                        
-                        if (modalZoomMode === 'width') {
-                            pdfDoc.getPage(1).then(async page => {
-                                const base = page.getViewport({ scale: 1 });
-                                modalZoom = calculateModalZoom(base);
-                                await renderModalPages();
-                                scrollModalToPage(currentPage);
-                            });
-                        }
-                    }, { once: true });
-                });
+                  const currentPage = modalPageNum;
+                  
+                  // REMOVED: The scroll state capture logic that was causing issues
+                  
+                  modalSidebar.classList.toggle('open');
+                  
+                  modalSidebar.addEventListener('transitionend', () => {
+                      if (modalSidebar.classList.contains('open')) {
+                          // ALWAYS focus on the active thumbnail when opening
+                          const selectedThumb = modalSidebar.querySelector('.pdf-thumb.active')?.parentElement;
+                          if (selectedThumb) {
+                              // Always scroll to center the active thumbnail
+                              modalSidebar.scrollTop = selectedThumb.offsetTop - 
+                                  (modalSidebar.clientHeight / 2) + (selectedThumb.clientHeight / 2);
+                          }
+                      }
+                      
+                      if (modalZoomMode === 'width') {
+                          pdfDoc.getPage(1).then(async page => {
+                              const base = page.getViewport({ scale: 1 });
+                              modalZoom = calculateModalZoom(base);
+                              await renderModalPages();
+                              scrollModalToPage(currentPage);
+                          });
+                      }
+                  }, { once: true });
+              });
   
                 // Add resize handler for zoom modes
                 window.addEventListener('resize', () => {
