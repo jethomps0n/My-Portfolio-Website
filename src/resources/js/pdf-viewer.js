@@ -767,13 +767,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   
     expandBtn.addEventListener('click', () => {
         if (!modal) {
-            // Store current frame state
+            const currentPageElement = pagesContainer.querySelector(`canvas[data-page="${pageNum}"]`);
+            const scrollTopWithinPage = canvasContainer.scrollTop - (currentPageElement?.offsetTop || 0);
+            const scrollLeftWithinPage = canvasContainer.scrollLeft - (currentPageElement?.offsetLeft || 0);
+
             const frameState = {
                 pageNum,
                 zoom,
                 zoomMode,
                 scrollLeft: canvasContainer.scrollLeft,
                 scrollTop: canvasContainer.scrollTop,
+                scrollTopWithinPage,
+                scrollLeftWithinPage,
+                pageHeight: currentPageElement?.height || 0,
+                pageWidth: currentPageElement?.width || 0,
                 sidebarOpen: sidebar.classList.contains('open')
             };
   
@@ -803,7 +810,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             const modalZoomInBtn = modalFrame.querySelector('#pdf-zoom-in');
             const modalZoomOutBtn = modalFrame.querySelector('#pdf-zoom-out');
             const modalZoomSelect = modalFrame.querySelector('#pdf-zoom-select');
-            modalZoomSelect.value = '1'; // Reset modal zoom to 100%
+            modalZoomSelect.value = frameState.zoomMode === 'custom' ? 
+              frameState.zoom.toString() : 
+              frameState.zoomMode;
             const modalDownloadBtn = modalFrame.querySelector('#pdf-download');
             const modalPrintBtn = modalFrame.querySelector('#pdf-print');
             const modalSidebar = modalFrame.querySelector('#pdf-sidebar');
@@ -875,13 +884,28 @@ document.addEventListener('DOMContentLoaded', async () => {
               }
               
               if (!skipScrollToPage) {
-                  requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
                     const target = modalPagesContainer.querySelector(`canvas[data-page="${currentPage}"]`);
                     if (target) {
-                        modalCanvasContainer.scrollTop = (target.height * (currentPage - 1)) + (12 * (currentPage - 1));
+                        // Calculate precise scroll position within page
+                        let scrollTop = target.offsetTop;
+                        let scrollLeft = 0;
+                        
+                        if (frameState.pageHeight && frameState.scrollTopWithinPage) {
+                            scrollTop += frameState.scrollTopWithinPage * 
+                                        (target.height / frameState.pageHeight);
+                        }
+                        
+                        if (frameState.pageWidth && frameState.scrollLeftWithinPage) {
+                            scrollLeft = frameState.scrollLeftWithinPage * 
+                                        (target.width / frameState.pageWidth);
+                        }
+                        
+                        modalCanvasContainer.scrollTop = scrollTop;
+                        modalCanvasContainer.scrollLeft = scrollLeft;
                     }
                     updateModalPageDisplay(currentPage);
-                  });
+                });
               }
             }
   
