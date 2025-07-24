@@ -318,6 +318,47 @@ body.no-scroll {
   color: hsla(242, 61%, 70%, 1);
 }
 
+/* ---- Custom Scrollbar Styles for PDF Viewer ---- */
+/* Apply to all scrollable containers in PDF viewer */
+#pdf-canvas-container::-webkit-scrollbar,
+#pdf-sidebar::-webkit-scrollbar,
+#pdf-modal #pdf-canvas-container::-webkit-scrollbar,
+#pdf-modal #pdf-sidebar::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+#pdf-canvas-container::-webkit-scrollbar-track,
+#pdf-sidebar::-webkit-scrollbar-track,
+#pdf-modal #pdf-canvas-container::-webkit-scrollbar-track,
+#pdf-modal #pdf-sidebar::-webkit-scrollbar-track {
+    background: hsla(201, 100%, 10%, 1);
+    border-radius: 5px;
+}
+
+#pdf-canvas-container::-webkit-scrollbar-thumb,
+#pdf-sidebar::-webkit-scrollbar-thumb,
+#pdf-modal #pdf-canvas-container::-webkit-scrollbar-thumb,
+#pdf-modal #pdf-sidebar::-webkit-scrollbar-thumb {
+    background: hsla(228, 48%, 60%, 1);
+    border-radius: 5px;
+    border: 2px solid hsla(201, 100%, 10%, 1);
+}
+
+#pdf-canvas-container::-webkit-scrollbar-thumb:hover,
+#pdf-sidebar::-webkit-scrollbar-thumb:hover,
+#pdf-modal #pdf-canvas-container::-webkit-scrollbar-thumb:hover,
+#pdf-modal #pdf-sidebar::-webkit-scrollbar-thumb:hover {
+    background: hsla(228, 48%, 70%, 1);
+}
+
+#pdf-canvas-container::-webkit-scrollbar-thumb:active,
+#pdf-sidebar::-webkit-scrollbar-thumb:active,
+#pdf-modal #pdf-canvas-container::-webkit-scrollbar-thumb:active,
+#pdf-modal #pdf-sidebar::-webkit-scrollbar-thumb:active {
+    background: hsla(228, 48%, 50%, 1);
+}
+
 /* Responsive Styles */
 
 /* Large tablets and small desktops (1200px and down) */
@@ -581,4 +622,37 @@ body.no-scroll {
   #pdf-modal #pdf-page-num {
     width: 40px;
   }
+}
+
+#pdf-modal-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: hsla(201, 100%, 10%, 0.95);
+    border-bottom: 1px solid hsla(0,0%,100%,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transform: translateY(0);
+    transition: transform 0.3s ease;
+}
+
+#pdf-modal-header.hidden {
+    transform: translateY(-100%);
+}
+
+#pdf-modal-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: auto;
+    padding-top: 50px; /* Height of header */
+    box-sizing: border-box;
+    transition: padding-top 0.3s ease;
+}
+
+#pdf-modal-header.hidden + #pdf-modal-content {
+    padding-top: 0;
 }
