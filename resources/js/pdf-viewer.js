@@ -207,6 +207,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const zoomInBtn = document.getElementById('pdf-zoom-in');
   const zoomOutBtn = document.getElementById('pdf-zoom-out');
   const zoomSelect = document.getElementById('pdf-zoom-select');
+  zoomSelect.value = '1'; // Explicitly set to 100% on page load
   const downloadBtn = document.getElementById('pdf-download');
   const printBtn = document.getElementById('pdf-print');
   const sidebar = document.getElementById('pdf-sidebar');
@@ -221,35 +222,35 @@ document.addEventListener('DOMContentLoaded', async () => {
   const createMobilePlaceholder = () => {
     const placeholder = document.createElement('div');
     placeholder.className = 'pdf-mobile-placeholder';
-    // placeholder.innerHTML = `
-    //   <button class="pdf-mobile-open-btn" type="button">
-    //     <span class="pdf-mobile-btn-text">Open PDF</span>
-    //     <svg class="pdf-mobile-btn-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-    //       <path fill="currentColor" d="M9.79 12.79L4 18.59V17a1 1 0 0 0-2 0v4a1 1 0 0 0 .08.38a1 1 0 0 0 .54.54A1 1 0 0 0 3 22h4a1 1 0 0 0 0-2H5.41l5.8-5.79a1 1 0 0 0-1.42-1.42M21.92 2.62a1 1 0 0 0-.54-.54A1 1 0 0 0 21 2h-4a1 1 0 0 0 0 2h1.59l-5.8 5.79a1 1 0 0 0 0 1.42a1 1 0 0 0 1.42 0L20 5.41V7a1 1 0 0 0 2 0V3a1 1 0 0 0-.08-.38"></path>
-    //     </svg>
-    //   </button>
-    // `;
-
-    // Temp fix for mobile placeholder
     placeholder.innerHTML = `
-      <a href="${url}" target="_blank" class="pdf-mobile-open-btn" style="display: flex; text-decoration: none;">
+      <button class="pdf-mobile-open-btn" type="button">
         <span class="pdf-mobile-btn-text">Open PDF</span>
         <svg class="pdf-mobile-btn-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
           <path fill="currentColor" d="M9.79 12.79L4 18.59V17a1 1 0 0 0-2 0v4a1 1 0 0 0 .08.38a1 1 0 0 0 .54.54A1 1 0 0 0 3 22h4a1 1 0 0 0 0-2H5.41l5.8-5.79a1 1 0 0 0-1.42-1.42M21.92 2.62a1 1 0 0 0-.54-.54A1 1 0 0 0 21 2h-4a1 1 0 0 0 0 2h1.59l-5.8 5.79a1 1 0 0 0 0 1.42a1 1 0 0 0 1.42 0L20 5.41V7a1 1 0 0 0 2 0V3a1 1 0 0 0-.08-.38"></path>
         </svg>
-      </a>
+      </button>
     `;
 
+    // Temp fix for mobile placeholder
+    // placeholder.innerHTML = `
+    //   <a href="${url}" target="_blank" class="pdf-mobile-open-btn" style="display: flex; text-decoration: none;">
+    //     <span class="pdf-mobile-btn-text">Open PDF</span>
+    //     <svg class="pdf-mobile-btn-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+    //       <path fill="currentColor" d="M9.79 12.79L4 18.59V17a1 1 0 0 0-2 0v4a1 1 0 0 0 .08.38a1 1 0 0 0 .54.54A1 1 0 0 0 3 22h4a1 1 0 0 0 0-2H5.41l5.8-5.79a1 1 0 0 0-1.42-1.42M21.92 2.62a1 1 0 0 0-.54-.54A1 1 0 0 0 21 2h-4a1 1 0 0 0 0 2h1.59l-5.8 5.79a1 1 0 0 0 0 1.42a1 1 0 0 0 1.42 0L20 5.41V7a1 1 0 0 0 2 0V3a1 1 0 0 0-.08-.38"></path>
+    //     </svg>
+    //   </a>
+    // `;
+
     // Add click handler to open modal in page width zoom mode
-    // const openBtn = placeholder.querySelector('.pdf-mobile-open-btn');
-    // openBtn.addEventListener('click', () => {
-    //   // Set zoom mode to width before opening modal
-    //   zoomMode = 'width';
-    //   zoomSelect.value = 'width';
+    const openBtn = placeholder.querySelector('.pdf-mobile-open-btn');
+    openBtn.addEventListener('click', () => {
+      // Set zoom mode to width before opening modal
+      zoomMode = 'width';
+      zoomSelect.value = 'width';
       
-    //   // Trigger the expand button click to open modal
-    //   expandBtn.click();
-    // });
+      // Trigger the expand button click to open modal
+      expandBtn.click();
+    });
     
     return placeholder;
   };
@@ -538,6 +539,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       pdfDoc = pdf;
       pageCountSpan.textContent = pdfDoc.numPages;
       
+      // Reset zoom selection to 100% after PDF loads
+      zoomSelect.value = '1';
+      
       await yieldToMain();
       
       const renderPagesPromise = renderPages();
@@ -763,13 +767,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   
     expandBtn.addEventListener('click', () => {
         if (!modal) {
-            // Store current frame state
+            const currentPageElement = pagesContainer.querySelector(`canvas[data-page="${pageNum}"]`);
+            const scrollTopWithinPage = canvasContainer.scrollTop - (currentPageElement?.offsetTop || 0);
+            const scrollLeftWithinPage = canvasContainer.scrollLeft - (currentPageElement?.offsetLeft || 0);
+
             const frameState = {
                 pageNum,
                 zoom,
                 zoomMode,
                 scrollLeft: canvasContainer.scrollLeft,
                 scrollTop: canvasContainer.scrollTop,
+                scrollTopWithinPage,
+                scrollLeftWithinPage,
+                pageHeight: currentPageElement?.height || 0,
+                pageWidth: currentPageElement?.width || 0,
                 sidebarOpen: sidebar.classList.contains('open')
             };
   
@@ -799,6 +810,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             const modalZoomInBtn = modalFrame.querySelector('#pdf-zoom-in');
             const modalZoomOutBtn = modalFrame.querySelector('#pdf-zoom-out');
             const modalZoomSelect = modalFrame.querySelector('#pdf-zoom-select');
+            modalZoomSelect.value = frameState.zoomMode === 'custom' ? 
+              frameState.zoom.toString() : 
+              frameState.zoomMode;
             const modalDownloadBtn = modalFrame.querySelector('#pdf-download');
             const modalPrintBtn = modalFrame.querySelector('#pdf-print');
             const modalSidebar = modalFrame.querySelector('#pdf-sidebar');
@@ -870,13 +884,28 @@ document.addEventListener('DOMContentLoaded', async () => {
               }
               
               if (!skipScrollToPage) {
-                  requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
                     const target = modalPagesContainer.querySelector(`canvas[data-page="${currentPage}"]`);
                     if (target) {
-                        modalCanvasContainer.scrollTop = (target.height * (currentPage - 1)) + (12 * (currentPage - 1));
+                        // Calculate precise scroll position within page
+                        let scrollTop = target.offsetTop;
+                        let scrollLeft = 0;
+                        
+                        if (frameState.pageHeight && frameState.scrollTopWithinPage) {
+                            scrollTop += frameState.scrollTopWithinPage * 
+                                        (target.height / frameState.pageHeight);
+                        }
+                        
+                        if (frameState.pageWidth && frameState.scrollLeftWithinPage) {
+                            scrollLeft = frameState.scrollLeftWithinPage * 
+                                        (target.width / frameState.pageWidth);
+                        }
+                        
+                        modalCanvasContainer.scrollTop = scrollTop;
+                        modalCanvasContainer.scrollLeft = scrollLeft;
                     }
                     updateModalPageDisplay(currentPage);
-                  });
+                });
               }
             }
   
