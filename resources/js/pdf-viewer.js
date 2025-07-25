@@ -259,6 +259,42 @@ document.addEventListener('DOMContentLoaded', async () => {
   const mobilePlaceholder = createMobilePlaceholder();
   canvasContainer.appendChild(mobilePlaceholder);
 
+  // PDF download helper function
+  async function downloadPDF() {
+    const filename = getDecodedFilename(url);
+    try {
+      let blob;
+      // Use PDF.js data if available
+      if (pdfDoc) {
+        const data = await pdfDoc.getData();
+        blob = new Blob([data], { type: 'application/pdf' });
+      } 
+      // Fallback to fetch
+      else {
+        const response = await fetch(url);
+        blob = await response.blob();
+      }
+      
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup after delay
+      setTimeout(() => {
+        if (document.body.contains(link)) {
+          document.body.removeChild(link);
+        }
+        URL.revokeObjectURL(link.href);
+      }, 100);
+    } catch (error) {
+      console.error('PDF download failed:', error);
+      alert('Download failed. Please try again.');
+    }
+  }
+
   function calculateScale(base) {
     if (zoomMode === 'fit') {
       zoom = canvasContainer.clientHeight / base.height;
@@ -676,19 +712,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   
     downloadBtn.addEventListener('click', async () => {
-      try {
-        const res = await fetch(url);
-        const blob = await res.blob();
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = getDecodedFilename(url);
-        link.click();
-        URL.revokeObjectURL(link.href);
-      } catch (e) {
-        console.error('Download failed', e);
-      }
+      await downloadPDF();
     });
-  
+
     printBtn.addEventListener('click', async () => {
       try {
         const response = await fetch(url);
@@ -1127,17 +1153,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
   
                 modalDownloadBtn.addEventListener('click', async () => {
-                    try {
-                        const res = await fetch(url);
-                        const blob = await res.blob();
-                        const link = document.createElement('a');
-                        link.href = URL.createObjectURL(blob);
-                        link.download = getDecodedFilename(url);
-                        link.click();
-                        URL.revokeObjectURL(link.href);
-                    } catch (e) {
-                        console.error('Download failed', e);
-                    }
+                  await downloadPDF();
                 });
   
                 modalPrintBtn.addEventListener('click', async () => {
