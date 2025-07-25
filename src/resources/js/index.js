@@ -2,36 +2,33 @@ const contentContainer = document.querySelectorAll('.contentContainer');
 let hoverDelay = 600; //ms
 let timeout;
 
+function vidStart(event) {
+    const video = event.currentTarget.querySelector('.passive');
+    if (video && video.checkVisibility({visibilityProperty: false})) {
+        timeout = setTimeout(() => {
+            scheduler.postTask(() => {
+                video.currentTime = 0;
+                video.play().catch(() => {});
+            }, { priority: 'user-visible' });
+        }, hoverDelay);
+    }
+}
+
+function vidStop(event) {
+    const video = event.currentTarget.querySelector('.passive');
+    if (video && video.checkVisibility({visibilityProperty: false})) {
+        clearTimeout(timeout);
+        scheduler.postTask(() => {
+            video.pause();
+        }, { priority: 'user-visible' });
+    }
+}
+
 // Robust touch device detection
 const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
 // Only enable video preview hover for non-touch devices
 if (!isTouchDevice) {
-    // Optimized video handling with requestAnimationFrame for better INP
-    const vidStart = event => {
-        const video = event.currentTarget.querySelector('.passive');
-        if (video && video.checkVisibility({visibilityProperty: false})) {
-            timeout = setTimeout(() => {
-                // Use scheduler.postTask for better prioritization
-                scheduler.postTask(() => {
-                    video.currentTime = 0;
-                    video.play().catch(() => {}); // Silently handle play failures
-                }, { priority: 'user-visible' });
-            }, hoverDelay);
-        }
-    };
-
-    // Optimized video pause with scheduler
-    const vidStop = event => {
-        const video = event.currentTarget.querySelector('.passive');
-        if (video && video.checkVisibility({visibilityProperty: false})) {
-            clearTimeout(timeout);
-            scheduler.postTask(() => {
-                video.pause();
-            }, { priority: 'user-visible' });
-        }
-    };
-
     // Use passive listeners for better scroll performance and batch event listener setup
     contentContainer.forEach(element => {
         element.addEventListener('mouseenter', vidStart, { passive: true });
