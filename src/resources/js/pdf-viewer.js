@@ -33,7 +33,8 @@ async function runTasksBatched(tasks) {
     try {
       await task();
     } catch (error) {
-      console.warn('Task failed:', error);
+      // [DEBUGGING CODE]
+      // console.warn('Task failed:', error);
       continue;
     }
     
@@ -122,7 +123,8 @@ class VirtualPageManager {
       
       pageData.rendered = true;
     } catch (error) {
-      console.warn(`Failed to render page ${pageNum}:`, error);
+      // [DEBUGGING CODE]
+      // console.warn(`Failed to render page ${pageNum}:`, error);
     } finally {
       this.renderQueue.delete(pageNum);
     }
@@ -182,7 +184,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       decodedFilename = decodedFilename.replace(/"/g, "'");
       return decodedFilename;
     } catch (e) {
-      console.warn('Failed to decode filename:', e);
+      // [DEBUGGING CODE]
+      // console.warn('Failed to decode filename:', e);
       return url.split('/').pop();
     }
   };
@@ -290,7 +293,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         URL.revokeObjectURL(link.href);
       }, 100);
     } catch (error) {
-      console.error('PDF download failed:', error);
+      // [DEBUGGING CODE]
+      // console.error('PDF download failed:', error);
       alert('Download failed. Please try again.');
     }
   }
@@ -367,7 +371,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           updatePageDisplay(prevScrollState.pageNum);
         }
       } catch (error) {
-        console.warn(`Failed to create page ${pageNum}:`, error);
+        // [DEBUGGING CODE]
+        // console.warn(`Failed to create page ${pageNum}:`, error);
       }
     }
     
@@ -565,7 +570,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           }).promise;
           
         } catch (error) {
-          console.warn(`Failed to render thumbnail for page ${pageNum}:`, error);
+          // [DEBUGGING CODE]
+          // console.warn(`Failed to render thumbnail for page ${pageNum}:`, error);
         }
       };
       
@@ -597,7 +603,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       const renderSidebarPromise = renderSidebar();
       
       await Promise.all([renderPagesPromise, renderSidebarPromise]);
-    }).catch(err => console.error('Failed to load PDF:', err));
+    }).catch(err => { 
+      // [DEBUGGING CODE]
+      // console.error('Failed to load PDF:', err);
+    });
   
     // Enhanced event handlers with priority-based yielding and better user interaction feedback
     prevBtn.addEventListener('click', async () => {
@@ -752,7 +761,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
   
         iframe.onerror = () => {
-          console.error('Failed to load PDF in iframe');
+          // [DEBUGGING CODE]
+          // console.error('Failed to load PDF in iframe');
           URL.revokeObjectURL(blobUrl);
           if (document.body.contains(iframe)) {
             document.body.removeChild(iframe);
@@ -761,7 +771,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   
         document.body.appendChild(iframe);
       } catch (error) {
-        console.error('Print failed:', error);
+        // [DEBUGGING CODE]
+        // console.error('Print failed:', error);
       }
     });
   
@@ -918,7 +929,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                   
                   modalVirtualPageManager.addPage(pageNum, canvas, page, viewport);
                 } catch (error) {
-                  console.warn(`Failed to create modal page ${pageNum}:`, error);
+                  // [DEBUGGING CODE]
+                  // console.warn(`Failed to create modal page ${pageNum}:`, error);
                 }
               }
               
@@ -1090,7 +1102,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                       modalSidebar.appendChild(thumbWrapper);
                       await p.render({ canvasContext: c.getContext('2d'), viewport: v }).promise;
                     } catch (error) {
-                      console.warn(`Failed to render modal thumbnail ${i}:`, error);
+                      // [DEBUGGING CODE]
+                      // console.warn(`Failed to render modal thumbnail ${i}:`, error);
                     }
                   }
                 });
@@ -1204,7 +1217,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                       };
   
                       iframe.onerror = () => {
-                        console.error('Failed to load PDF in iframe');
+                        // [DEBUGGING CODE]
+                        // console.error('Failed to load PDF in iframe');
                         URL.revokeObjectURL(blobUrl);
                         if (document.body.contains(iframe)) {
                           document.body.removeChild(iframe);
@@ -1213,7 +1227,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   
                       document.body.appendChild(iframe);
                     } catch (error) {
-                      console.error('Print failed:', error);
+                      // [DEBUGGING CODE]
+                      // console.error('Print failed:', error);
                     }
                 });
   

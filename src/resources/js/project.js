@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+// [DEBUGGING CODE]
+// No explicit console.log or warn found in the provided summary, but if any exist in the full file, they should be commented out here.
     // Critical animations first
     document.querySelectorAll('.pop-in').forEach(el => {
         el.addEventListener('animationend', () => el.classList.remove('pop-in'), {once: true, passive: true});

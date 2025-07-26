@@ -68,6 +68,8 @@ async function loadData(){
         console.error('Failed to load data.json', err);
     }
 }
+        // [DEBUGGING CODE]
+        // console.error('Failed to load data.json', err);
 
 function applyURL(){
     const params=new URLSearchParams(location.search);
