@@ -297,6 +297,7 @@
     flex-wrap: wrap;
     justify-content: flex-start;
     gap: 12px;
+    padding-inline-start: 0;
 }
 
 .skill-tag {

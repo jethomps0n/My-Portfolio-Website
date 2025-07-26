@@ -463,6 +463,7 @@ async function renderResults(){
 
                 const a = document.createElement('a');
                 a.href = `/explore/${item.slug}` || '#';
+                a.setAttribute('aria-label', `Go to ${item.title}`);
                 const hasScreenplay = item.Screenplay === 'Yes' || item.Screenplay === 'Sole';
                 let thumbClass = hasScreenplay ? 'thumb screenplay-attached' : 'thumb';
 
@@ -480,10 +481,10 @@ async function renderResults(){
 
                 // On touch devices, always render only the <img> and never the <video>
                 if (isTouchDevice || disablePreview) {
-                    thumbDiv.innerHTML = `<img class="thumbnail active" src="${item.imgSrc}" alt="" loading="lazy">`;
+                    thumbDiv.innerHTML = `<img class="thumbnail active" src="${item.imgSrc}" alt="${item.title} thumbnail" loading="lazy">`;
                     a.classList.add('no-preview');
                 } else {
-                    thumbDiv.innerHTML = `<img class="thumbnail active" src="${item.imgSrc}" alt="" loading="lazy"><video class="thumbnail passive" src="${item.previewSrc}" muted loop preload="none"></video>`;
+                    thumbDiv.innerHTML = `<img class="thumbnail active" src="${item.imgSrc}" alt="${item.title} thumbnail" loading="lazy"><video class="thumbnail passive" src="${item.previewSrc}" muted loop preload="none"></video>`;
                 }
 
                 // Add video preview event listeners ONLY if preview is not disabled and not touch device
@@ -607,6 +608,7 @@ function renderPagination(total){
     const prev=document.createElement('button');
     prev.textContent='‹';
     prev.disabled=currentPage===1;
+    prev.setAttribute('aria-label', 'Previous page');
     prev.addEventListener('click',()=>{
         if(currentPage>1){
             currentPage--;
@@ -620,6 +622,7 @@ function renderPagination(total){
     for(let i=start;i<=end;i++){
         const b=document.createElement('button');
         b.textContent=i;
+        b.setAttribute('aria-label', `Go to page ${i}`);
         if(i===currentPage) b.disabled=true;
         b.addEventListener('click',()=>{
             currentPage=i;
@@ -631,6 +634,7 @@ function renderPagination(total){
     const next=document.createElement('button');
     next.textContent='›';
     next.disabled=currentPage===totalPages;
+    next.setAttribute('aria-label', 'Next page');
     next.addEventListener('click',()=>{
         if(currentPage<totalPages){
             currentPage++;

@@ -6,7 +6,7 @@ pagejs: <script src="/resources/js/about.js" defer></script>
 ---
 
 <div id="about-page">
-    <aside class="about-sidebar pop-in">
+<aside class="about-sidebar pop-in" role="complementary" aria-label="About Sidebar">
         <div class="profile-section">
             <div class="profile-window-frame" id="profile-frame">
                 <img src="/resources/images/avatars/about-img1.webp" alt="Jonathan Thompson" class="profile-image active" id="profile-img-1">
@@ -47,26 +47,26 @@ pagejs: <script src="/resources/js/about.js" defer></script>
             </div>
 
             <div class="social-tiles">
-                <a href="https://www.youtube.com/@jethompsn" target="_blank" class="social-tile" title="YouTube">
+                <a href="https://www.youtube.com/@jethompsn" target="_blank" class="social-tile" title="YouTube" aria-label="YouTube">
                     <img src="/resources/images/icons/YouTube-alt1.png" alt="YouTube">
                 </a>
-                <a href="https://www.instagram.com/jethompsn/" target="_blank" class="social-tile" title="Instagram">
+                <a href="https://www.instagram.com/jethompsn/" target="_blank" class="social-tile" title="Instagram" aria-label="Instagram">
                     <img src="/resources/images/icons/Instagram-alt1.png" alt="Instagram">
                 </a>
-                <a href="https://www.linkedin.com/in/jethompsn/" target="_blank" class="social-tile" title="LinkedIn">
+                <a href="https://www.linkedin.com/in/jethompsn/" target="_blank" class="social-tile" title="LinkedIn" aria-label="LinkedIn">
                     <img src="/resources/images/icons/LinkedIn-alt1.png" alt="LinkedIn">
                 </a>
-                <a href="https://github.com/jethomps0n" target="_blank" class="social-tile" title="GitHub">
+                <a href="https://github.com/jethomps0n" target="_blank" class="social-tile" title="GitHub" aria-label="GitHub">
                     <img src="/resources/images/icons/GitHub-alt1.png" alt="GitHub">
                 </a>
-                <a href="https://letterboxd.com/Jonathan_T/" target="_blank" class="social-tile" title="Letterboxd">
+                <a href="https://letterboxd.com/Jonathan_T/" target="_blank" class="social-tile" title="Letterboxd" aria-label="Letterboxd">
                     <img src="/resources/images/icons/Letterboxd-alt1.png" alt="Letterboxd">
                 </a>
             </div>
         </div>
     </aside>
 
-    <main class="about-main">
+    <main class="about-main" role="main" aria-label="About Main Content">
         <section class="about-section intro pop-in">
             <div class="intro-card">
                 <h1 class="intro-title">About Jonathan</h1>
@@ -143,18 +143,18 @@ pagejs: <script src="/resources/js/about.js" defer></script>
             <div class="section-header">
                 <h2>Skills</h2>
             </div>
-            <div class="skills-grid">
-                <div class="skill-tag">Video<br>Editing</div>
-                <div class="skill-tag">Screenwriting</div>
-                <div class="skill-tag">Directing</div>
-                <div class="skill-tag">Audio<br>Post</div>
-                <div class="skill-tag">Web<br>Development</div>
-                <div class="skill-tag">Color<br>Grading</div>
-                <div class="skill-tag">Problem<br>Solving</div>
-                <div class="skill-tag">Project<br>Management</div>
-                <div class="skill-tag">Script<br>Coverage</div>
-                <div class="skill-tag">Programming</div>
-            </div>
+            <ul class="skills-grid" aria-label="Skills">
+                <li class="skill-tag">Video<br>Editing</li>
+                <li class="skill-tag">Screenwriting</li>
+                <li class="skill-tag">Directing</li>
+                <li class="skill-tag">Audio<br>Post</li>
+                <li class="skill-tag">Web<br>Development</li>
+                <li class="skill-tag">Color<br>Grading</li>
+                <li class="skill-tag">Problem<br>Solving</li>
+                <li class="skill-tag">Project<br>Management</li>
+                <li class="skill-tag">Script<br>Coverage</li>
+                <li class="skill-tag">Programming</li>
+            </ul>
         </section>
     </main>
 </div>

@@ -6,29 +6,29 @@ pagejs: <script src="/resources/js/blog.js" defer></script>
 ---
 
 <div id="blog-page">
-    <header class="blog-header pop-in">
+    <header class="blog-header pop-in" role="banner" aria-label="Blog Header">
         <h1 class="blog-title">The Cutting Room</h1>
         <p class="blog-subtitle">My insights from behind the scenes <small style="font-size: 0.9rem;">(that should probably be cut)</small></p>
     </header>
 
-    <div class="categories-strip pop-in">
-        <a href="/blog/" class="category-tag active">All</a>
-        <a href="/blog/tags/post-production/" class="category-tag">Post-Production</a>
-        {# <a href="/blog/tags/production/" class="category-tag">Production</a> #}
-        <a href="/blog/tags/writing/" class="category-tag">Writing</a>
-        <a href="/blog/tags/sound-design/" class="category-tag">Sound Design</a>
-        <a href="/blog/tags/film-tv/" class="category-tag">Film & TV</a>
-        <a href="/blog/tags/the-walking-dead/" class="category-tag">The Walking Dead</a>
+    <div class="categories-strip pop-in" aria-label="Blog Categories">
+        <a href="/blog/" class="category-tag active" aria-label="Show all blog posts">All</a>
+        <a href="/blog/tags/post-production/" class="category-tag" aria-label="Show posts tagged Post-Production">Post-Production</a>
+        {# <a href="/blog/tags/production/" class="category-tag" aria-label="Show posts tagged Production">Production</a> #}
+        <a href="/blog/tags/writing/" class="category-tag" aria-label="Show posts tagged Writing">Writing</a>
+        <a href="/blog/tags/sound-design/" class="category-tag" aria-label="Show posts tagged Sound Design">Sound Design</a>
+        <a href="/blog/tags/film-tv/" class="category-tag" aria-label="Show posts tagged Film & TV">Film & TV</a>
+        <a href="/blog/tags/the-walking-dead/" class="category-tag" aria-label="Show posts tagged The Walking Dead">The Walking Dead</a>
     </div>
 
-    <div class="blog-grid">
+    <div class="blog-grid" aria-label="Latest Blog Posts">
         {% set latestPosts = collections.blogPosts | slice(0, 4) %}
         {% for post in latestPosts %}
         <article class="blog-post {% if loop.index0 == 0 %}featured{% endif %} pop-in">
             <div class="post-meta">
                 <div class="post-meta-tags">
                     {% for tag in post.data.tags %}
-                    <a href="/blog/tags/{{ tag | slugify }}/" class="post-category {{ tag | slugify }}">{{ tag | titleCase }}</a>
+                    <a href="/blog/tags/{{ tag | slugify }}/" class="post-category {{ tag | slugify }}" aria-label="Show posts tagged {{ tag | titleCase }}">{{ tag | titleCase }}</a>
                     {% endfor %}
                 </div>
                 <div class="post-meta-info">
@@ -37,26 +37,26 @@ pagejs: <script src="/resources/js/blog.js" defer></script>
                 </div>
             </div>
             {% if loop.index0 == 0 %}
-            <h2><a href="{{ post.url }}">{{ post.data.title }}</a></h2>
+            <h2><a href="{{ post.url }}" aria-label="Read full post: {{ post.data.title }}">{{ post.data.title }}</a></h2>
             {% else %}
-            <h3><a href="{{ post.url }}">{{ post.data.title }}</a></h3>
+            <h3><a href="{{ post.url }}" aria-label="Read full post: {{ post.data.title }}">{{ post.data.title }}</a></h3>
             {% endif %}
             <p class="post-excerpt">{{ post.data.excerpt }}</p>
-            <a href="{{ post.url }}" class="read-more">Read More →</a>
+            <a href="{{ post.url }}" class="read-more" aria-label="Read more about {{ post.data.title }}">Read More →</a>
         </article>
         {% endfor %}
     </div>
 
-    <div class="blog-navigation pop-in">
+    <div class="blog-navigation pop-in" aria-label="Blog Navigation">
         <div class="nav-buttons">
-            <a href="/blog/posts/" class="nav-button primary">
+            <a href="/blog/posts/" class="nav-button primary" aria-label="View all blog posts">
                 <span class="nav-icon">📚</span>
                 <span class="nav-text">
                     <strong>View All Posts</strong>
                     <small>Browse {{ collections.blogPosts.length }} articles</small>
                 </span>
             </a>
-            <a href="/blog/tags/" class="nav-button secondary">
+            <a href="/blog/tags/" class="nav-button secondary" aria-label="Browse blog posts by tag">
                 <span class="nav-icon">🏷️</span>
                 <span class="nav-text">
                     <strong>Browse by Tags</strong>

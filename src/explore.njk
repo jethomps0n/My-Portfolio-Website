@@ -36,7 +36,7 @@ pagejs: <script src="/resources/js/explore.js" defer></script>
             <div class="filter-header">
                 <h2>Filter By</h2>
                 <span id="filter-count">0</span>
-                <button id="clear-filters" type="button">Clear All</button>
+                <button id="clear-filters" type="button" aria-label="Clear all filters">Clear All</button>
             </div>
 
             <div class="filter-group" id="filter-role">
@@ -85,7 +85,7 @@ pagejs: <script src="/resources/js/explore.js" defer></script>
                     <div class="custom-range">
                         <input type="date" id="start-date"><span> – </span>
                         <input type="date" id="end-date">
-                        <button id="set-custom" type="button">Set</button>
+                        <button id="set-custom" type="button" aria-label="Set custom date range">Set</button>
                     </div>
                 </div>
             </div>
@@ -125,6 +125,6 @@ pagejs: <script src="/resources/js/explore.js" defer></script>
         <!-- Filter content will be copied here -->
     </div>
     <div class="mobile-filter-footer">
-        <button class="clear-filters" id="mobile-clear-filters">Clear All</button>
+        <button class="clear-filters" id="mobile-clear-filters" aria-label="Clear all filters">Clear All</button>
     </div>
 </div>

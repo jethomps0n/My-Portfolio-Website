@@ -236,41 +236,48 @@ module.exports = function (eleventyConfig) {
         const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
         // Vimeo regex  
         const vimeoRegex = /(?:vimeo\.com\/)([0-9]+)/i;
-        
+
         let embedUrl = '';
-        
+        let platform = '';
+
         // Check for YouTube
         const youtubeMatch = url.match(youtubeRegex);
         if (youtubeMatch) {
             embedUrl = `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+            platform = 'YouTube';
         }
-        
+
         // Check for Vimeo
         const vimeoMatch = url.match(vimeoRegex);
         if (vimeoMatch) {
             embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+            platform = 'Vimeo';
         }
-        
+
         // Fallback for direct embed URLs
         if (!embedUrl && url.includes('embed')) {
             embedUrl = url;
+            platform = 'Video';
         }
-        
+
         if (embedUrl) {
             return `
-<div class="video-embed" style="width:${width};" id="player">
-    <div class="player">
-        <iframe
-            src="${embedUrl}"
-            allowfullscreen
-            allowtransparency
-            allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            loading="lazy"
-        ></iframe>
-    </div>
-</div>`;
+            <div class="video-embed" style="width:${width};" id="player" role="region" aria-label="Embedded ${platform} video">
+                <div class="player">
+                    <iframe
+                        src="${embedUrl}"
+                        title="Embedded ${platform} video"
+                        aria-label="Embedded ${platform} video"
+                        allowfullscreen
+                        allowtransparency
+                        allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        loading="lazy"
+                        tabindex="0"
+                    ></iframe>
+                </div>
+            </div>`;
         }
-        
+
         // Return original if no match found
         return `videoLink: [${url}]`;
     }
@@ -281,7 +288,7 @@ module.exports = function (eleventyConfig) {
       htmlTemplateEngine: "njk",
       dataTemplateEngine: "njk",
       dir: {
-        input: "./src",        // your source folder
+        input: "./src",        // source folder
         output: "_site",   // default build folder
         data: "../_data", // default data folder
         includes: "templates", // default includes folder

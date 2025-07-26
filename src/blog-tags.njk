@@ -7,32 +7,32 @@ permalink: "/blog/tags/"
 ---
 
 <div id="blog-page">
-    <header class="blog-header pop-in">
+    <header class="blog-header pop-in" role="banner" aria-label="Blog Tags Header">
         <h1 class="blog-title">Browse by Tag</h1>
         <p class="blog-subtitle">Explore posts by topic and theme</p>
     </header>
 
-    <div class="categories-strip pop-in">
-        <a href="/blog/" class="category-tag">← Back to Blog</a>
-        <a href="/blog/posts/" class="category-tag">All Posts</a>
+    <div class="categories-strip pop-in" aria-label="Blog Navigation">
+        <a href="/blog/" class="category-tag" aria-label="Back to Blog">← Back to Blog</a>
+        <a href="/blog/posts/" class="category-tag" aria-label="Browse all posts">All Posts</a>
     </div>
 
     <div class="tags-grid pop-in">
         {% for tag in collections.blogTags %}
         {% set tagPosts = collections.blogPosts | selectattr("data.tags", "contains", tag) %}
         <div class="tag-card">
-            <h3><a href="/blog/tags/{{ tag | slugify }}/" class="tag-link">{{ tag | titleCase }}</a></h3>
+            <h3><a href="/blog/tags/{{ tag | slugify }}/" class="tag-link" aria-label="Show posts tagged {{ tag | titleCase }}">{{ tag | titleCase }}</a></h3>
             <span class="tag-count">{{ tagPosts.length }} post{% if tagPosts.length != 1 %}s{% endif %}</span>
             <div class="tag-preview">
                 {% for post in tagPosts | reverse | slice(0, 2) %}
                 <div class="preview-post">
-                    <a href="{{ post.url }}">{{ post.data.title }}</a>
+                    <a href="{{ post.url }}" aria-label="Read post: {{ post.data.title }}">{{ post.data.title }}</a>
                     <span class="preview-date">{{ post.data.date | dateFormat }}</span>
                 </div>
                 {% endfor %}
                 {% if tagPosts.length > 2 %}
                 <div class="more-posts">
-                    <a href="/blog/tags/{{ tag | slugify }}/">and {{ tagPosts.length - 2 }} more...</a>
+                    <a href="/blog/tags/{{ tag | slugify }}/" aria-label="Show all posts tagged {{ tag | titleCase }}">and {{ tagPosts.length - 2 }} more...</a>
                 </div>
                 {% endif %}
             </div>

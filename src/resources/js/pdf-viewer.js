@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const placeholder = document.createElement('div');
     placeholder.className = 'pdf-mobile-placeholder';
     placeholder.innerHTML = `
-      <button class="pdf-mobile-open-btn" type="button">
+      <button class="pdf-mobile-open-btn" type="button" aria-label="Open PDF in viewer">
         <span class="pdf-mobile-btn-text">Open PDF</span>
         <svg class="pdf-mobile-btn-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
           <path fill="currentColor" d="M9.79 12.79L4 18.59V17a1 1 0 0 0-2 0v4a1 1 0 0 0 .08.38a1 1 0 0 0 .54.54A1 1 0 0 0 3 22h4a1 1 0 0 0 0-2H5.41l5.8-5.79a1 1 0 0 0-1.42-1.42M21.92 2.62a1 1 0 0 0-.54-.54A1 1 0 0 0 21 2h-4a1 1 0 0 0 0 2h1.59l-5.8 5.79a1 1 0 0 0 0 1.42a1 1 0 0 0 1.42 0L20 5.41V7a1 1 0 0 0 2 0V3a1 1 0 0 0-.08-.38"></path>
@@ -518,6 +518,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           thumbWrapper.classList.add('pdf-thumb-wrapper');
           
           const canvas = document.createElement('canvas');
+          canvas.setAttribute('aria-label', `Go to page ${pageNum}`);
+          canvas.setAttribute('tabindex', '0');
+          canvas.setAttribute('role', 'button');
           // Use integer coordinates for thumbnails
           canvas.width = Math.floor(viewport.width);
           canvas.height = Math.floor(viewport.height);
@@ -525,9 +528,18 @@ document.addEventListener('DOMContentLoaded', async () => {
           canvas.dataset.page = pageNum;
           
           if (pageNum === pageNum) canvas.classList.add('active');
+
+          canvas.addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              await yieldToMain();
+              scrollToPage(pageNum);
+            }
+          });
           
           // Use passive event listener and event delegation for better performance
           canvas.addEventListener('click', async () => {
+          // Keyboard accessibility for canvas thumbnails
             await yieldToMain(); // Yield before scroll operation
             scrollToPage(pageNum);
           }, { passive: true });
@@ -823,6 +835,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Update expand button
             expandBtn.textContent = '✕';
             expandBtn.title = 'Close';
+            expandBtn.setAttribute('aria-label', 'Close PDF viewer');
             expandBtn.blur();
   
             // Get modal elements
@@ -1053,11 +1066,21 @@ document.addEventListener('DOMContentLoaded', async () => {
                       const thumbWrapper = document.createElement('div');
                       thumbWrapper.classList.add('pdf-thumb-wrapper');
                       const c = document.createElement('canvas');
+                      c.setAttribute('aria-label', `Go to page ${i}`);
+                      c.setAttribute('tabindex', '0');
+                      c.setAttribute('role', 'button');
                       c.width = v.width;
                       c.height = v.height;
                       c.classList.add('pdf-thumb');
                       c.dataset.page = i;
                       if (i === modalPageNum) c.classList.add('active');
+                      // Keyboard accessibility for modal canvas thumbnails
+                      c.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          scrollModalToPage(i);
+                        }
+                      });
                       c.addEventListener('click', () => scrollModalToPage(i), { passive: true });
                       thumbWrapper.appendChild(c);
                       const label = document.createElement('span');
@@ -1241,6 +1264,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const modalExpandBtn = modalFrame.querySelector('#pdf-expand');
             modalExpandBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M6.225 4.811a1 1 0 0 0-1.414 1.414L10.586 12L4.81 17.775a1 1 0 1 0 1.414 1.414L12 13.414l5.775 5.775a1 1 0 0 0 1.414-1.414L13.414 12l5.775-5.775a1 1 0 0 0-1.414-1.414L12 10.586z" stroke-width="1.5" stroke="#fff"/></svg>';
             modalExpandBtn.title = 'Close';
+            modalExpandBtn.setAttribute('aria-label', 'Close PDF viewer');
             modalExpandBtn.addEventListener('click', () => {
                 const finalState = {
                     pageNum: modalPageNum,

@@ -11,14 +11,14 @@ permalink: "/blog/posts/{% if pagination.pageNumber > 0 %}page-{{ pagination.pag
 ---
 
 <div id="blog-page">
-    <header class="blog-header pop-in">
+    <header class="blog-header pop-in" role="banner" aria-label="All Blog Posts Header">
         <h1 class="blog-title">All Posts</h1>
         <p class="blog-subtitle">{{ collections.blogPosts.length }} post{% if collections.blogPosts.length != 1 %}s{% endif %} • Page {{ pagination.pageNumber + 1 }} of {{ pagination.pages.length }}</p>
     </header>
 
-    <div class="categories-strip pop-in">
-        <a href="/blog/" class="category-tag">← Back to Blog</a>
-        <a href="/blog/tags/" class="category-tag">Browse by Tag</a>
+    <div class="categories-strip pop-in" aria-label="Blog Categories">
+        <a href="/blog/" class="category-tag" aria-label="Back to Blog">← Back to Blog</a>
+        <a href="/blog/tags/" class="category-tag" aria-label="Browse by Tag">Browse by Tag</a>
     </div>
 
     <div class="blog-posts-list">
@@ -27,7 +27,7 @@ permalink: "/blog/posts/{% if pagination.pageNumber > 0 %}page-{{ pagination.pag
             <div class="post-meta">
                 <div class="post-meta-tags">
                     {% for tag in post.data.tags %}
-                    <a href="/blog/tags/{{ tag | slugify }}/" class="post-category {{ tag | slugify }}">{{ tag | titleCase }}</a>
+                    <a href="/blog/tags/{{ tag | slugify }}/" class="post-category {{ tag | slugify }}" aria-label="Show posts tagged {{ tag | titleCase }}">{{ tag | titleCase }}</a>
                     {% endfor %}
                 </div>
                 <div class="post-meta-info">
@@ -35,21 +35,21 @@ permalink: "/blog/posts/{% if pagination.pageNumber > 0 %}page-{{ pagination.pag
                     <span class="reading-time">{{ post.templateContent | readingTime }} min read</span>
                 </div>
             </div>
-            <h2><a href="{{ post.url }}">{{ post.data.title }}</a></h2>
+            <h2><a href="{{ post.url }}" aria-label="Read full post: {{ post.data.title }}">{{ post.data.title }}</a></h2>
             <p class="post-excerpt">{{ post.data.excerpt }}</p>
-            <a href="{{ post.url }}" class="read-more">Read More →</a>
+            <a href="{{ post.url }}" class="read-more" aria-label="Read more about {{ post.data.title }}">Read More →</a>
         </article>
         {% endfor %}
     </div>
 
     {% if pagination.pages.length > 1 %}
-    <nav class="pagination pop-in">
+    <nav class="pagination pop-in" aria-label="Blog Pagination">
         <div class="pagination-links">
             {% if pagination.pageNumber > 0 %}
             {% if pagination.pageNumber == 1 %}
-            <a href="/blog/posts/" class="pagination-link prev">← Previous</a>
+            <a href="/blog/posts/" class="pagination-link prev" aria-label="Previous page">← Previous</a>
             {% else %}
-            <a href="/blog/posts/page-{{ pagination.pageNumber }}/" class="pagination-link prev">← Previous</a>
+            <a href="/blog/posts/page-{{ pagination.pageNumber }}/" class="pagination-link prev" aria-label="Previous page">← Previous</a>
             {% endif %}
             {% endif %}
 
@@ -58,15 +58,15 @@ permalink: "/blog/posts/{% if pagination.pageNumber > 0 %}page-{{ pagination.pag
             <span class="pagination-link current">{{ pageNum + 1 }}</span>
             {% else %}
             {% if pageNum == 0 %}
-            <a href="/blog/posts/" class="pagination-link">{{ pageNum + 1 }}</a>
+            <a href="/blog/posts/" class="pagination-link" aria-label="Go to page {{ pageNum + 1 }}">{{ pageNum + 1 }}</a>
             {% else %}
-            <a href="/blog/posts/page-{{ pageNum + 1 }}/" class="pagination-link">{{ pageNum + 1 }}</a>
+            <a href="/blog/posts/page-{{ pageNum + 1 }}/" class="pagination-link" aria-label="Go to page {{ pageNum + 1 }}">{{ pageNum + 1 }}</a>
             {% endif %}
             {% endif %}
             {% endfor %}
 
             {% if pagination.pageNumber < pagination.pages.length - 1 %}
-            <a href="/blog/posts/page-{{ pagination.pageNumber + 2 }}/" class="pagination-link next">Next →</a>
+            <a href="/blog/posts/page-{{ pagination.pageNumber + 2 }}/" class="pagination-link next" aria-label="Next page">Next →</a>
             {% endif %}
         </div>
     </nav>

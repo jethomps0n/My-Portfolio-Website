@@ -128,22 +128,24 @@ document.addEventListener('DOMContentLoaded', () => {
             let frameHTML = '';
             if (isTouchDevice) {
                 frameHTML = `<a class="frame" href="/explore/${data.slug}">
-                    <img class="thumbnail active" src="${data.imgSrc}" alt="" loading="lazy">
+                    <img class="thumbnail active" src="${data.imgSrc}" alt="Thumbnail for ${data.title}" loading="lazy">
                 </a>`;
             } else {
                 frameHTML = `<a class="frame" href="/explore/${data.slug}">
-                    <img class="thumbnail active" src="${data.imgSrc}" alt="" loading="lazy">
-                    <video class="thumbnail passive" src="${data.previewSrc}" muted loop preload="none"></video>
+                    <img class="thumbnail active" src="${data.imgSrc}" alt="Thumbnail for ${data.title}" loading="lazy">
+                    <video class="thumbnail passive" src="${data.previewSrc}" muted loop preload="none" aria-label="Preview video for ${data.title}"></video>
                 </a>`;
             }
 
+            // Format date for datetime attribute (ISO 8601)
+            const dateISO = (data.date && !isNaN(Date.parse(data.date))) ? new Date(data.date).toISOString().split('T')[0] : '';
             newContentContainer.innerHTML = `
                 ${frameHTML}
                 <div class="info">
-                    <a class="expand" href="/explore/${data.slug}"></a>
+                    <a class="expand" href="/explore/${data.slug}" tabindex="-1" aria-hidden="true"></a>
                     <h2 class="contentTitle">${data.title}</h2>
-                    <h3 class="date">${data.date}</h3>
-                    <div class="roles">${rolesHTML}</div>
+                    <h3 class="date"><time datetime="${dateISO}">${data.date}</time></h3>
+                    <div class="roles" aria-label="Roles">${rolesHTML}</div>
                 </div>
             `;
 

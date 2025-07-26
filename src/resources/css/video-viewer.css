@@ -18,3 +18,96 @@ iframe {
         position: relative;
     }
 }
+
+ @keyframes projectRipple {
+    from {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0.6;
+    }
+    to {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
+}
+
+.timestamp-text {
+    color: hsla(242, 61%, 67%, 1);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    cursor: help;
+}
+
+.timestamp-text:hover {
+    color: hsla(242, 61%, 80%, 1);
+}
+
+.timestamp-link {
+    background: hsla(242, 61%, 67%, 0.1);
+    border: 1px solid hsla(242, 61%, 67%, 0.3);
+    border-radius: 4px;
+    color: hsla(242, 61%, 67%, 1);
+    cursor: pointer;
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+    font-size: 0.9em;
+    font-weight: 600;
+    padding: 0 6px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.timestamp-link:hover {
+    background: hsla(242, 61%, 67%, 0.15);
+    border-color: hsla(242, 61%, 67%, 0.5);
+    color: hsla(242, 61%, 80%, 1);
+}
+
+.timestamp-link:focus {
+    outline: 2px solid hsla(242, 61%, 67%, 0.5);
+    outline-offset: 2px;
+}
+
+.timestamp-link:active {
+    background: hsla(242, 61%, 67%, 0.2);
+    color: hsla(242, 61%, 60%, 1);
+    transform: translateY(0px) scale(0.95);
+}
+
+/* Ensure proper spacing around timestamp links */
+.timestamp-link + .timestamp-link {
+    margin-left: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .timestamp-link {
+        transition: none;
+    }
+    
+    .timestamp-link:hover {
+        transform: none;
+    }
+    
+    .timestamp-link:active {
+        transform: none;
+    }
+}
+
+/* Dark mode support if available */
+@media (prefers-color-scheme: dark) {
+    .timestamp-link {
+        background: hsla(242, 61%, 80%, 0.1);
+        border-color: hsla(242, 61%, 80%, 0.3);
+        color: hsla(242, 61%, 80%, 1);
+    }
+    
+    .timestamp-link:hover {
+        background: hsla(242, 61%, 80%, 0.15);
+        border-color: hsla(242, 61%, 80%, 0.5);
+        color: hsla(242, 61%, 90%, 1);
+    }
+    
+    .timestamp-link:active {
+        background: hsla(242, 61%, 80%, 0.2);
+        color: hsla(242, 61%, 70%, 1);
+    }
+}

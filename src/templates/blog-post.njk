@@ -9,7 +9,7 @@ pagejs: <script src="/resources/js/blog.js" defer></script>
         <div class="post-meta">
             <div class="post-meta-tags">
                 {% for tag in tags %}
-                <a href="/blog/tags/{{ tag | slugify }}/" class="post-category {{ tag | slugify }}">{{ tag | titleCase }}</a>
+                <a href="/blog/tags/{{ tag | slugify }}/" class="post-category {{ tag | slugify }}" aria-label="Show posts tagged {{ tag | titleCase }}">{{ tag | titleCase }}</a>
                 {% endfor %}
             </div>
             <div class="post-meta-info">
@@ -19,7 +19,7 @@ pagejs: <script src="/resources/js/blog.js" defer></script>
                 {% endif %}
             </div>
         </div>
-        <h1 class="post-title">{{ title }}</h1>
+        <h1 class="post-title" aria-label="Blog post title: {{ title }}">{{ title }}</h1>
         {% if excerpt %}
         <p class="post-excerpt">{{ excerpt }}</p>
         {% endif %}
@@ -43,8 +43,8 @@ pagejs: <script src="/resources/js/blog.js" defer></script>
     
     <div class="post-footer">
         <div class="post-navigation">
-            <a href="/blog/" class="nav-link">← Back to Blog</a>
-            <a href="/blog/posts/" class="nav-link">All Posts →</a>
+            <a href="/blog/" class="nav-link" aria-label="Back to Blog">← Back to Blog</a>
+            <a href="/blog/posts/" class="nav-link" aria-label="View all blog posts">All Posts →</a>
         </div>
         
         {% if tags and tags.length > 0 %}
@@ -52,7 +52,7 @@ pagejs: <script src="/resources/js/blog.js" defer></script>
             <h3>Tagged with:</h3>
             <div class="tag-links">
                 {% for tag in tags %}
-                <a href="/blog/tags/{{ tag | slugify }}/" class="tag-link">{{ tag | titleCase }}</a>
+                <a href="/blog/tags/{{ tag | slugify }}/" class="tag-link" aria-label="Show posts tagged {{ tag | titleCase }}">{{ tag | titleCase }}</a>
                 {% endfor %}
             </div>
         </div>
