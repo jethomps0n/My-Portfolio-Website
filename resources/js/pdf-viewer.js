@@ -6,6 +6,45 @@ const pageMarginBottom = parseInt(
   getComputedStyle(document.documentElement).getPropertyValue('--pdf-page-margin-bottom')
 ) || 0;
 
+const FIXED_DPI = 1; // Adjust this value as needed (1 = standard)
+
+function estimatePPI() {
+    // Get screen dimensions in device pixels
+    const physicalWidth = screen.width * window.devicePixelRatio;
+    const physicalHeight = screen.height * window.devicePixelRatio;
+    
+    // Common device diagonals (inches) based on device type
+    let diagonalInches;
+    
+    if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+        // Apple device size estimation
+        if (window.screen.height >= 2688) diagonalInches = 6.5;  // iPhone Max sizes
+        else if (window.screen.height >= 2436) diagonalInches = 5.8;
+        else if (window.screen.height >= 1792) diagonalInches = 6.1;
+        else diagonalInches = 4.7;  // Standard iPhone
+    } else if (/Android/.test(navigator.userAgent)) {
+        // Android device size estimation
+        if (window.screen.width >= 1440) diagonalInches = 6.5;  // Large phones
+        else diagonalInches = 5.5;  // Standard phones
+    } else {
+        // Desktop/laptop estimation
+        if (window.screen.width >= 3840) diagonalInches = 27;  // 4K monitors
+        else if (window.screen.width >= 2560) diagonalInches = 24;
+        else diagonalInches = 21;  // Standard monitors
+    }
+    
+    // Calculate PPI using Pythagorean theorem
+    const diagonalPixels = Math.sqrt(
+        Math.pow(physicalWidth, 2) + 
+        Math.pow(physicalHeight, 2)
+    );
+    
+    return diagonalPixels / diagonalInches;
+}
+
+// Base PPI for scaling reference (standard screen)
+const BASE_PPI = 96;
+
 // Optimized yielding utility with browser-specific handling
 function yieldToMain() {
   if (globalThis.scheduler?.yield) {
@@ -109,6 +148,14 @@ class VirtualPageManager {
     if (!pageData || pageData.rendered) return;
 
     try {
+      // Skip rendering if on a low-performance mobile device
+      const isLowPerfMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && 
+                            (window.deviceMemory < 2 || navigator.hardwareConcurrency < 2);
+      
+      if (isLowPerfMobile) {
+        throw new Error('Skipping render on low-performance device');
+      }
+      
       const page = await pageData.pdfPage;
       const canvas = pageData.canvas;
       
@@ -127,8 +174,21 @@ class VirtualPageManager {
       
       pageData.rendered = true;
     } catch (error) {
-      // [DEBUGGING CODE]
-      // console.warn(`Failed to render page ${pageNum}:`, error);
+      // Handle rendering errors gracefully
+      console.warn(`Failed to render page ${pageNum}:`, error);
+      
+      // Create fallback content
+      if (canvas && canvas.parentNode) {
+        const fallback = document.createElement('div');
+        fallback.className = 'pdf-page-fallback';
+        fallback.innerHTML = `
+          <div class="pdf-page-content">
+            <p>Page ${pageNum}</p>
+            <p class="pdf-page-warning">Preview not available</p>
+          </div>
+        `;
+        canvas.parentNode.replaceChild(fallback, canvas);
+      }
     } finally {
       this.renderQueue.delete(pageNum);
     }
@@ -344,7 +404,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     );
     
     await runTasksBatched(canvasCreationTasks);
-    
+
     async function createPageCanvas(pageNum) {
       try {
         const canvas = document.createElement('canvas');
@@ -354,13 +414,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         const page = await pdfDoc.getPage(pageNum);
         const base = page.getViewport({ scale: 1 });
-        const scale = calculateScale(base);
-        const viewport = page.getViewport({ scale });
         
+        // Calculate base scale (CSS pixels)
+        const baseScale = calculateScale(base);
+        
+        // Calculate PPI-based scaling factor
+        const ppi = estimatePPI();
+        const ppiRatio = Math.min(ppi / BASE_PPI, 3); // Cap at 3x to prevent mobile crashes
+
+        console.log(`Actual device width: ${screen.width * window.devicePixelRatio}px`);
+        console.log(`Actual device height: ${screen.height * window.devicePixelRatio}px`);
+        console.log(`Estimated device diagonal: ${Math.sqrt(Math.pow((screen.width * window.devicePixelRatio), 2) + Math.pow((screen.height * window.devicePixelRatio), 2))} pixels`);
+        console.log(`Estimated PPI: ${ppi}`);
+
+        // Calculate effective scale
+        const effectiveScale = baseScale * ppiRatio;
+        
+        // Create viewport with effective scale
+        const viewport = page.getViewport({ scale: effectiveScale });
+        
+        // Set canvas dimensions
         canvas.width = Math.floor(viewport.width);
         canvas.height = Math.floor(viewport.height);
-        canvas.style.width = `${Math.floor(viewport.width)}px`;
-        canvas.style.height = `${Math.floor(viewport.height)}px`;
+        
+        // Set CSS dimensions (based on base scale only)
+        canvas.style.width = `${Math.floor(base.width * baseScale)}px`;
+        canvas.style.height = `${Math.floor(base.height * baseScale)}px`;
         
         virtualPageManager.addPage(pageNum, canvas, page, viewport);
         
@@ -377,6 +456,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       } catch (error) {
         // [DEBUGGING CODE]
         // console.warn(`Failed to create page ${pageNum}:`, error);
+
+        // Create fallback element
+        const fallback = document.createElement('div');
+        fallback.className = 'pdf-page-fallback';
+        fallback.dataset.page = pageNum;
+        fallback.innerHTML = `
+          <div class="pdf-page-content">
+            <p>Page ${pageNum}</p>
+            <p class="pdf-page-warning">Unable to render page</p>
+          </div>
+        `;
+        fallback.style.width = `${Math.floor(base.width * baseScale)}px`;
+        fallback.style.height = `${Math.floor(base.height * baseScale)}px`;
+        
+        pagesContainer.replaceChild(fallback, canvas);
       }
     }
     
@@ -922,18 +1016,47 @@ document.addEventListener('DOMContentLoaded', async () => {
                   
                   const page = await pdfDoc.getPage(pageNum);
                   const base = page.getViewport({ scale: 1 });
-                  const scale = calculateModalZoom(base);
-                  const viewport = page.getViewport({ scale });
                   
+                  // Calculate base scale (CSS pixels)
+                  const baseScale = calculateModalZoom(base);
+                  
+                    // Calculate PPI-based scaling factor
+                    const ppi = estimatePPI();
+                    const ppiRatio = Math.min(ppi / BASE_PPI, 3); // Cap at 3x
+                    
+                    // Calculate effective scale
+                    const effectiveScale = baseScale * ppiRatio;
+                  
+                  // Create viewport with effective scale
+                  const viewport = page.getViewport({ scale: effectiveScale });
+                  
+                  // Set canvas dimensions
                   canvas.width = Math.floor(viewport.width);
                   canvas.height = Math.floor(viewport.height);
-                  canvas.style.width = Math.floor(viewport.width) + 'px';
-                  canvas.style.height = Math.floor(viewport.height) + 'px';
+                  
+                  // Set CSS dimensions (based on base scale only)
+                  canvas.style.width = `${Math.floor(base.width * baseScale)}px`;
+                  canvas.style.height = `${Math.floor(base.height * baseScale)}px`;
                   
                   modalVirtualPageManager.addPage(pageNum, canvas, page, viewport);
                 } catch (error) {
                   // [DEBUGGING CODE]
                   // console.warn(`Failed to create modal page ${pageNum}:`, error);
+
+                  // Create fallback element
+                  const fallback = document.createElement('div');
+                  fallback.className = 'pdf-page-fallback';
+                  fallback.dataset.page = pageNum;
+                  fallback.innerHTML = `
+                    <div class="pdf-page-content">
+                      <p>Page ${pageNum}</p>
+                      <p class="pdf-page-warning">Unable to render page</p>
+                    </div>
+                  `;
+                  fallback.style.width = `${Math.floor(base.width * baseScale)}px`;
+                  fallback.style.height = `${Math.floor(base.height * baseScale)}px`;
+                  
+                  modalPagesContainer.replaceChild(fallback, canvas);
                 }
               }
               
