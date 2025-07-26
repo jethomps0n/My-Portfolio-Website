@@ -4,18 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rescoring A Scene</title>
-    <link rel="icon" type="image/x-icon" href="/resources/images/icons/favicon.png">
-
-    <meta property="og:title" content="Jonathan Thompson" />
+    <meta name="description" content="Jonathan Thompson has a passion for storytelling and visual innovation in the filmmaking landscape.">
+    <link rel="canonical" href="https://itsjonathanthompson.com">
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Rescoring A Scene" />
     <meta property="og:description" content="Jonathan Thompson has a passion for storytelling and visual innovation in the filmmaking landscape." />
     <meta property="og:image" content="/resources/images/icons/favicon.png" />
-    <meta property="og:url" content="itsjonathanthompson.com" />
-
+    <meta property="og:url" content="https://itsjonathanthompson.com" />
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Rescoring A Scene" />
+    <meta name="twitter:description" content="Jonathan Thompson has a passion for storytelling and visual innovation in the filmmaking landscape." />
+    <meta name="twitter:image" content="/resources/images/icons/favicon.png" />
+    <link rel="icon" type="image/x-icon" href="/resources/images/icons/favicon.png">
     <link rel="stylesheet" href="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.css">
     
     <link rel="stylesheet" href="/resources/css/global.css">
     <link rel="stylesheet" href="/resources/css/blog.css">
-
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
     <script src="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.js" defer></script>
     
@@ -23,6 +28,7 @@
     <script src="/resources/js/blog.js" defer></script>
 </head>
 <body>
+    <a href="#main-content" class="skip-link" style="position:absolute;left:-999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:100;">Skip to main content</a>
     <div class="effects">
         <canvas id="noise"></canvas>
         
@@ -31,7 +37,7 @@
     <div class="blur-overlay" id="blurOverlay"></div>
     
     <!-- Sidebar navigation -->
-    <nav class="sidebar-nav" id="sidebarNav">
+    <nav class="sidebar-nav" id="sidebarNav" role="navigation" aria-label="Sidebar Navigation">
         <div class="sidebar-content">
             <a class="sidebar-webtitle" href="/"><svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 779.88 123.91">
                 <defs>
@@ -83,7 +89,7 @@
         </div>
     </nav>
     
-    <header>
+    <header role="banner">
         <div id="navbar">
             <nav>
                 <a class="nav" href="/explore/?roles=Writer">Writer</a>
@@ -136,18 +142,18 @@
             </div>
         </div>
     </header>
-    <main>
+    <main id="main-content" role="main" tabindex="-1">
         
 <article class="blog-post-single">
     <header class="post-header">
         <div class="post-meta">
             <div class="post-meta-tags">
                 
-                <a href="/blog/tags/post-production/" class="post-category post-production">Post-Production</a>
+                <a href="/blog/tags/post-production/" class="post-category post-production" aria-label="Show posts tagged Post-Production">Post-Production</a>
                 
-                <a href="/blog/tags/sound-design/" class="post-category sound-design">Sound Design</a>
+                <a href="/blog/tags/sound-design/" class="post-category sound-design" aria-label="Show posts tagged Sound Design">Sound Design</a>
                 
-                <a href="/blog/tags/rescores/" class="post-category rescores">Rescores</a>
+                <a href="/blog/tags/rescores/" class="post-category rescores" aria-label="Show posts tagged Rescores">Rescores</a>
                 
             </div>
             <div class="post-meta-info">
@@ -155,7 +161,7 @@
                 
             </div>
         </div>
-        <h1 class="post-title">Rescoring A Scene</h1>
+        <h1 class="post-title" aria-label="Blog post title: Rescoring A Scene">Rescoring A Scene</h1>
         
         <p class="post-excerpt">My step-by-step guide in crafting a beautifully fitting rescore</p>
         
@@ -169,17 +175,20 @@
 <p>Often times, my inspiration for rescoring a scene will come from one of two places. Sometimes there might be a scene I've watched that I think I might want to rescore. Or sometimes there might be a piece of music I've listened to that I might want to use in a rescore.</p>
 <p>Either way, they both create a spark that gets me closer to my end goal. In this case, the music came first.</p>
 <p>
-<div class="video-embed" style="width:70%;" id="player">
-    <div class="player">
-        <iframe
-            src="https://www.youtube.com/embed/XZDStvUubuk"
-            allowfullscreen
-            allowtransparency
-            allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            loading="lazy"
-        ></iframe>
-    </div>
-</div>
+            <div class="video-embed" style="width:70%;" id="player" role="region" aria-label="Embedded YouTube video">
+                <div class="player">
+                    <iframe
+                        src="https://www.youtube.com/embed/XZDStvUubuk"
+                        title="Embedded YouTube video"
+                        aria-label="Embedded YouTube video"
+                        allowfullscreen
+                        allowtransparency
+                        allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        loading="lazy"
+                        tabindex="0"
+                    ></iframe>
+                </div>
+            </div>
 <small class="video-caption" style="font-style:italic;">video: The Last of Us Part II</small></p>
 <p>The music in this scene strikes a sense of innocence, but also works as a stark contrast to the overall beats in the story; a premonition for what the main character, Ellie, will soon go through. If you've never played or heard of <em>The Last of Us</em> franchise, the story of <em>The Last of Us Part II (2020)</em> is quite bleak and dire. It reflects over Ellie’s loss of loved ones and it deals with themes of revenge and forgiveness. This scene, a flashback, goes back in time to when things were simpler - when the only thing Ellie had to worry about was if a girl liked her back.</p>
 <p>Personally, I think it’s easier to draw from what worked in the scene above, to help infuence our goals in finding a scene to rescore that can match the music well. This is why I linked the scene the music was in and not just the music by itself.</p>
@@ -202,17 +211,20 @@
 and an underlying <strong>sense of premonition</strong> (in regard to her confrontation with Bill).</p>
 <p><strong>We’ve hit all four points… This is our scene.</strong></p>
 <p>
-<div class="video-embed" style="width:70%;" id="player">
-    <div class="player">
-        <iframe
-            src="https://www.youtube.com/embed/qLOeRmnppng"
-            allowfullscreen
-            allowtransparency
-            allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            loading="lazy"
-        ></iframe>
-    </div>
-</div></p>
+            <div class="video-embed" style="width:70%;" id="player" role="region" aria-label="Embedded YouTube video">
+                <div class="player">
+                    <iframe
+                        src="https://www.youtube.com/embed/qLOeRmnppng"
+                        title="Embedded YouTube video"
+                        aria-label="Embedded YouTube video"
+                        allowfullscreen
+                        allowtransparency
+                        allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        loading="lazy"
+                        tabindex="0"
+                    ></iframe>
+                </div>
+            </div></p>
 <p>You might not always get so lucky, but fortunately for us this scene is a very similar length to the original <em>The Last of Us Part II</em> scene. This means two things:</p>
 <ol>
 <li>There's not much room for worry in terms of if our music will be long enough for the duration of this scene.</li>
@@ -259,17 +271,20 @@ and an underlying <strong>sense of premonition</strong> (in regard to her confro
 </ol>
 <p>This time the scene came first.</p>
 <p>
-<div class="video-embed" style="width:70%;" id="player">
-    <div class="player">
-        <iframe
-            src="https://www.youtube.com/embed/OflkapcEdKU"
-            allowfullscreen
-            allowtransparency
-            allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            loading="lazy"
-        ></iframe>
-    </div>
-</div></p>
+            <div class="video-embed" style="width:70%;" id="player" role="region" aria-label="Embedded YouTube video">
+                <div class="player">
+                    <iframe
+                        src="https://www.youtube.com/embed/OflkapcEdKU"
+                        title="Embedded YouTube video"
+                        aria-label="Embedded YouTube video"
+                        allowfullscreen
+                        allowtransparency
+                        allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        loading="lazy"
+                        tabindex="0"
+                    ></iframe>
+                </div>
+            </div></p>
 <p>The core steps for crafting a rescore remain the same: Draw from what worked above, and create main points to look for. However this time, it will be more of drawing from what worked in the music, and less of the actions/content of the scene. We will also order our main points differently. Our main points last time:</p>
 <ul>
 <li><u>innocence</u></li>
@@ -288,17 +303,20 @@ and an underlying <strong>sense of premonition</strong> (in regard to her confro
 <p>Once again, there’s no right or wrong way to find a piece of music for this. You could try to browse for scenes that have similar content or beats like we did in Part I, but there's no gaurantee that the scene you find contains music, and getting the music is the goal. This is why I feel like it is slightly easier to create a rescore starting with how we did in Part I than in Part II.</p>
 <p>I listen to a lot of music, particularly from soundtracks. For this rescore a piece of music from <em>A Quiet Place (2018)</em> came to mind.</p>
 <p>
-<div class="video-embed" style="width:70%;" id="player">
-    <div class="player">
-        <iframe
-            src="https://www.youtube.com/embed/9FvqvSaQIKw"
-            allowfullscreen
-            allowtransparency
-            allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            loading="lazy"
-        ></iframe>
-    </div>
-</div></p>
+            <div class="video-embed" style="width:70%;" id="player" role="region" aria-label="Embedded YouTube video">
+                <div class="player">
+                    <iframe
+                        src="https://www.youtube.com/embed/9FvqvSaQIKw"
+                        title="Embedded YouTube video"
+                        aria-label="Embedded YouTube video"
+                        allowfullscreen
+                        allowtransparency
+                        allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        loading="lazy"
+                        tabindex="0"
+                    ></iframe>
+                </div>
+            </div></p>
 <p>The music here is powerful, but most importantly it is <strong>overwhelmingly positive</strong>.</p>
 <p>It contains feelings of <strong>wonder and inspiration</strong>.</p>
 <p>In the film, the characters <strong>push through past doubts</strong> and <strong>embrace the people in their lives</strong>.</p>
@@ -328,8 +346,8 @@ and an underlying <strong>sense of premonition</strong> (in regard to her confro
     
     <div class="post-footer">
         <div class="post-navigation">
-            <a href="/blog/" class="nav-link">← Back to Blog</a>
-            <a href="/blog/posts/" class="nav-link">All Posts →</a>
+            <a href="/blog/" class="nav-link" aria-label="Back to Blog">← Back to Blog</a>
+            <a href="/blog/posts/" class="nav-link" aria-label="View all blog posts">All Posts →</a>
         </div>
         
         
@@ -337,11 +355,11 @@ and an underlying <strong>sense of premonition</strong> (in regard to her confro
             <h3>Tagged with:</h3>
             <div class="tag-links">
                 
-                <a href="/blog/tags/post-production/" class="tag-link">Post-Production</a>
+                <a href="/blog/tags/post-production/" class="tag-link" aria-label="Show posts tagged Post-Production">Post-Production</a>
                 
-                <a href="/blog/tags/sound-design/" class="tag-link">Sound Design</a>
+                <a href="/blog/tags/sound-design/" class="tag-link" aria-label="Show posts tagged Sound Design">Sound Design</a>
                 
-                <a href="/blog/tags/rescores/" class="tag-link">Rescores</a>
+                <a href="/blog/tags/rescores/" class="tag-link" aria-label="Show posts tagged Rescores">Rescores</a>
                 
             </div>
         </div>
@@ -350,7 +368,7 @@ and an underlying <strong>sense of premonition</strong> (in regard to her confro
 </article>
 
     </main>
-    <footer>
+    <footer role="contentinfo" aria-label="Footer">
         <div id="footer">
             <div id="footer-middle">
                 <a id="explore-header" href="/explore">Explore All Work</a>
@@ -415,11 +433,11 @@ and an underlying <strong>sense of premonition</strong> (in regard to her confro
                 </svg></a>
                 <div id="set-center"><small id="copyright">© 2024-2025 Jonathan Thompson. All Rights Reserved.</small></div>
                 <ul id="socials">
-                    <li><a href="https://www.youtube.com/@jethompsn" target="_blank"><img src="/resources/images/icons/YouTube.png" alt="YouTube"></a></li>
-                    <li><a href="https://www.instagram.com/jethompsn/" target="_blank"><img src="/resources/images/icons/Instagram.png" alt="Instagram"></a></li>
-                    <li><a href="https://www.linkedin.com/in/jethompsn/" target="_blank"><img src="/resources/images/icons/LinkedIn.png" alt="LinkedIn"></a></li>
-                    <li><a href="https://github.com/jethomps0n" target="_blank"><img src="/resources/images/icons/GitHub.png" alt="Github"></a></li>
-                    <li><a href="https://letterboxd.com/Jonathan_T/" target="_blank"><img src="/resources/images/icons/Letterboxd.png" alt="Letterboxd"></a></li>
+                    <li><a href="https://www.youtube.com/@jethompsn" target="_blank" aria-label="YouTube"><img src="/resources/images/icons/YouTube.png" alt="YouTube"></a></li>
+                    <li><a href="https://www.instagram.com/jethompsn/" target="_blank" aria-label="Instagram"><img src="/resources/images/icons/Instagram.png" alt="Instagram"></a></li>
+                    <li><a href="https://www.linkedin.com/in/jethompsn/" target="_blank" aria-label="LinkedIn"><img src="/resources/images/icons/LinkedIn.png" alt="LinkedIn"></a></li>
+                    <li><a href="https://github.com/jethomps0n" target="_blank" aria-label="Github"><img src="/resources/images/icons/GitHub.png" alt="Github"></a></li>
+                    <li><a href="https://letterboxd.com/Jonathan_T/" target="_blank" aria-label="Letterboxd"><img src="/resources/images/icons/Letterboxd.png" alt="Letterboxd"></a></li>
                 </ul>
             </div>
         </div>

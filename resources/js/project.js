@@ -43,7 +43,7 @@ function processCharacterRoles() {
             // Replace each match with a styled span
             matches.forEach(match => {
                 const trimmedMatch = match.trim(); // Remove extra whitespace
-                const styledMatch = ` <span class="character-role">${trimmedMatch}</span>`;
+                const styledMatch = ` <span class="character-role" aria-label="${trimmedMatch}" title="${trimmedMatch}">${trimmedMatch}</span>`;
                 newHtml = newHtml.replace(match, styledMatch);
             });
             
@@ -312,7 +312,7 @@ function processCharacterRolesInPopup() {
             let newHtml = text;
             matches.forEach(match => {
                 const trimmedMatch = match.trim();
-                const styledMatch = ` <span class="character-role">${trimmedMatch}</span>`;
+                const styledMatch = ` <span class="character-role" aria-label="${trimmedMatch}" title="${trimmedMatch}">${trimmedMatch}</span>`;
                 newHtml = newHtml.replace(match, styledMatch);
             });
             nameElement.innerHTML = newHtml;
@@ -387,7 +387,7 @@ function processDescriptionTimestamps() {
     const timestampRegex = /\b(\d{1,2}:\d{2}(?::\d{2})?)\b/g;
     
     const processedText = text.replace(timestampRegex, (match, timestamp) => {
-        return `<span class="timestamp-text" data-timestamp="${timestamp}" title="Timestamp: ${timestamp}">${timestamp}</span>`;
+        return `<span class="timestamp-text" data-timestamp="${timestamp}" title="Timestamp: ${timestamp}" role="button" tabindex="0" aria-label="Jump to ${timestamp}">${timestamp}</span>`;
     });
     
     if (processedText !== text) {
@@ -431,31 +431,3 @@ function createRipple(element) {
         }
     }, 600);
 }
-
-// Add custom CSS for timestamps and ripple effect
-const projectStyles = document.createElement('style');
-projectStyles.textContent = `
-    @keyframes projectRipple {
-        from {
-            transform: translate(-50%, -50%) scale(0);
-            opacity: 0.6;
-        }
-        to {
-            transform: translate(-50%, -50%) scale(2);
-            opacity: 0;
-        }
-    }
-    
-    .timestamp-text {
-        color: hsla(242, 61%, 67%, 1);
-        font-weight: 600;
-        text-decoration: underline;
-        text-decoration-style: dotted;
-        cursor: help;
-    }
-    
-    .timestamp-text:hover {
-        color: hsla(242, 61%, 80%, 1);
-    }
-`;
-document.head.appendChild(projectStyles);

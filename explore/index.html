@@ -4,18 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Explore</title>
-    <link rel="icon" type="image/x-icon" href="/resources/images/icons/favicon.png">
-
-    <meta property="og:title" content="Jonathan Thompson" />
+    <meta name="description" content="Jonathan Thompson has a passion for storytelling and visual innovation in the filmmaking landscape.">
+    <link rel="canonical" href="https://itsjonathanthompson.com">
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Explore" />
     <meta property="og:description" content="Jonathan Thompson has a passion for storytelling and visual innovation in the filmmaking landscape." />
     <meta property="og:image" content="/resources/images/icons/favicon.png" />
-    <meta property="og:url" content="itsjonathanthompson.com" />
-
+    <meta property="og:url" content="https://itsjonathanthompson.com" />
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Explore" />
+    <meta name="twitter:description" content="Jonathan Thompson has a passion for storytelling and visual innovation in the filmmaking landscape." />
+    <meta name="twitter:image" content="/resources/images/icons/favicon.png" />
+    <link rel="icon" type="image/x-icon" href="/resources/images/icons/favicon.png">
     <link rel="stylesheet" href="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.css">
     
     <link rel="stylesheet" href="/resources/css/global.css">
     <link rel="stylesheet" href="/resources/css/explore.css">
-
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
     <script src="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.js" defer></script>
     
@@ -23,6 +28,7 @@
     <script src="/resources/js/explore.js" defer></script>
 </head>
 <body>
+    <a href="#main-content" class="skip-link" style="position:absolute;left:-999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:100;">Skip to main content</a>
     <div class="effects">
         <canvas id="noise"></canvas>
         
@@ -31,7 +37,7 @@
     <div class="blur-overlay" id="blurOverlay"></div>
     
     <!-- Sidebar navigation -->
-    <nav class="sidebar-nav" id="sidebarNav">
+    <nav class="sidebar-nav" id="sidebarNav" role="navigation" aria-label="Sidebar Navigation">
         <div class="sidebar-content">
             <a class="sidebar-webtitle" href="/"><svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 779.88 123.91">
                 <defs>
@@ -83,7 +89,7 @@
         </div>
     </nav>
     
-    <header>
+    <header role="banner">
         <div id="navbar">
             <nav>
                 <a class="nav" href="/explore/?roles=Writer">Writer</a>
@@ -136,7 +142,7 @@
             </div>
         </div>
     </header>
-    <main>
+    <main id="main-content" role="main" tabindex="-1">
         
 <div id="explore-page">
     <!-- Main search bar - always visible -->
@@ -169,7 +175,7 @@
             <div class="filter-header">
                 <h2>Filter By</h2>
                 <span id="filter-count">0</span>
-                <button id="clear-filters" type="button">Clear All</button>
+                <button id="clear-filters" type="button" aria-label="Clear all filters">Clear All</button>
             </div>
 
             <div class="filter-group" id="filter-role">
@@ -218,7 +224,7 @@
                     <div class="custom-range">
                         <input type="date" id="start-date"><span> – </span>
                         <input type="date" id="end-date">
-                        <button id="set-custom" type="button">Set</button>
+                        <button id="set-custom" type="button" aria-label="Set custom date range">Set</button>
                     </div>
                 </div>
             </div>
@@ -258,11 +264,11 @@
         <!-- Filter content will be copied here -->
     </div>
     <div class="mobile-filter-footer">
-        <button class="clear-filters" id="mobile-clear-filters">Clear All</button>
+        <button class="clear-filters" id="mobile-clear-filters" aria-label="Clear all filters">Clear All</button>
     </div>
 </div>
     </main>
-    <footer>
+    <footer role="contentinfo" aria-label="Footer">
         <div id="footer">
             <div id="footer-middle">
                 <a id="explore-header" href="/explore">Explore All Work</a>
@@ -327,11 +333,11 @@
                 </svg></a>
                 <div id="set-center"><small id="copyright">© 2024-2025 Jonathan Thompson. All Rights Reserved.</small></div>
                 <ul id="socials">
-                    <li><a href="https://www.youtube.com/@jethompsn" target="_blank"><img src="/resources/images/icons/YouTube.png" alt="YouTube"></a></li>
-                    <li><a href="https://www.instagram.com/jethompsn/" target="_blank"><img src="/resources/images/icons/Instagram.png" alt="Instagram"></a></li>
-                    <li><a href="https://www.linkedin.com/in/jethompsn/" target="_blank"><img src="/resources/images/icons/LinkedIn.png" alt="LinkedIn"></a></li>
-                    <li><a href="https://github.com/jethomps0n" target="_blank"><img src="/resources/images/icons/GitHub.png" alt="Github"></a></li>
-                    <li><a href="https://letterboxd.com/Jonathan_T/" target="_blank"><img src="/resources/images/icons/Letterboxd.png" alt="Letterboxd"></a></li>
+                    <li><a href="https://www.youtube.com/@jethompsn" target="_blank" aria-label="YouTube"><img src="/resources/images/icons/YouTube.png" alt="YouTube"></a></li>
+                    <li><a href="https://www.instagram.com/jethompsn/" target="_blank" aria-label="Instagram"><img src="/resources/images/icons/Instagram.png" alt="Instagram"></a></li>
+                    <li><a href="https://www.linkedin.com/in/jethompsn/" target="_blank" aria-label="LinkedIn"><img src="/resources/images/icons/LinkedIn.png" alt="LinkedIn"></a></li>
+                    <li><a href="https://github.com/jethomps0n" target="_blank" aria-label="Github"><img src="/resources/images/icons/GitHub.png" alt="Github"></a></li>
+                    <li><a href="https://letterboxd.com/Jonathan_T/" target="_blank" aria-label="Letterboxd"><img src="/resources/images/icons/Letterboxd.png" alt="Letterboxd"></a></li>
                 </ul>
             </div>
         </div>

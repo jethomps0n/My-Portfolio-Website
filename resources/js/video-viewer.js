@@ -119,7 +119,7 @@ function processTimestamps() {
         // Additional validation: make sure this looks like a proper timestamp
         const seconds = parseTimestamp(timestamp);
         if (seconds >= 0) {
-            return `<button class="timestamp-link" data-time="${seconds}" title="Jump to ${timestamp}" aria-label="Jump to ${timestamp}">${timestamp}</button>`;
+            return `<button class="timestamp-link" type="button" data-time="${seconds}" title="Jump to ${timestamp}" aria-label="Jump to ${timestamp}">${timestamp}</button>`;
         }
         return match; // Return original if validation fails
     });
@@ -192,83 +192,6 @@ function initializeVideoPlayer() {
         processTimestamps();
         
     }, { priority: 'user-visible' });
-}
-
-// Add custom styles for timestamp links
-function addTimestampStyles() {
-    const style = document.createElement('style');
-    style.textContent = `
-        .timestamp-link {
-            background: hsla(242, 61%, 67%, 0.1);
-            border: 1px solid hsla(242, 61%, 67%, 0.3);
-            border-radius: 4px;
-            color: hsla(242, 61%, 67%, 1);
-            cursor: pointer;
-            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-            font-size: 0.9em;
-            font-weight: 600;
-            padding: 0 6px;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-        }
-        
-        .timestamp-link:hover {
-            background: hsla(242, 61%, 67%, 0.15);
-            border-color: hsla(242, 61%, 67%, 0.5);
-            color: hsla(242, 61%, 80%, 1);
-        }
-        
-        .timestamp-link:focus {
-            outline: 2px solid hsla(242, 61%, 67%, 0.5);
-            outline-offset: 2px;
-        }
-        
-        .timestamp-link:active {
-            background: hsla(242, 61%, 67%, 0.2);
-            color: hsla(242, 61%, 60%, 1);
-            transform: translateY(0px) scale(0.95);
-        }
-        
-        /* Ensure proper spacing around timestamp links */
-        .timestamp-link + .timestamp-link {
-            margin-left: 4px;
-        }
-        
-        @media (prefers-reduced-motion: reduce) {
-            .timestamp-link {
-                transition: none;
-            }
-            
-            .timestamp-link:hover {
-                transform: none;
-            }
-            
-            .timestamp-link:active {
-                transform: none;
-            }
-        }
-        
-        /* Dark mode support if available */
-        @media (prefers-color-scheme: dark) {
-            .timestamp-link {
-                background: hsla(242, 61%, 80%, 0.1);
-                border-color: hsla(242, 61%, 80%, 0.3);
-                color: hsla(242, 61%, 80%, 1);
-            }
-            
-            .timestamp-link:hover {
-                background: hsla(242, 61%, 80%, 0.15);
-                border-color: hsla(242, 61%, 80%, 0.5);
-                color: hsla(242, 61%, 90%, 1);
-            }
-            
-            .timestamp-link:active {
-                background: hsla(242, 61%, 80%, 0.2);
-                color: hsla(242, 61%, 70%, 1);
-            }
-        }
-    `;
-    document.head.appendChild(style);
 }
 
 // Enhanced error handling for video player initialization

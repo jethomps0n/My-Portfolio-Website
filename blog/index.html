@@ -4,18 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Blog</title>
-    <link rel="icon" type="image/x-icon" href="/resources/images/icons/favicon.png">
-
-    <meta property="og:title" content="Jonathan Thompson" />
+    <meta name="description" content="Jonathan Thompson has a passion for storytelling and visual innovation in the filmmaking landscape.">
+    <link rel="canonical" href="https://itsjonathanthompson.com">
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="My Blog" />
     <meta property="og:description" content="Jonathan Thompson has a passion for storytelling and visual innovation in the filmmaking landscape." />
     <meta property="og:image" content="/resources/images/icons/favicon.png" />
-    <meta property="og:url" content="itsjonathanthompson.com" />
-
+    <meta property="og:url" content="https://itsjonathanthompson.com" />
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="My Blog" />
+    <meta name="twitter:description" content="Jonathan Thompson has a passion for storytelling and visual innovation in the filmmaking landscape." />
+    <meta name="twitter:image" content="/resources/images/icons/favicon.png" />
+    <link rel="icon" type="image/x-icon" href="/resources/images/icons/favicon.png">
     <link rel="stylesheet" href="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.css">
     
     <link rel="stylesheet" href="/resources/css/global.css">
     <link rel="stylesheet" href="/resources/css/blog.css">
-
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
     <script src="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.js" defer></script>
     
@@ -23,6 +28,7 @@
     <script src="/resources/js/blog.js" defer></script>
 </head>
 <body>
+    <a href="#main-content" class="skip-link" style="position:absolute;left:-999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:100;">Skip to main content</a>
     <div class="effects">
         <canvas id="noise"></canvas>
         
@@ -31,7 +37,7 @@
     <div class="blur-overlay" id="blurOverlay"></div>
     
     <!-- Sidebar navigation -->
-    <nav class="sidebar-nav" id="sidebarNav">
+    <nav class="sidebar-nav" id="sidebarNav" role="navigation" aria-label="Sidebar Navigation">
         <div class="sidebar-content">
             <a class="sidebar-webtitle" href="/"><svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 779.88 123.91">
                 <defs>
@@ -83,7 +89,7 @@
         </div>
     </nav>
     
-    <header>
+    <header role="banner">
         <div id="navbar">
             <nav>
                 <a class="nav" href="/explore/?roles=Writer">Writer</a>
@@ -136,38 +142,38 @@
             </div>
         </div>
     </header>
-    <main>
+    <main id="main-content" role="main" tabindex="-1">
         
 <div id="blog-page">
-    <header class="blog-header pop-in">
+    <header class="blog-header pop-in" role="banner" aria-label="Blog Header">
         <h1 class="blog-title">The Cutting Room</h1>
         <p class="blog-subtitle">My insights from behind the scenes <small style="font-size: 0.9rem;">(that should probably be cut)</small></p>
     </header>
 
-    <div class="categories-strip pop-in">
-        <a href="/blog/" class="category-tag active">All</a>
-        <a href="/blog/tags/post-production/" class="category-tag">Post-Production</a>
+    <div class="categories-strip pop-in" aria-label="Blog Categories">
+        <a href="/blog/" class="category-tag active" aria-label="Show all blog posts">All</a>
+        <a href="/blog/tags/post-production/" class="category-tag" aria-label="Show posts tagged Post-Production">Post-Production</a>
         
-        <a href="/blog/tags/writing/" class="category-tag">Writing</a>
-        <a href="/blog/tags/sound-design/" class="category-tag">Sound Design</a>
-        <a href="/blog/tags/film-tv/" class="category-tag">Film & TV</a>
-        <a href="/blog/tags/the-walking-dead/" class="category-tag">The Walking Dead</a>
+        <a href="/blog/tags/writing/" class="category-tag" aria-label="Show posts tagged Writing">Writing</a>
+        <a href="/blog/tags/sound-design/" class="category-tag" aria-label="Show posts tagged Sound Design">Sound Design</a>
+        <a href="/blog/tags/film-tv/" class="category-tag" aria-label="Show posts tagged Film & TV">Film & TV</a>
+        <a href="/blog/tags/the-walking-dead/" class="category-tag" aria-label="Show posts tagged The Walking Dead">The Walking Dead</a>
     </div>
 
-    <div class="blog-grid">
+    <div class="blog-grid" aria-label="Latest Blog Posts">
         
         
         <article class="blog-post featured pop-in">
             <div class="post-meta">
                 <div class="post-meta-tags">
                     
-                    <a href="/blog/tags/film-tv/" class="post-category film-tv">Film &amp; TV</a>
+                    <a href="/blog/tags/film-tv/" class="post-category film-tv" aria-label="Show posts tagged Film &amp; TV">Film &amp; TV</a>
                     
-                    <a href="/blog/tags/writing/" class="post-category writing">Writing</a>
+                    <a href="/blog/tags/writing/" class="post-category writing" aria-label="Show posts tagged Writing">Writing</a>
                     
-                    <a href="/blog/tags/video-games/" class="post-category video-games">Video Games</a>
+                    <a href="/blog/tags/video-games/" class="post-category video-games" aria-label="Show posts tagged Video Games">Video Games</a>
                     
-                    <a href="/blog/tags/critique/" class="post-category critique">Critique</a>
+                    <a href="/blog/tags/critique/" class="post-category critique" aria-label="Show posts tagged Critique">Critique</a>
                     
                 </div>
                 <div class="post-meta-info">
@@ -176,21 +182,21 @@
                 </div>
             </div>
             
-            <h2><a href="/blog/posts/how-to-ruin-the-last-of-us/">How to Ruin The Last of Us</a></h2>
+            <h2><a href="/blog/posts/how-to-ruin-the-last-of-us/" aria-label="Read full post: How to Ruin The Last of Us">How to Ruin The Last of Us</a></h2>
             
             <p class="post-excerpt">My thoughts on the second season of HBO&#39;s The Last of Us</p>
-            <a href="/blog/posts/how-to-ruin-the-last-of-us/" class="read-more">Read More →</a>
+            <a href="/blog/posts/how-to-ruin-the-last-of-us/" class="read-more" aria-label="Read more about How to Ruin The Last of Us">Read More →</a>
         </article>
         
         <article class="blog-post  pop-in">
             <div class="post-meta">
                 <div class="post-meta-tags">
                     
-                    <a href="/blog/tags/post-production/" class="post-category post-production">Post-Production</a>
+                    <a href="/blog/tags/post-production/" class="post-category post-production" aria-label="Show posts tagged Post-Production">Post-Production</a>
                     
-                    <a href="/blog/tags/sound-design/" class="post-category sound-design">Sound Design</a>
+                    <a href="/blog/tags/sound-design/" class="post-category sound-design" aria-label="Show posts tagged Sound Design">Sound Design</a>
                     
-                    <a href="/blog/tags/rescores/" class="post-category rescores">Rescores</a>
+                    <a href="/blog/tags/rescores/" class="post-category rescores" aria-label="Show posts tagged Rescores">Rescores</a>
                     
                 </div>
                 <div class="post-meta-info">
@@ -199,17 +205,17 @@
                 </div>
             </div>
             
-            <h3><a href="/blog/posts/rescoring-a-scene/">Rescoring A Scene</a></h3>
+            <h3><a href="/blog/posts/rescoring-a-scene/" aria-label="Read full post: Rescoring A Scene">Rescoring A Scene</a></h3>
             
             <p class="post-excerpt">My step-by-step guide in crafting a beautifully fitting rescore</p>
-            <a href="/blog/posts/rescoring-a-scene/" class="read-more">Read More →</a>
+            <a href="/blog/posts/rescoring-a-scene/" class="read-more" aria-label="Read more about Rescoring A Scene">Read More →</a>
         </article>
         
         <article class="blog-post  pop-in">
             <div class="post-meta">
                 <div class="post-meta-tags">
                     
-                    <a href="/blog/tags/sound-design/" class="post-category sound-design">Sound Design</a>
+                    <a href="/blog/tags/sound-design/" class="post-category sound-design" aria-label="Show posts tagged Sound Design">Sound Design</a>
                     
                 </div>
                 <div class="post-meta-info">
@@ -218,19 +224,19 @@
                 </div>
             </div>
             
-            <h3><a href="/blog/posts/sound-in-film/">Sound in Film</a></h3>
+            <h3><a href="/blog/posts/sound-in-film/" aria-label="Read full post: Sound in Film">Sound in Film</a></h3>
             
             <p class="post-excerpt">Exploring the significance of sound in film and its impact on film history</p>
-            <a href="/blog/posts/sound-in-film/" class="read-more">Read More →</a>
+            <a href="/blog/posts/sound-in-film/" class="read-more" aria-label="Read more about Sound in Film">Read More →</a>
         </article>
         
         <article class="blog-post  pop-in">
             <div class="post-meta">
                 <div class="post-meta-tags">
                     
-                    <a href="/blog/tags/the-walking-dead/" class="post-category the-walking-dead">The Walking Dead</a>
+                    <a href="/blog/tags/the-walking-dead/" class="post-category the-walking-dead" aria-label="Show posts tagged The Walking Dead">The Walking Dead</a>
                     
-                    <a href="/blog/tags/film-tv/" class="post-category film-tv">Film &amp; TV</a>
+                    <a href="/blog/tags/film-tv/" class="post-category film-tv" aria-label="Show posts tagged Film &amp; TV">Film &amp; TV</a>
                     
                 </div>
                 <div class="post-meta-info">
@@ -239,24 +245,24 @@
                 </div>
             </div>
             
-            <h3><a href="/blog/posts/my-favorite-twd-edits/">My Favorite TWD Edits</a></h3>
+            <h3><a href="/blog/posts/my-favorite-twd-edits/" aria-label="Read full post: My Favorite TWD Edits">My Favorite TWD Edits</a></h3>
             
             <p class="post-excerpt">An ever-updating collection of my favorite edits from The Walking Dead</p>
-            <a href="/blog/posts/my-favorite-twd-edits/" class="read-more">Read More →</a>
+            <a href="/blog/posts/my-favorite-twd-edits/" class="read-more" aria-label="Read more about My Favorite TWD Edits">Read More →</a>
         </article>
         
     </div>
 
-    <div class="blog-navigation pop-in">
+    <div class="blog-navigation pop-in" aria-label="Blog Navigation">
         <div class="nav-buttons">
-            <a href="/blog/posts/" class="nav-button primary">
+            <a href="/blog/posts/" class="nav-button primary" aria-label="View all blog posts">
                 <span class="nav-icon">📚</span>
                 <span class="nav-text">
                     <strong>View All Posts</strong>
                     <small>Browse 5 articles</small>
                 </span>
             </a>
-            <a href="/blog/tags/" class="nav-button secondary">
+            <a href="/blog/tags/" class="nav-button secondary" aria-label="Browse blog posts by tag">
                 <span class="nav-icon">🏷️</span>
                 <span class="nav-text">
                     <strong>Browse by Tags</strong>
@@ -273,7 +279,7 @@
 </div>
 
     </main>
-    <footer>
+    <footer role="contentinfo" aria-label="Footer">
         <div id="footer">
             <div id="footer-middle">
                 <a id="explore-header" href="/explore">Explore All Work</a>
@@ -338,11 +344,11 @@
                 </svg></a>
                 <div id="set-center"><small id="copyright">© 2024-2025 Jonathan Thompson. All Rights Reserved.</small></div>
                 <ul id="socials">
-                    <li><a href="https://www.youtube.com/@jethompsn" target="_blank"><img src="/resources/images/icons/YouTube.png" alt="YouTube"></a></li>
-                    <li><a href="https://www.instagram.com/jethompsn/" target="_blank"><img src="/resources/images/icons/Instagram.png" alt="Instagram"></a></li>
-                    <li><a href="https://www.linkedin.com/in/jethompsn/" target="_blank"><img src="/resources/images/icons/LinkedIn.png" alt="LinkedIn"></a></li>
-                    <li><a href="https://github.com/jethomps0n" target="_blank"><img src="/resources/images/icons/GitHub.png" alt="Github"></a></li>
-                    <li><a href="https://letterboxd.com/Jonathan_T/" target="_blank"><img src="/resources/images/icons/Letterboxd.png" alt="Letterboxd"></a></li>
+                    <li><a href="https://www.youtube.com/@jethompsn" target="_blank" aria-label="YouTube"><img src="/resources/images/icons/YouTube.png" alt="YouTube"></a></li>
+                    <li><a href="https://www.instagram.com/jethompsn/" target="_blank" aria-label="Instagram"><img src="/resources/images/icons/Instagram.png" alt="Instagram"></a></li>
+                    <li><a href="https://www.linkedin.com/in/jethompsn/" target="_blank" aria-label="LinkedIn"><img src="/resources/images/icons/LinkedIn.png" alt="LinkedIn"></a></li>
+                    <li><a href="https://github.com/jethomps0n" target="_blank" aria-label="Github"><img src="/resources/images/icons/GitHub.png" alt="Github"></a></li>
+                    <li><a href="https://letterboxd.com/Jonathan_T/" target="_blank" aria-label="Letterboxd"><img src="/resources/images/icons/Letterboxd.png" alt="Letterboxd"></a></li>
                 </ul>
             </div>
         </div>
