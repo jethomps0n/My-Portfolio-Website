@@ -321,25 +321,6 @@ body.no-scroll {
   color: hsla(242, 61%, 70%, 1);
 }
 
-.pdf-page-fallback {
-  background: #f8f8f8;
-  border: 1px solid #ddd;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.pdf-page-content {
-  padding: 20px;
-}
-
-.pdf-page-warning {
-  color: #e74c3c;
-  font-size: 0.9em;
-  margin-top: 10px;
-}
-
 /* ---- Custom Scrollbar Styles for PDF Viewer ---- */
 /* Apply to all scrollable containers in PDF viewer */
 #pdf-canvas-container::-webkit-scrollbar,
