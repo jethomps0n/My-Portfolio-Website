@@ -145,11 +145,29 @@ function bindEvents(){
     
     // Debounced search for better INP
     let searchTimeout;
-// Only enable video preview hover for non-touch devices
-if (!isTouchDevice) {
-    // Attach event listeners for hover only on non-touch devices
-    document.querySelectorAll('.thumbnail').forEach(el => {
-        el.addEventListener('mouseenter', previewStart, { passive: true });
+    searchInput.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            searchText = searchInput.value.trim().toLowerCase();
+            clearSearch.style.display = searchText ? 'block' : 'none';
+            currentPage = 1;
+            update();
+        }, 150); // 150ms debounce
+    }, { passive: true });
+    
+    clearSearch.addEventListener('click', () => {
+        searchInput.value = '';
+        searchText = '';
+        clearSearch.style.display = 'none';
+        currentPage = 1;
+        update();
+    });
+
+    // Only enable video preview hover for non-touch devices
+    if (!isTouchDevice) {
+        // Attach event listeners for hover only on non-touch devices
+        document.querySelectorAll('.thumbnail').forEach(el => {
+            el.addEventListener('mouseenter', previewStart, { passive: true });
         el.addEventListener('mouseleave', previewStop, { passive: true });
     });
 }
