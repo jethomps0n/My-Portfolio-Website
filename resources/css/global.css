@@ -798,8 +798,13 @@ body::-webkit-scrollbar-corner {
         z-index: 1000;
         transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: hsla(228, 48%, 60%, 1) transparent;
+        will-change: right;
+        backface-visibility: hidden;
+        perspective: 1000px;
+    }
+
+    .sidebar-nav.active {
+        right: 0;
     }
     
     /* Webkit scrollbar for sidebar */
@@ -818,10 +823,6 @@ body::-webkit-scrollbar-corner {
     
     .sidebar-nav::-webkit-scrollbar-thumb:hover {
         background: hsla(228, 48%, 70%, 0.8);
-    }
-    
-    .sidebar-nav.active {
-        right: 0;
     }
     
     /* Blur overlay */
@@ -907,6 +908,10 @@ body::-webkit-scrollbar-corner {
     .sidebar-nav-item:active {
         transform: translateX(5px) scale(0.98);
         background: hsla(228, 48%, 60%, 0.3);
+    }
+
+    .hamburger-menu {
+        will-change: transform;
     }
     
     /* Footer changes */

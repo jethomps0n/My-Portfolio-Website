@@ -36,8 +36,11 @@
     width: 100%;
 }
 
+:root {
+  --pdf-page-margin-bottom: 12px;
+}
 .pdf-page {
-    margin-bottom: 12px;
+    margin-bottom: var(--pdf-page-margin-bottom);
     display: block;
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }

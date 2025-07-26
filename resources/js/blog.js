@@ -213,25 +213,6 @@ function setupCategoryNavigation() {
     });
 }
 
-function filterByCategory(category) {
-    // Placeholder for future category filtering functionality
-    console.log(`Filtering by category: ${category}`);
-    
-    // Could implement:
-    // - Hide/show relevant posts
-    // - Update URL hash
-    // - Animate transitions
-    // - Show filtered state indicator
-}
-
-function trackBlogInteraction(action, data) {
-    // Analytics tracking (placeholder)
-    console.log(`Blog interaction: ${action}`, data);
-    
-    // You can integrate with analytics services here
-    // gtag('event', action, { event_category: 'blog', event_label: data });
-}
-
 // Add typing animation for blog title
 function animateBlogTitle() {
     const title = document.querySelector('.blog-title');

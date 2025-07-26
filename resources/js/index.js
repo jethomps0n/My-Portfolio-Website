@@ -66,7 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             
             const data = await response.json();
-            console.log("Fetched Data:", data);
+            // [DEBUGGING CODE]
+            // console.log("Fetched Data:", data);
             
             // Yield control while processing data to improve INP
             await new Promise(resolve => setTimeout(resolve, 0));

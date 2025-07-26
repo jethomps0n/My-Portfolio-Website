@@ -720,9 +720,9 @@ html {
     /* Mobile credits popup */
     .mobile-credits-popup {
         position: fixed;
-        bottom: -100%;
-        left: 10px;
-        right: 10px;
+        bottom: 0;
+        left: 0;
+        right: 0;
         max-width: 100%;
         height: 75vh;
         max-height: calc(100vh - 40px);
@@ -732,15 +732,19 @@ html {
         padding: 0;
         box-shadow: 0px -8px 50px rgba(0, 0, 0, 0.6);
         backdrop-filter: blur(20px) brightness(0.8);
-        transition: bottom 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         z-index: 10001;
         overflow: hidden;
         display: flex;
         flex-direction: column;
+        transform: translateY(100%);
+        will-change: transform;
+        backface-visibility: hidden;
+        perspective: 1000px;
     }
-    
+
     .mobile-credits-popup.active {
-        bottom: 10px;
+        transform: translateY(0);
     }
     
     .mobile-credits-popup .credits-header {
@@ -1123,9 +1127,9 @@ html {
     
     .mobile-version-popup {
         position: fixed;
-        bottom: -100%;
-        left: 10px;
-        right: 10px;
+        bottom: 0;
+        left: 0;
+        right: 0;
         max-width: 100%;
         height: 65vh;
         max-height: calc(100vh - 40px);
@@ -1135,15 +1139,19 @@ html {
         padding: 0;
         box-shadow: 0px -8px 50px rgba(0, 0, 0, 0.6);
         backdrop-filter: blur(20px) brightness(0.8);
-        transition: bottom 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         z-index: 10003;
         overflow: hidden;
         display: flex;
         flex-direction: column;
+        transform: translateY(100%);
+        will-change: transform;
+        backface-visibility: hidden;
+        perspective: 1000px;
     }
-    
+
     .mobile-version-popup.active {
-        bottom: 10px;
+        transform: translateY(0);
     }
     
     .mobile-version-popup .version-header {

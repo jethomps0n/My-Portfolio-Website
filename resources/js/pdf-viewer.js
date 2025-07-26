@@ -2,6 +2,10 @@ import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.3.31/
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.3.31/pdf.worker.min.mjs';
 
+const pageMarginBottom = parseInt(
+  getComputedStyle(document.documentElement).getPropertyValue('--pdf-page-margin-bottom')
+) || 0;
+
 // Optimized yielding utility with browser-specific handling
 function yieldToMain() {
   if (globalThis.scheduler?.yield) {
@@ -33,7 +37,8 @@ async function runTasksBatched(tasks) {
     try {
       await task();
     } catch (error) {
-      console.warn('Task failed:', error);
+      // [DEBUGGING CODE]
+      // console.warn('Task failed:', error);
       continue;
     }
     
@@ -122,7 +127,8 @@ class VirtualPageManager {
       
       pageData.rendered = true;
     } catch (error) {
-      console.warn(`Failed to render page ${pageNum}:`, error);
+      // [DEBUGGING CODE]
+      // console.warn(`Failed to render page ${pageNum}:`, error);
     } finally {
       this.renderQueue.delete(pageNum);
     }
@@ -182,7 +188,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       decodedFilename = decodedFilename.replace(/"/g, "'");
       return decodedFilename;
     } catch (e) {
-      console.warn('Failed to decode filename:', e);
+      // [DEBUGGING CODE]
+      // console.warn('Failed to decode filename:', e);
       return url.split('/').pop();
     }
   };
@@ -290,7 +297,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         URL.revokeObjectURL(link.href);
       }, 100);
     } catch (error) {
-      console.error('PDF download failed:', error);
+      // [DEBUGGING CODE]
+      // console.error('PDF download failed:', error);
       alert('Download failed. Please try again.');
     }
   }
@@ -367,7 +375,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           updatePageDisplay(prevScrollState.pageNum);
         }
       } catch (error) {
-        console.warn(`Failed to create page ${pageNum}:`, error);
+        // [DEBUGGING CODE]
+        // console.warn(`Failed to create page ${pageNum}:`, error);
       }
     }
     
@@ -383,14 +392,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (pages.length === 0) return;
         
         const oldPageHeight = pages[0].height / zoom * oldZoom;
-        const marginBetweenPages = 12;
         
         let accumulatedHeight = 0;
         let currentPageIndex = 0;
         
         for (let i = 0; i < pages.length; i++) {
           const pageHeight = oldPageHeight;
-          const totalPageHeight = pageHeight + (i < pages.length - 1 ? marginBetweenPages : 0);
+          const totalPageHeight = pageHeight + (i < pages.length - 1 ? pageMarginBottom : 0);
           
           if (oldScrollTop < accumulatedHeight + pageHeight) {
             currentPageIndex = i;
@@ -405,7 +413,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         let newAccumulatedHeight = 0;
         
         for (let i = 0; i < currentPageIndex; i++) {
-          newAccumulatedHeight += newPageHeight + (i < pages.length - 1 ? marginBetweenPages : 0);
+          newAccumulatedHeight += newPageHeight + (i < pages.length - 1 ? pageMarginBottom : 0);
         }
         
         const newScrollWithinPage = scrollWithinPage * scaleRatio;
@@ -416,7 +424,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function scrollToPage(num) {
       const target = pagesContainer.querySelector(`canvas[data-page="${num}"]`);
       if (target) {
-        canvasContainer.scrollTop = (target.height * (num - 1)) + (12 * (num - 1));
+        canvasContainer.scrollTop = (target.height * (num - 1)) + (pageMarginBottom * (num - 1));
       }
       updatePageDisplay(num);
       scrollSidebarThumbIntoView(num);
@@ -565,7 +573,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           }).promise;
           
         } catch (error) {
-          console.warn(`Failed to render thumbnail for page ${pageNum}:`, error);
+          // [DEBUGGING CODE]
+          // console.warn(`Failed to render thumbnail for page ${pageNum}:`, error);
         }
       };
       
@@ -597,7 +606,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       const renderSidebarPromise = renderSidebar();
       
       await Promise.all([renderPagesPromise, renderSidebarPromise]);
-    }).catch(err => console.error('Failed to load PDF:', err));
+    }).catch(err => { 
+      // [DEBUGGING CODE]
+      // console.error('Failed to load PDF:', err);
+    });
   
     // Enhanced event handlers with priority-based yielding and better user interaction feedback
     prevBtn.addEventListener('click', async () => {
@@ -752,7 +764,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
   
         iframe.onerror = () => {
-          console.error('Failed to load PDF in iframe');
+          // [DEBUGGING CODE]
+          // console.error('Failed to load PDF in iframe');
           URL.revokeObjectURL(blobUrl);
           if (document.body.contains(iframe)) {
             document.body.removeChild(iframe);
@@ -761,7 +774,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   
         document.body.appendChild(iframe);
       } catch (error) {
-        console.error('Print failed:', error);
+        // [DEBUGGING CODE]
+        // console.error('Print failed:', error);
       }
     });
   
@@ -918,7 +932,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                   
                   modalVirtualPageManager.addPage(pageNum, canvas, page, viewport);
                 } catch (error) {
-                  console.warn(`Failed to create modal page ${pageNum}:`, error);
+                  // [DEBUGGING CODE]
+                  // console.warn(`Failed to create modal page ${pageNum}:`, error);
                 }
               }
               
@@ -957,14 +972,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (pages.length === 0) return;
                 
                 const oldPageHeight = pages[0].height / modalZoom * modalOldZoom;
-                const marginBetweenPages = 12;
                 
                 let accumulatedHeight = 0;
                 let currentPageIndex = 0;
                 
                 for (let i = 0; i < pages.length; i++) {
                   const pageHeight = oldPageHeight;
-                  const totalPageHeight = pageHeight + (i < pages.length - 1 ? marginBetweenPages : 0);
+                  const totalPageHeight = pageHeight + (i < pages.length - 1 ? pageMarginBottom : 0);
                   
                   if (modalOldScrollTop < accumulatedHeight + pageHeight) {
                     currentPageIndex = i;
@@ -979,7 +993,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 let newAccumulatedHeight = 0;
                 
                 for (let i = 0; i < currentPageIndex; i++) {
-                  newAccumulatedHeight += newPageHeight + (i < pages.length - 1 ? marginBetweenPages : 0);
+                  newAccumulatedHeight += newPageHeight + (i < pages.length - 1 ? pageMarginBottom : 0);
                 }
                 
                 const newScrollWithinPage = scrollWithinPage * scaleRatio;
@@ -1007,7 +1021,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             function scrollModalToPage(num) {
                 const target = modalPagesContainer.querySelector(`canvas[data-page="${num}"]`);
                 if (target) {
-                    modalCanvasContainer.scrollTop = (target.height * (num - 1)) + (12 * (num - 1));
+                    modalCanvasContainer.scrollTop = (target.height * (num - 1)) + (pageMarginBottom * (num - 1));
                 }
                 updateModalPageDisplay(num);
             }
@@ -1090,7 +1104,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                       modalSidebar.appendChild(thumbWrapper);
                       await p.render({ canvasContext: c.getContext('2d'), viewport: v }).promise;
                     } catch (error) {
-                      console.warn(`Failed to render modal thumbnail ${i}:`, error);
+                      // [DEBUGGING CODE]
+                      // console.warn(`Failed to render modal thumbnail ${i}:`, error);
                     }
                   }
                 });
@@ -1204,7 +1219,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                       };
   
                       iframe.onerror = () => {
-                        console.error('Failed to load PDF in iframe');
+                        // [DEBUGGING CODE]
+                        // console.error('Failed to load PDF in iframe');
                         URL.revokeObjectURL(blobUrl);
                         if (document.body.contains(iframe)) {
                           document.body.removeChild(iframe);
@@ -1213,7 +1229,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   
                       document.body.appendChild(iframe);
                     } catch (error) {
-                      console.error('Print failed:', error);
+                      // [DEBUGGING CODE]
+                      // console.error('Print failed:', error);
                     }
                 });
   

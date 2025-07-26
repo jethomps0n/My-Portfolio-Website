@@ -33,7 +33,8 @@ function seekToTimestamp(seconds) {
             // Direct video element - use native currentTime and play
             videoElement.currentTime = seconds;
             videoElement.play();
-            console.log(`Seeking to ${seconds} seconds and playing native video element`);
+            // [DEBUGGING CODE]
+            // console.log(`Seeking to ${seconds} seconds and playing native video element`);
         } else if (iframe) {
             // Handle iframe embeds
             updateIframeTimestamp(iframe, seconds);
@@ -74,7 +75,8 @@ function updateIframeTimestamp(iframe, seconds) {
         
         // Force reload the iframe to apply changes
         iframe.src = newSrc;
-        console.log(`Updated YouTube iframe to start at ${seconds}s with autoplay`);
+        // [DEBUGGING CODE]
+        // console.log(`Updated YouTube iframe to start at ${seconds}s with autoplay`);
         
     } else if (currentSrc.includes('drive.google.com')) {
         // Google Drive videos
@@ -85,7 +87,8 @@ function updateIframeTimestamp(iframe, seconds) {
             newSrc = newSrc + `&t=${seconds}`;
         }
         iframe.src = newSrc;
-        console.log(`Updated Google Drive video to start at ${seconds}s`);
+        // [DEBUGGING CODE]
+        // console.log(`Updated Google Drive video to start at ${seconds}s`);
         
     } else {
         // For other iframe sources, try URL manipulation with autoplay
@@ -152,7 +155,8 @@ function processTimestamps() {
             });
         });
         
-        console.log(`Processed ${timestampLinks.length} timestamp(s) in description`);
+        // [DEBUGGING CODE]
+        // console.log(`Processed ${timestampLinks.length} timestamp(s) in description`);
     }
 }
 
@@ -172,14 +176,16 @@ function initializeVideoPlayer() {
             // Direct video element - use native controls
             player = playerElement;
             playerType = 'video';
-            console.log('Found native video element');
+            // [DEBUGGING CODE]
+            // console.log('Found native video element');
         } else if (playerElement.classList.contains('plyr__video-embed')) {
             // Embedded video (YouTube, etc.) - handle iframe directly
             const iframe = playerElement.querySelector('iframe');
             if (iframe) {
                 if (iframe.src.includes('youtube.com')) {
                     playerType = 'youtube';
-                    console.log('Found YouTube embed');
+                    // [DEBUGGING CODE]
+                    // console.log('Found YouTube embed');
                 } else {
                     playerType = 'iframe';
                     console.log('Found iframe embed');
@@ -196,7 +202,8 @@ function initializeVideoPlayer() {
 
 // Enhanced error handling for video player initialization
 function handlePlayerError(error) {
-    console.warn('Video player initialization error:', error);
+    // [DEBUGGING CODE]
+    // console.warn('Video player initialization error:', error);
     // Fallback: still process timestamps even if player fails to initialize
     processTimestamps();
 }
