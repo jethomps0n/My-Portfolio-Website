@@ -7,6 +7,41 @@
     max-width: 1300px;
     position: relative;
 }
+/* --- Custom Scrollbar for #credits-container (Safari only) --- */
+/*
+   This block targets only #credits-container scrollbars in Safari (WebKit),
+   without affecting global scrollbars or other elements. Chrome/Firefox unaffected.
+   If you update global scrollbar styles, do so in global.css, not here.
+*/
+@media not all and (min-resolution: 0.001dpcm) {
+  @supports (-webkit-touch-callout: none) {
+    #credits-container::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+    #credits-container::-webkit-scrollbar-track {
+        background: hsla(201, 100%, 10%, 1);
+        border-radius: 5px;
+    }
+    #credits-container::-webkit-scrollbar-thumb {
+        background: hsla(228, 48%, 60%, 1);
+        border-radius: 5px;
+        border: 2px solid hsla(201, 100%, 10%, 1);
+    }
+    #credits-container::-webkit-scrollbar-thumb:hover {
+        background: hsla(228, 48%, 70%, 1);
+    }
+    #credits-container::-webkit-scrollbar-thumb:active {
+        background: hsla(228, 48%, 50%, 1);
+    }
+  }
+}
+/*
+  --- END Custom Scrollbar for #credits-container ---
+  This ensures only #credits-container gets the custom scrollbar in Safari.
+  No global scrollbars are affected. If you see global scrollbars break,
+  check for accidental overrides or blank ::-webkit-scrollbar rules elsewhere.
+*/
 
 #content-box {
     display: flex;
@@ -582,6 +617,8 @@ html {
 .mobile-version-overlay {
     display: none;
 }
+
+
 
 /* 1124px and below: Smaller credits section */
 @media (max-width: 1124px) {
@@ -1488,4 +1525,28 @@ html {
     .credits-button {
         font-size: 0.52rem;
     }
+}
+
+#credits-container::-webkit-scrollbar {
+    width: 10px !important;
+    height: 10px !important;
+}
+
+#credits-container::-webkit-scrollbar-track {
+    background: hsla(201, 100%, 10%, 1) !important;
+    border-radius: 5px !important;
+}
+
+#credits-container::-webkit-scrollbar-thumb {
+    background: hsla(228, 48%, 60%, 1) !important;
+    border-radius: 5px !important;
+    border: 2px solid hsla(201, 100%, 10%, 1) !important;
+}
+
+#credits-container::-webkit-scrollbar-thumb:hover {
+    background: hsla(228, 48%, 70%, 1) !important;
+}
+
+#credits-container::-webkit-scrollbar-thumb:active {
+    background: hsla(228, 48%, 50%, 1) !important;
 }
