@@ -6,11 +6,10 @@ tags: ["The Walking Dead", "Film & TV"]
 excerpt: "An ever-updating collection of my favorite edits from The Walking Dead"
 permalink: "/blog/posts/{{ title | slugify }}/"
 layout: "blog-post.njk"
-# addcss: >
-#     <link rel="stylesheet" href="/resources/css/pdf-viewer.css">
-#     <link rel="stylesheet" href="/resources/css/video-viewer.css">
-# addjs: >
-#     <script type="module" src="/resources/js/pdf-viewer.js" defer></script>
+eleventyComputed:
+    og_title: "{{ title }} - Jonathan Thompson"
+    description: "{{ excerpt | safe }}."
+    canonical: "https://itsjonathanthompson.com/blog/posts/{{ title | slugify }}/"
 ---
 
 <figcaption style="text-align:center;"><strong>Spoilers Ahead</strong> for <em>The Walking Dead</em> (and any related spin-offs)</figcaption>

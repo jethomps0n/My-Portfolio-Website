@@ -6,11 +6,10 @@ tags: ["Writing", "Film & TV"]
 excerpt: "An appreciation of Christopher Nolan and Scott M. Gimple's art of non-chronological storytelling"
 permalink: "/blog/posts/{{ title | slugify }}/"
 layout: "blog-post.njk"
-# addcss: >
-#     <link rel="stylesheet" href="/resources/css/pdf-viewer.css">
-#     <link rel="stylesheet" href="/resources/css/video-viewer.css">
-# addjs: >
-#     <script type="module" src="/resources/js/pdf-viewer.js" defer></script>
+eleventyComputed:
+    og_title: "{{ title }} - Jonathan Thompson"
+    description: "{{ excerpt | safe }}."
+    canonical: "https://itsjonathanthompson.com/blog/posts/{{ title | slugify }}/"
 ---
 
 Most of my favorite stories are told non-chronologically. Two of my favorite writers, Christopher Nolan and Scott M. Gimple, achieve a structure for their stories that goes unmatched. Even if the narrative isn't outwardly non-chronological - it is on the inside.

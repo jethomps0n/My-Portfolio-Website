@@ -1,6 +1,10 @@
 ---
 layout: base.njk
 title: Jonathan Thompson
+og_title: Jonathan Thompson - Writer, Editor, Filmmaker
+description: Jonathan Thompson is a writer, editor, and filmmaker based in Atlanta, GA. Explore his projects in film, screenplays, and more.
+canonical: https://itsjonathanthompson.com/
+og_image:
 pagecss: <link rel="stylesheet" href="/resources/css/index.css">
 pagejs: <script src="/resources/js/index.js" defer></script>
 ---
@@ -22,8 +26,8 @@ pagejs: <script src="/resources/js/index.js" defer></script>
             </a>
             <div class="info">
                 <a class="expand" href="/explore/{{ i.slug }}" tabindex="-1" aria-hidden="true"></a>
-                <h2 class="contentTitle">{{ i.title }}</h2>
-                <h3 class="date"><time datetime="{{ i.date }}">{{ i.date }}</time></h3>
+                <h1 class="contentTitle">{{ i.title }}</h1>
+                <h2 class="date"><time datetime="{{ i.date }}">{{ i.date }}</time></h2>
                 {% set roles = i.role.split('/') %}
                 <div class="roles" aria-label="Roles">
                     {% for r in roles %}<a class="role-tag" href="/explore/?roles={{ r | urlencode }}">{{ r }}</a>{% endfor %}

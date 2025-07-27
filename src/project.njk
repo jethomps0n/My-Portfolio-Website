@@ -8,6 +8,10 @@ permalink: "/explore/{{ i.slug }}/"
 layout: base.njk
 eleventyComputed:
     title: "{{ i.title }}"
+    og_title: "{{ i.title }} - Jonathan Thompson"
+    description: "{{ i.description | truncate(160) }}"
+    canonical: "https://itsjonathanthompson.com/explore/{{ i.slug }}/"
+    og_image:
     pagecss: >
         <link rel="stylesheet" href="/resources/css/project.css">
         {% if i.Screenplay == "Sole" %}<link rel="stylesheet" href="/resources/css/pdf-viewer.css">{% endif %}
@@ -129,7 +133,6 @@ eleventyComputed:
                     <a class="type-tag" href="/explore/?types={{ i.type | urlencode }}">{{ i.type }}</a>
                 </div>
                 
-                <!-- Mobile-specific buttons (1020px and below) -->
                 <div class="project-buttons">
                     <button class="credits-button" id="credits-toggle" aria-label="Show credits" title="Show credits">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="#fff" d="M8 8.5c3.85 0 7 2.5 7 4.5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2c0-2 3.15-4.5 7-4.5M8 10c-1.61 0-3.064.526-4.092 1.234C2.798 12.001 2.5 12.733 2.5 13a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5c0-.267-.297-1-1.408-1.766C11.064 10.526 9.609 10 8 10m0-9a3.5 3.5 0 1 1 0 7a3.5 3.5 0 0 1 0-7m0 1.5a2 2 0 1 0 0 4a2 2 0 0 0 0-4"/></svg>
@@ -214,7 +217,6 @@ eleventyComputed:
     </div>
 </div>
 
-<!-- Mobile Credits Popup -->
 <div class="mobile-credits-overlay" id="mobile-credits-overlay" role="dialog" aria-modal="true" aria-label="Mobile credits popup">
     <div class="mobile-credits-popup">
         <div class="credits-header">
@@ -238,7 +240,6 @@ eleventyComputed:
     </div>
 </div>
 
-<!-- Mobile Version History Popup -->
 {% if (i.versioning == "Yes" or i.versioning == "Completed") and i.versionInfo and i.versionInfo.currentVersion %}
 <div class="mobile-version-overlay" id="mobile-version-overlay" role="dialog" aria-modal="true" aria-label="Mobile screenplay version history popup">
     <div class="mobile-version-popup">

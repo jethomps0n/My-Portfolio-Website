@@ -6,11 +6,10 @@ tags: ["Sound Design"]
 excerpt: "Exploring the significance of sound in film and its impact on film history"
 permalink: "/blog/posts/{{ title | slugify }}/"
 layout: "blog-post.njk"
-# addcss: >
-#     <link rel="stylesheet" href="/resources/css/pdf-viewer.css">
-#     <link rel="stylesheet" href="/resources/css/video-viewer.css">
-# addjs: >
-#     <script type="module" src="/resources/js/pdf-viewer.js" defer></script>
+eleventyComputed:
+    og_title: "{{ title }} - Jonathan Thompson"
+    description: "{{ excerpt | safe }}."
+    canonical: "https://itsjonathanthompson.com/blog/posts/{{ title | slugify }}/"
 ---
 
 Sound in film is something that I think not a lot of people discuss. Not that it doesn’t get

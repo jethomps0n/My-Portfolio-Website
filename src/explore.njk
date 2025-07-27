@@ -1,18 +1,20 @@
 ---
 layout: base.njk
 title: Explore
+og_title: Explore - Jonathan Thompson
+description: Explore the projects and works of Jonathan Thompson, showcasing a variety of roles including writing, editing, directing, and producing across the world of film and television.
+canonical: https://itsjonathanthompson.com/explore/
+og_image:
 pagecss: <link rel="stylesheet" href="/resources/css/explore.css">
 pagejs: <script src="/resources/js/explore.js" defer></script>
 ---
 
 <div id="explore-page">
-    <!-- Main search bar - always visible -->
     <div id="search-container" class="pop-in">
         <input id="search-input" type="text" placeholder="Search..." />
         <button id="clear-search" aria-label="Clear search">&#x2715;</button>
     </div>
     
-    <!-- Mobile search and filters layout - only shown below 1020px -->
     <div class="search-and-filters">
         <div id="search-container" class="search-container">
             <input id="search-input" type="text" placeholder="Search..." />
@@ -114,7 +116,6 @@ pagejs: <script src="/resources/js/explore.js" defer></script>
     </div>
 </div>
 
-<!-- Mobile Filter Popup -->
 <div class="mobile-filter-overlay" id="mobile-filter-overlay"></div>
 <div class="mobile-filter-popup" id="mobile-filter-popup">
     <div class="mobile-filter-header">
@@ -122,7 +123,6 @@ pagejs: <script src="/resources/js/explore.js" defer></script>
         <button class="mobile-filter-close" id="mobile-filter-close" aria-label="Close filters">&times;</button>
     </div>
     <div class="mobile-filter-content" id="mobile-filter-content">
-        <!-- Filter content will be copied here -->
     </div>
     <div class="mobile-filter-footer">
         <button class="clear-filters" id="mobile-clear-filters" aria-label="Clear all filters">Clear All</button>

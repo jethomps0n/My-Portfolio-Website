@@ -6,9 +6,13 @@ pagination:
   data: collections.tagPaginationData
   size: 1
   alias: tagPage
-permalink: "/blog/tags/{{ tagPage.tag | slugify }}/{% if tagPage.pageNumber > 0 %}page-{{ tagPage.pageNumber + 1 }}/{% endif %}index.html"
+permalink: "/blog/tags/{{ tagPage.tag | slugify }}/{% if tagPage.pageNumber > 0 %}page-{{ tagPage.pageNumber + 1 }}/{% endif %}"
 eleventyComputed:
   title: "{{ tagPage.tag | titleCase }} Posts"
+  og_title: "{{ tagPage.tag | titleCase }} Posts - Jonathan Thompson"
+  description: "Browse all my blog posts tagged with {{ tagPage.tag | titleCase }}."
+  canonical: "https://itsjonathanthompson.com/blog/tags/{{ tagPage.tag | slugify }}/"
+  og_image:
 ---
 
 <div id="blog-page">

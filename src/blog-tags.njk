@@ -1,6 +1,10 @@
 ---
 layout: base.njk
 title: Blog Tags
+og_title: Blog Tags - Jonathan Thompson
+description: Sort through my blog posts by tags and topics.
+canonical: https://itsjonathanthompson.com/blog/tags/
+og_image:
 pagecss: <link rel="stylesheet" href="/resources/css/blog.css">
 pagejs: <script src="/resources/js/blog.js" defer></script>
 permalink: "/blog/tags/"
@@ -21,7 +25,7 @@ permalink: "/blog/tags/"
         {% for tag in collections.blogTags %}
         {% set tagPosts = collections.blogPosts | selectattr("data.tags", "contains", tag) %}
         <div class="tag-card">
-            <h3><a href="/blog/tags/{{ tag | slugify }}/" class="tag-link" aria-label="Show posts tagged {{ tag | titleCase }}">{{ tag | titleCase }}</a></h3>
+            <h2><a href="/blog/tags/{{ tag | slugify }}/" class="tag-link" aria-label="Show posts tagged {{ tag | titleCase }}">{{ tag | titleCase }}</a></h2>
             <span class="tag-count">{{ tagPosts.length }} post{% if tagPosts.length != 1 %}s{% endif %}</span>
             <div class="tag-preview">
                 {% for post in tagPosts | reverse | slice(0, 2) %}

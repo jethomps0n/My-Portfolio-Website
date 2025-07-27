@@ -6,11 +6,10 @@ tags: ["Post-Production", "Sound Design", "Rescores"]
 excerpt: "My step-by-step guide in crafting a beautifully fitting rescore"
 permalink: "/blog/posts/{{ title | slugify }}/"
 layout: "blog-post.njk"
-# addcss: >
-#     <link rel="stylesheet" href="/resources/css/pdf-viewer.css">
-#     <link rel="stylesheet" href="/resources/css/video-viewer.css">
-# addjs: >
-#     <script type="module" src="/resources/js/pdf-viewer.js" defer></script>
+eleventyComputed:
+    og_title: "{{ title }} - Jonathan Thompson"
+    description: "{{ excerpt | safe }}."
+    canonical: "https://itsjonathanthompson.com/blog/posts/{{ title | slugify }}/"
 ---
 
 <figcaption style="text-align:center;"><strong>Spoilers Ahead</strong> for <em>The Last of Us Part II</em>, <em>Kill Bill: Vol. 2</em>, and <em>Ad Astra</em></figcaption>

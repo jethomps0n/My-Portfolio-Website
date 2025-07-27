@@ -6,11 +6,10 @@ tags: ["Film & TV", "Writing", "Video Games", "Critique"]
 excerpt: "My thoughts on the second season of HBO's The Last of Us"
 permalink: "/blog/posts/{{ title | slugify }}/"
 layout: "blog-post.njk"
-# addcss: >
-#     <link rel="stylesheet" href="/resources/css/pdf-viewer.css">
-#     <link rel="stylesheet" href="/resources/css/video-viewer.css">
-# addjs: >
-#     <script type="module" src="/resources/js/pdf-viewer.js" defer></script>
+eleventyComputed:
+    og_title: "{{ title }} - Jonathan Thompson"
+    description: "{{ excerpt | safe }}."
+    canonical: "https://itsjonathanthompson.com/blog/posts/{{ title | slugify }}/"
 ---
 
 <figcaption style="text-align:center;"><strong>Spoilers Ahead</strong> for <em>The Last of Us Part I</em>, <em>The Last of Us Part II</em>, <em>The Last of Us Season 1</em>, and <em>The Last of Us Season 2</em></figcaption>
