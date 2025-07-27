@@ -511,18 +511,18 @@ body > header {
     border-color: hsla(0, 0%, 25%, 0.8);
 }
 
-.tag-card h3 {
+.tag-card h2 {
     margin: 0 0 8px 0;
     font-size: 1.3rem;
     font-weight: 600;
 }
 
-.tag-card h3 a {
+.tag-card h2 a {
     color: hsla(0, 0%, 95%, 1);
     text-decoration: none;
 }
 
-.tag-card h3 a:hover {
+.tag-card h2 a:hover {
     color: hsla(210, 90%, 60%, 1);
 }
 

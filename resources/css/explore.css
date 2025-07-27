@@ -550,7 +550,7 @@ button.show-more:hover {
     flex-direction: column;
 }
 
-.result-info h4 {
+.result-info h1 {
     margin: 0 0 5px 0;
     font-size: 1rem;
     font-weight: 700;
@@ -715,7 +715,7 @@ button.show-more:hover {
         height: 170px;
     }
 
-    .result-info h4 {
+    .result-info h1 {
         font-size: 0.85rem;
     }
     
@@ -1177,7 +1177,7 @@ button.show-more:hover {
         height: 210px;
     }
     
-    .result-info h4 {
+    .result-info h1 {
         font-size: 1.1rem;
     }
     
@@ -1232,7 +1232,7 @@ button.show-more:hover {
     }
     
     /* Title styling */
-    .result-info h4 {
+    .result-info h1 {
         font-size: 1em;
         margin-bottom: 0;
     }
