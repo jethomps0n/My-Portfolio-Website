@@ -53,6 +53,27 @@ async function runTasksBatched(tasks) {
   }
 }
 
+function getZoomText(value) {
+    const zoomTexts = {
+        'auto': 'Automatic Zoom',
+        'fit': 'Page Fit',
+        'width': 'Page Width',
+        '0.25': '25%',
+        '0.5': '50%',
+        '0.75': '75%',
+        '1': '100%',
+        '1.25': '125%',
+        '1.5': '150%',
+        '1.75': '175%',
+        '2': '200%',
+        '2.25': '225%',
+        '2.5': '250%',
+        '2.75': '275%',
+        '3': '300%'
+    };
+    return zoomTexts[value] || 'Automatic Zoom';
+}
+
 // Virtual Page Manager with Safari/Firefox optimizations
 class VirtualPageManager {
   constructor(pagesContainer, canvasContainer) {
@@ -232,7 +253,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const options = dropdownOptions.querySelectorAll('li');
       
       // Set initial value
-      selectedValue.textContent = zoomSelect.options[zoomSelect.selectedIndex].text;
+      selectedValue.textContent = getZoomText(zoomSelect.value);
       
       // Toggle dropdown visibility
       trigger.addEventListener('click', (e) => {
@@ -244,8 +265,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       options.forEach(option => {
           option.addEventListener('click', () => {
               const value = option.dataset.value;
-              zoomSelect.value = value;
-              selectedValue.textContent = option.textContent;
+              zoomSelect.value = value;  // Update hidden input value
+              selectedValue.textContent = getZoomText(value);  // Update display text
               dropdownOptions.classList.remove('show');
 
               option.classList.add('selected');
@@ -254,7 +275,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                       opt.classList.remove('selected');
                   }
               });
-
+              
               // Trigger change event
               zoomSelect.dispatchEvent(new Event('change'));
           });
@@ -270,7 +291,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Update function for programmatic changes
       return {
           update: () => {
-              selectedValue.textContent = zoomSelect.options[zoomSelect.selectedIndex].text;
+              selectedValue.textContent = getZoomText(zoomSelect.value);
+
+              options.forEach(opt => {
+                  if (opt.dataset.value === zoomSelect.value) {
+                      opt.classList.add('selected');
+                  } else {
+                      opt.classList.remove('selected');
+                  }
+              });
           }
       };
   }
@@ -279,6 +308,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const customZoom = initCustomZoomDropdown();
 
   zoomSelect.value = '1'; // Explicitly set to 100% on page load
+  customZoom.update();
 
   // Create mobile placeholder
   const createMobilePlaceholder = () => {
@@ -937,7 +967,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Initialize modal dropdown
             function updateModalDropdown() {
-                modalSelectedValue.textContent = modalZoomSelect.options[modalZoomSelect.selectedIndex].text;
+                modalSelectedValue.textContent = getZoomText(modalZoomSelect.value);
+
+                modalDropdownOptions.querySelectorAll('li').forEach(opt => {
+                    if (opt.dataset.value === modalZoomSelect.value) {
+                        opt.classList.add('selected');
+                    } else {
+                        opt.classList.remove('selected');
+                    }
+                });
             }
             
             // Set up modal dropdown event listeners
@@ -949,6 +987,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             modalDropdownOptions.addEventListener('click', (e) => {
                 const option = e.target.closest('li');
                 if (!option) return;
+                
+                const value = option.dataset.value;
+                modalZoomSelect.value = value;
+                modalSelectedValue.textContent = getZoomText(value);
+                modalDropdownOptions.classList.remove('show');
 
                 option.classList.add('selected');
                 modalDropdownOptions.querySelectorAll('li').forEach(opt => {
@@ -957,12 +1000,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 });
                 
-                const value = option.dataset.value;
-                modalZoomSelect.value = value;
-                modalSelectedValue.textContent = option.textContent;
-                modalDropdownOptions.classList.remove('show');
-                
-                // Trigger zoom change
+                // Trigger change event
                 modalZoomSelect.dispatchEvent(new Event('change'));
             });
 
@@ -1422,8 +1460,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                 zoom = finalState.zoom;
                 zoomMode = finalState.zoomMode;
                 
-                zoomSelect.value = modalZoomSelect.value;
+                zoomSelect.value = finalState.zoomMode === 'custom' ? 
+                  finalState.zoom.toString() : 
+                  finalState.zoomMode;
                 pageNumInput.value = finalState.pageNum;
+
+                const selectedValue = document.querySelector('.custom-zoom-dropdown .selected-value');
+                if (selectedValue) {
+                    selectedValue.textContent = getZoomText(zoomSelect.value);
+
+                    // Remove any existing selected class
+                    const options = document.querySelectorAll('.custom-zoom-dropdown .dropdown-options li');
+                    options.forEach(opt => opt.classList.remove('selected'));
+                    const selectedOption = document.querySelector(`.custom-zoom-dropdown .dropdown-options li[data-value="${zoomSelect.value}"]`);
+                    if (selectedOption) {
+                        selectedOption.classList.add('selected');
+                    }
+                }
                 
                 if (finalState.sidebarOpen !== sidebar.classList.contains('open')) {
                     sidebar.classList.toggle('open');

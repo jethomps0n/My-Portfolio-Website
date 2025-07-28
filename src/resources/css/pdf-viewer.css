@@ -184,6 +184,10 @@ position: absolute;
     display: none !important;
 }
 
+#pdf-zoom-select {
+    display: none !important;
+}
+
 /* Right section - Download, print, expand/close */
 .pdf-controls-right {
   display: flex;
