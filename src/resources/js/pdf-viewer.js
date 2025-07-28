@@ -832,38 +832,45 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     printBtn.addEventListener('click', async () => {
       try {
-        const response = await fetch(url);
-        const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-  
-        const iframe = document.createElement("iframe");
-        iframe.style.position = "fixed";
-        iframe.style.right = "100%";
-        iframe.style.bottom = "100%";
-        iframe.src = blobUrl;
-  
-        iframe.onload = () => {
-          iframe.contentWindow.focus();
-          iframe.contentWindow.print();
-          
-          setTimeout(() => {
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+        if (isMobile) {
+          // For mobile, open PDF in a new tab for proper printing
+          window.open(url, '_blank');
+        } else {
+          const response = await fetch(url);
+          const blob = await response.blob();
+          const blobUrl = URL.createObjectURL(blob);
+    
+          const iframe = document.createElement("iframe");
+          iframe.style.position = "fixed";
+          iframe.style.right = "100%";
+          iframe.style.bottom = "100%";
+          iframe.src = blobUrl;
+    
+          iframe.onload = () => {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+            
+            setTimeout(() => {
+              URL.revokeObjectURL(blobUrl);
+              if (document.body.contains(iframe)) {
+                document.body.removeChild(iframe);
+              }
+            }, 600000);
+          };
+    
+          iframe.onerror = () => {
+            // [DEBUGGING CODE]
+            // console.error('Failed to load PDF in iframe');
             URL.revokeObjectURL(blobUrl);
             if (document.body.contains(iframe)) {
               document.body.removeChild(iframe);
             }
-          }, 600000);
-        };
-  
-        iframe.onerror = () => {
-          // [DEBUGGING CODE]
-          // console.error('Failed to load PDF in iframe');
-          URL.revokeObjectURL(blobUrl);
-          if (document.body.contains(iframe)) {
-            document.body.removeChild(iframe);
-          }
-        };
-  
-        document.body.appendChild(iframe);
+          };
+    
+          document.body.appendChild(iframe);
+        }
       } catch (error) {
         // [DEBUGGING CODE]
         // console.error('Print failed:', error);
@@ -1349,38 +1356,44 @@ document.addEventListener('DOMContentLoaded', async () => {
   
                 modalPrintBtn.addEventListener('click', async () => {
                     try {
-                      const response = await fetch(url);
-                      const blob = await response.blob();
-                      const blobUrl = URL.createObjectURL(blob);
-  
-                      const iframe = document.createElement("iframe");
-                      iframe.style.position = "fixed";
-                      iframe.style.right = "100%";
-                      iframe.style.bottom = "100%";
-                      iframe.src = blobUrl;
-  
-                      iframe.onload = () => {
-                        iframe.contentWindow.focus();
-                        iframe.contentWindow.print();
-                        
-                        setTimeout(() => {
+                      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+                      if (isMobile) {
+                        window.open(url, '_blank');
+                      } else {
+                        const response = await fetch(url);
+                        const blob = await response.blob();
+                        const blobUrl = URL.createObjectURL(blob);
+    
+                        const iframe = document.createElement("iframe");
+                        iframe.style.position = "fixed";
+                        iframe.style.right = "100%";
+                        iframe.style.bottom = "100%";
+                        iframe.src = blobUrl;
+    
+                        iframe.onload = () => {
+                          iframe.contentWindow.focus();
+                          iframe.contentWindow.print();
+                          
+                          setTimeout(() => {
+                            URL.revokeObjectURL(blobUrl);
+                            if (document.body.contains(iframe)) {
+                              document.body.removeChild(iframe);
+                            }
+                          }, 600000);
+                        };
+    
+                        iframe.onerror = () => {
+                          // [DEBUGGING CODE]
+                          // console.error('Failed to load PDF in iframe');
                           URL.revokeObjectURL(blobUrl);
                           if (document.body.contains(iframe)) {
                             document.body.removeChild(iframe);
                           }
-                        }, 600000);
-                      };
-  
-                      iframe.onerror = () => {
-                        // [DEBUGGING CODE]
-                        // console.error('Failed to load PDF in iframe');
-                        URL.revokeObjectURL(blobUrl);
-                        if (document.body.contains(iframe)) {
-                          document.body.removeChild(iframe);
-                        }
-                      };
-  
-                      document.body.appendChild(iframe);
+                        };
+    
+                        document.body.appendChild(iframe);
+                      }
                     } catch (error) {
                       // [DEBUGGING CODE]
                       // console.error('Print failed:', error);
