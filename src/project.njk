@@ -55,7 +55,36 @@ eleventyComputed:
                                 <button id="pdf-zoom-out" title="Zoom out" aria-label="Zoom out">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M19 11H5a1 1 0 0 0 0 2h14a1 1 0 0 0 0-2"/></svg>
                                 </button>
-                                <select id="pdf-zoom-select" aria-label="PDF zoom level">
+
+                                <div class="custom-zoom-dropdown">
+                                    <button class="dropdown-trigger" aria-label="PDF zoom level" title="Select zoom level">
+                                        <span class="selected-value">Automatic Zoom</span>
+                                        <span class="dropdown-icon">▼</span>
+                                    </button>
+                                    <ul class="dropdown-options">
+                                        <li data-value="auto">Automatic Zoom</li>
+                                        <li data-value="fit">Page Fit</li>
+                                        <li data-value="width">Page Width</li>
+                                        <li data-value="0.5">50%</li>
+                                        <li data-value="0.75">75%</li>
+                                        <li data-value="1">100%</li>
+                                        <li data-value="1.25">125%</li>
+                                        <li data-value="1.5">150%</li>
+                                        <li data-value="2">200%</li>
+                                        <li data-value="3">300%</li>
+                                        <li data-value="0.25" style="display: none;">25%</li>
+                                        <li data-value="1.75" style="display: none;">175%</li>
+                                        <li data-value="2.25" style="display: none;">225%</li>
+                                        <li data-value="2.5" style="display: none;">250%</li>
+                                        <li data-value="2.75" style="display: none;">275%</li>
+                                    </ul>
+                                </div>
+
+                                <button id="pdf-zoom-in" title="Zoom in" aria-label="Zoom in">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M19 11h-6V5a1 1 0 0 0-2 0v6H5a1 1 0 0 0 0 2h6v6a1 1 0 0 0 2 0v-6h6a1 1 0 0 0 0-2"/></svg>
+                                </button>
+
+                                <select id="pdf-zoom-select" aria-label="PDF zoom level" style="display: none;">
                                     <option value="auto">Automatic Zoom</option>
                                     <option value="fit">Page Fit</option>
                                     <option value="width">Page Width</option>
@@ -72,9 +101,6 @@ eleventyComputed:
                                     <option value="2.75" style="display: none;">275%</option>
                                     <option value="3">300%</option>
                                 </select>
-                                <button id="pdf-zoom-in" title="Zoom in" aria-label="Zoom in">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M19 11h-6V5a1 1 0 0 0-2 0v6H5a1 1 0 0 0 0 2h6v6a1 1 0 0 0 2 0v-6h6a1 1 0 0 0 0-2"/></svg>
-                                </button>
                             </div>
                         </div>
                         <div class="pdf-controls-right">

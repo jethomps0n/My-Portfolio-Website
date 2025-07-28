@@ -214,7 +214,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const zoomInBtn = document.getElementById('pdf-zoom-in');
   const zoomOutBtn = document.getElementById('pdf-zoom-out');
   const zoomSelect = document.getElementById('pdf-zoom-select');
-  zoomSelect.value = '1'; // Explicitly set to 100% on page load
   const downloadBtn = document.getElementById('pdf-download');
   const printBtn = document.getElementById('pdf-print');
   const sidebar = document.getElementById('pdf-sidebar');
@@ -224,6 +223,62 @@ document.addEventListener('DOMContentLoaded', async () => {
   let modal = null;
   const frameParent = frame.parentElement;
   const frameNextSibling = frame.nextElementSibling;
+
+  function initCustomZoomDropdown() {
+      const container = document.querySelector('.custom-zoom-dropdown');
+      const trigger = container.querySelector('.dropdown-trigger');
+      const selectedValue = container.querySelector('.selected-value');
+      const dropdownOptions = container.querySelector('.dropdown-options');
+      const options = dropdownOptions.querySelectorAll('li');
+      
+      // Set initial value
+      selectedValue.textContent = zoomSelect.options[zoomSelect.selectedIndex].text;
+      
+      // Toggle dropdown visibility
+      trigger.addEventListener('click', (e) => {
+          e.stopPropagation();
+          dropdownOptions.classList.toggle('show');
+      });
+      
+      // Handle option selection
+      options.forEach(option => {
+          option.addEventListener('click', () => {
+              const value = option.dataset.value;
+              zoomSelect.value = value;
+              selectedValue.textContent = option.textContent;
+              dropdownOptions.classList.remove('show');
+
+              option.classList.add('selected');
+              options.forEach(opt => {
+                  if (opt !== option) {
+                      opt.classList.remove('selected');
+                  }
+              });
+
+              // Trigger change event
+              zoomSelect.dispatchEvent(new Event('change'));
+          });
+      });
+      
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+          if (!container.contains(e.target)) {
+              dropdownOptions.classList.remove('show');
+          }
+      });
+      
+      // Update function for programmatic changes
+      return {
+          update: () => {
+              selectedValue.textContent = zoomSelect.options[zoomSelect.selectedIndex].text;
+          }
+      };
+  }
+
+  // Initialize custom dropdown
+  const customZoom = initCustomZoomDropdown();
+
+  zoomSelect.value = '1'; // Explicitly set to 100% on page load
 
   // Create mobile placeholder
   const createMobilePlaceholder = () => {
@@ -658,6 +713,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       zoom = Math.min(zoom + 0.25, 3);
       zoomSelect.value = zoom;
+
+      customZoom.update(); 
       
       // Yield before heavy rendering work to show immediate feedback
       await yieldToMain();
@@ -691,6 +748,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       zoom = Math.max(zoom - 0.25, 0.25);
       zoomSelect.value = zoom;
+
+      customZoom.update(); 
       
       // Yield before heavy rendering work
       await yieldToMain();
@@ -722,6 +781,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         zoom = parseFloat(val);
         currentZoom = zoom;
       }
+
+      customZoom.update(); 
       
       // Yield before heavy rendering work
       await yieldToMain();
@@ -833,7 +894,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 scrollLeftWithinPage,
                 pageHeight: currentPageElement?.height || 0,
                 pageWidth: currentPageElement?.width || 0,
-                sidebarOpen: sidebar.classList.contains('open')
+                sidebarOpen: sidebar.classList.contains('open'),
+                customZoomValue: zoomSelect.value
             };
   
             // Create modal
@@ -863,14 +925,61 @@ document.addEventListener('DOMContentLoaded', async () => {
             const modalZoomInBtn = modalFrame.querySelector('#pdf-zoom-in');
             const modalZoomOutBtn = modalFrame.querySelector('#pdf-zoom-out');
             const modalZoomSelect = modalFrame.querySelector('#pdf-zoom-select');
-            modalZoomSelect.value = frameState.zoomMode === 'custom' ? 
-              frameState.zoom.toString() : 
-              frameState.zoomMode;
             const modalDownloadBtn = modalFrame.querySelector('#pdf-download');
             const modalPrintBtn = modalFrame.querySelector('#pdf-print');
             const modalSidebar = modalFrame.querySelector('#pdf-sidebar');
             const modalSidebarToggle = modalFrame.querySelector('#pdf-sidebar-toggle');
   
+            const modalCustomDropdown = modalFrame.querySelector('.custom-zoom-dropdown');
+            const modalDropdownTrigger = modalCustomDropdown.querySelector('.dropdown-trigger');
+            const modalSelectedValue = modalCustomDropdown.querySelector('.selected-value');
+            const modalDropdownOptions = modalCustomDropdown.querySelector('.dropdown-options');
+
+            // Initialize modal dropdown
+            function updateModalDropdown() {
+                modalSelectedValue.textContent = modalZoomSelect.options[modalZoomSelect.selectedIndex].text;
+            }
+            
+            // Set up modal dropdown event listeners
+            modalDropdownTrigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                modalDropdownOptions.classList.toggle('show');
+            });
+
+            modalDropdownOptions.addEventListener('click', (e) => {
+                const option = e.target.closest('li');
+                if (!option) return;
+
+                option.classList.add('selected');
+                modalDropdownOptions.querySelectorAll('li').forEach(opt => {
+                    if (opt !== option) {
+                        opt.classList.remove('selected');
+                    }
+                });
+                
+                const value = option.dataset.value;
+                modalZoomSelect.value = value;
+                modalSelectedValue.textContent = option.textContent;
+                modalDropdownOptions.classList.remove('show');
+                
+                // Trigger zoom change
+                modalZoomSelect.dispatchEvent(new Event('change'));
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!modalCustomDropdown.contains(e.target)) {
+                    modalDropdownOptions.classList.remove('show');
+                }
+            });
+
+            // Initialize modal dropdown
+            updateModalDropdown();
+
+            modalZoomSelect.value = frameState.zoomMode === 'custom' ? 
+              frameState.zoom.toString() : 
+              frameState.zoomMode;
+            updateModalDropdown();
+
             // Track modal state
             let modalPageNum = frameState.pageNum;
             let modalZoom = frameState.zoom;
@@ -1146,6 +1255,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                     modalZoom = Math.min(modalZoom + 0.25, 3);
                     modalZoomSelect.value = modalZoom;
+
+                    updateModalDropdown();
                     
                     await yieldToMain();
                     await renderModalPages(true);
@@ -1163,6 +1274,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                     modalZoom = Math.max(modalZoom - 0.25, 0.25);
                     modalZoomSelect.value = modalZoom;
+
+                    updateModalDropdown();
                     
                     await yieldToMain();
                     await renderModalPages(true);
@@ -1184,6 +1297,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     } else {
                         modalZoom = parseFloat(val);
                     }
+
+                    updateModalDropdown();
                     
                     await yieldToMain();
                     await renderModalPages(true);
