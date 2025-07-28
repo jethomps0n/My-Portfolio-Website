@@ -7,7 +7,7 @@ excerpt: "An appreciation of Christopher Nolan and Scott M. Gimple's art of non-
 permalink: "/blog/posts/{{ title | slugify }}/"
 layout: "blog-post.njk"
 eleventyComputed:
-    og_title: "{{ title }} - Jonathan Thompson"
+    og_title: "{{ title }} — Jonathan Thompson"
     description: "{{ excerpt | safe }}."
     canonical: "https://itsjonathanthompson.com/blog/posts/{{ title | slugify }}/"
 ---
