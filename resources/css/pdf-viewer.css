@@ -114,6 +114,80 @@ position: absolute;
   gap: 6px;
 }
 
+.custom-zoom-dropdown {
+    position: relative;
+    display: inline-block;
+    min-width: 180px;
+}
+
+.dropdown-trigger {
+    background: #333;
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+}
+
+.dropdown-trigger:hover {
+    background: #444;
+}
+
+.dropdown-icon {
+    margin-left: 8px;
+    font-size: 0.8em;
+}
+
+.dropdown-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: hsla(201, 100%, 10%, 1);
+    border: 1px solid #555;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0 0;
+    max-height: fit-content;
+    overflow-y: auto;
+    display: none;
+    z-index: 1000;
+}
+
+.dropdown-options.show {
+    display: block;
+}
+
+.dropdown-options li {
+    padding: 8px 12px;
+    cursor: pointer;
+    color: #fff;
+}
+
+.dropdown-options li:hover {
+    background: hsla(228, 48%, 70%, 1);
+}
+
+.dropdown-options li.selected {
+    background: hsla(228, 48%, 60%, 1);
+}
+
+/* Ensure hidden options stay hidden in Safari */
+.dropdown-options li[style*="display: none"] {
+    display: none !important;
+}
+
+#pdf-zoom-select {
+    display: none !important;
+}
+
 /* Right section - Download, print, expand/close */
 .pdf-controls-right {
   display: flex;
@@ -409,7 +483,7 @@ body.no-scroll {
   }
   
   /* Hide unwanted controls in modal */
-  #pdf-modal .pdf-zoom-group select {
+  #pdf-modal .pdf-zoom-group select, #pdf-modal .custom-zoom-dropdown {
     display: none !important;
   }
   
