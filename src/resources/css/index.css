@@ -17,6 +17,7 @@
     container-name: contentBox;
     z-index: inherit;
     will-change: transform, opacity;
+    transform-origin: center center;
 }
 
 .frame {
@@ -163,7 +164,7 @@
 }
 
 .contentContainer:hover {
-    scale: 1.02;
+    transform: scale(1.02);
 }
 
 .contentContainer:hover .thumbnail{
