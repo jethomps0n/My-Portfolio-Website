@@ -355,7 +355,7 @@
     }
 
     .info {
-        width: 100%;
+        width: fit-content;
         position: relative;
         top: 0;
         left: 0;
