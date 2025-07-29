@@ -355,12 +355,17 @@
     }
 
     .info {
-        width: fit-content;
+        width: stretch;
         position: relative;
         top: 0;
         left: 0;
         padding: 15px;
         font-size: 1rem;
+    }
+
+    .expand {
+        top: 0;
+        left: 0;
     }
 
     .button {
