@@ -13,23 +13,31 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://itsjonathanthompson.com/explore/?roles=Writer/</loc>
+    <loc>https://itsjonathanthompson.com/explore/?roles=Writer</loc>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://itsjonathanthompson.com/explore/?roles=Editor/</loc>
+    <loc>https://itsjonathanthompson.com/explore/?roles=Editor</loc>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://itsjonathanthompson.com/explore/?roles=Director/</loc>
+    <loc>https://itsjonathanthompson.com/explore/?roles=Director</loc>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://itsjonathanthompson.com/explore/?roles=Producer/</loc>
+    <loc>https://itsjonathanthompson.com/explore/?roles=Producer</loc>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://itsjonathanthompson.com/explore/?roles=DP/</loc>
+    <loc>https://itsjonathanthompson.com/explore/?roles=DP</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://itsjonathanthompson.com/explore/?types=Short%20Film</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://itsjonathanthompson.com/explore/?types=Rescore</loc>
     <priority>0.5</priority>
   </url>
   <!-- Dynamically Generated -->
