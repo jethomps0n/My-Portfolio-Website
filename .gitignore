@@ -3,3 +3,4 @@ cors-rules.json
 .env
 node_modules/
 src/blog-posts/temp/
+.vscode/

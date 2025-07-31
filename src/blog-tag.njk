@@ -6,6 +6,7 @@ pagination:
   data: collections.tagPaginationData
   size: 1
   alias: tagPage
+  addAllPagesToCollections: true
 permalink: "/blog/tags/{{ tagPage.tag | slugify }}/{% if tagPage.pageNumber > 0 %}page-{{ tagPage.pageNumber + 1 }}/{% endif %}"
 eleventyComputed:
   title: "{{ tagPage.tag | titleCase }} Posts"
