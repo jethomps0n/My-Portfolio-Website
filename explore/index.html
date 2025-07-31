@@ -146,27 +146,24 @@
     <main id="main-content" role="main" tabindex="-1">
         
 <div id="explore-page">
-    <div id="search-container" class="pop-in">
-        <input id="search-input" type="text" placeholder="Search..." />
-        <button id="clear-search" aria-label="Clear search">&#x2715;</button>
-    </div>
-    
-    <div class="search-and-filters">
-        <div id="search-container" class="search-container">
+    <div class="top-controls">
+        <div id="search-container" class="pop-in">
             <input id="search-input" type="text" placeholder="Search..." />
             <button id="clear-search" aria-label="Clear search">&#x2715;</button>
         </div>
-        <button class="filters-button" id="mobile-filters-btn" aria-label="Open filters">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48">
-                <defs>
-                    <mask id="ipTFilter0">
-                        <path fill="#555555" stroke="#fff" stroke-linejoin="round" stroke-width="4" d="m6 9l14.4 16.818v12.626L27.6 42V25.818L42 9z"/>
-                    </mask>
-                </defs>
-                <path fill="#fff" d="M0 0h48v48H0z" mask="url(#ipTFilter0)"/>
-            </svg>
-            Filters
-        </button>
+        <div class="search-and-filters">
+            <button class="filters-button" id="mobile-filters-btn" aria-label="Open filters">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48">
+                    <defs>
+                        <mask id="ipTFilter0">
+                            <path fill="#555555" stroke="#fff" stroke-linejoin="round" stroke-width="4" d="m6 9l14.4 16.818v12.626L27.6 42V25.818L42 9z"/>
+                        </mask>
+                    </defs>
+                    <path fill="#fff" d="M0 0h48v48H0z" mask="url(#ipTFilter0)"/>
+                </svg>
+                Filters
+            </button>
+        </div>
     </div>
 
     <div id="query-interface">

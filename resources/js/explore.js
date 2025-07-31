@@ -133,7 +133,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     
     bindEvents();
     initMobileFilters();
-    initMobileSearch();
     applyURL();
     loadData();
 });
@@ -143,7 +142,7 @@ function bindEvents(){
     const searchInput = document.getElementById('search-input');
     const clearSearch = document.getElementById('clear-search');
     
-    // Debounced search for better INP
+    // Existing debounced search code
     let searchTimeout;
     searchInput.addEventListener('input', () => {
         clearTimeout(searchTimeout);
@@ -152,7 +151,7 @@ function bindEvents(){
             clearSearch.style.display = searchText ? 'block' : 'none';
             currentPage = 1;
             update();
-        }, 150); // 150ms debounce
+        }, 150);
     }, { passive: true });
     
     clearSearch.addEventListener('click', () => {
@@ -865,39 +864,6 @@ function initMobileFilters() {
         if (e.key === 'Escape' && mobileFilterPopup.classList.contains('active')) {
             closeMobileFilters();
         }
-    });
-}
-
-// Mobile search synchronization
-function initMobileSearch() {
-    const mobileSearchInput = document.getElementById('mobile-search-input');
-    const mobileSearchClear = document.getElementById('mobile-clear-search');
-    const mainSearchInput = document.getElementById('search-input');
-    const mainSearchClear = document.getElementById('clear-search');
-    
-    if (!mobileSearchInput || !mainSearchInput) return;
-    
-    // Sync mobile search with main search
-    mobileSearchInput.addEventListener('input', () => {
-        mainSearchInput.value = mobileSearchInput.value;
-        mainSearchInput.dispatchEvent(new Event('input'));
-        
-        // Show/hide clear button
-        mobileSearchClear.style.display = mobileSearchInput.value ? 'block' : 'none';
-    });
-    
-    // Sync main search with mobile search
-    mainSearchInput.addEventListener('input', () => {
-        mobileSearchInput.value = mainSearchInput.value;
-        mobileSearchClear.style.display = mobileSearchInput.value ? 'block' : 'none';
-    });
-    
-    // Mobile clear search
-    mobileSearchClear.addEventListener('click', () => {
-        mobileSearchInput.value = '';
-        mainSearchInput.value = '';
-        mobileSearchClear.style.display = 'none';
-        mainSearchInput.dispatchEvent(new Event('input'));
     });
 }
 
