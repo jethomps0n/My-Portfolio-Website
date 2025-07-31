@@ -113,7 +113,7 @@ button:disabled {
 
 /* Search Bar */
 #search-container {
-    display: flex;
+    display: block;
     align-items: center;
     margin: 0 auto;
     width: 100%;
@@ -127,6 +127,15 @@ button:disabled {
     position: relative;
 }
 
+.top-controls {
+    width: 100%;
+    max-width: 1300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
 #search-input {
     flex: 1;
     background: none;
@@ -135,6 +144,7 @@ button:disabled {
     color: hsla(0, 0%, 100%, 1);
     font-size: 0.9rem;
     padding: 3px 40px 3px 15px;
+    width: stretch;
 }
 
 
@@ -801,15 +811,25 @@ button.show-more:hover {
         display: none;
     }
     
-    /* Show the filters button next to search bar */
-    .search-and-filters {
-        display: flex !important;
+    .top-controls {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
         margin-bottom: 42px;
     }
     
-    /* Keep the original search container hidden above mobile, show mobile version */
-    #explore-page > #search-container {
-        display: none;
+    .search-and-filters {
+        display: flex;
+        gap: 12px;
+        width: auto;
+        flex: 0 0 auto;
+    }
+    
+    #search-container {
+        display: flex !important;
+        margin: 0;
+        max-width: none;
+        flex: 1;
     }
     
     /* Adjust query interface layout */
@@ -1337,8 +1357,7 @@ button.show-more:hover {
         margin: 20px auto 0 auto;
     }
     
-    /* Adjust search and filters gap */
-    .search-and-filters {
+    .top-controls {
         gap: 6px;
     }
     
