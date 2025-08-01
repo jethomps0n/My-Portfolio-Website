@@ -64,6 +64,8 @@ async function getFileVersions(fileName) {
     const bucketId = process.env.B2_BUCKET_ID;
     const url = `${apiUrl}/b2api/v2/b2_list_file_versions?bucketId=${bucketId}&prefix=${encodeURIComponent(fileName)}&maxFileCount=100`;
     
+    console.log(`Searching for file versions with prefix: "${fileName}"`);
+    
     const response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -79,10 +81,20 @@ async function getFileVersions(fileName) {
 
     const data = await response.json();
     
+    console.log(`Found ${data.files.length} files matching prefix`);
+    
     // Filter to exact file name matches and sort by upload timestamp
     const fileVersions = data.files
-      .filter(file => file.fileName === fileName && file.action === 'upload')
+      .filter(file => {
+        const matches = file.fileName === fileName && file.action === 'upload';
+        if (matches) {
+          console.log(`Exact match found: ${file.fileName}`);
+        }
+        return matches;
+      })
       .sort((a, b) => parseInt(a.uploadTimestamp) - parseInt(b.uploadTimestamp));
+    
+    console.log(`Found ${fileVersions.length} exact matches for: "${fileName}"`);
     
     return fileVersions;
   } catch (error) {
@@ -91,11 +103,41 @@ async function getFileVersions(fileName) {
   }
 }
 
+// Fixed URL parsing function
+function parseFileUrl(url) {
+  try {
+    const urlObj = new URL(url);
+    
+    // Get the pathname and remove leading slash
+    const pathname = urlObj.pathname.substring(1);
+    
+    // Properly decode URL components, handling both %20 and + for spaces
+    const fullPath = decodeURIComponent(pathname.replace(/\+/g, ' '));
+    
+    // Extract filename
+    const pathParts = fullPath.split('/');
+    const fileName = pathParts[pathParts.length - 1];
+    
+    console.log(`Parsed URL: ${url}`);
+    console.log(`  - Full path: "${fullPath}"`);
+    console.log(`  - File name: "${fileName}"`);
+    
+    return { fullPath, fileName };
+  } catch (error) {
+    console.warn(`Failed to parse URL: ${url}`, error.message);
+    
+    // Fallback to original method
+    const urlParts = url.split('/');
+    const fileName = decodeURIComponent(urlParts[urlParts.length - 1].replace(/\+/g, ' '));
+    const fullPath = urlParts.slice(3).map(part => decodeURIComponent(part.replace(/\+/g, ' '))).join('/');
+    
+    return { fullPath, fileName };
+  }
+}
+
 async function getVersionInfo(url) {
-  // Extract filename from URL like https://files.itsjonathanthompson.com/screenplays/example.pdf
-  const urlParts = url.split('/');
-  const fileName = decodeURIComponent(urlParts[urlParts.length - 1]);
-  const fullPath = urlParts.slice(3).map(part => decodeURIComponent(part)).join('/'); // Get path after domain and decode
+  // Use improved URL parsing
+  const { fullPath, fileName } = parseFileUrl(url);
   
   const versions = await getFileVersions(fullPath);
   
@@ -103,6 +145,7 @@ async function getVersionInfo(url) {
     // If we can't find the file through the API but the URL exists and points to our domain,
     // we'll assume it exists as v1 (this handles cases where the file exists but path matching fails)
     if (url.includes('files.itsjonathanthompson.com')) {
+      console.log(`No versions found for ${fullPath}, using fallback`);
       return {
         hasVersions: true,
         currentVersion: 1,
@@ -139,5 +182,6 @@ async function getVersionInfo(url) {
 
 module.exports = {
   authorize,
-  getVersionInfo
+  getVersionInfo,
+  parseFileUrl // Export for testing
 };
