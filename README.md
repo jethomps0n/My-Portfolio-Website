@@ -6,6 +6,8 @@ Over the course of building my website, I've created these tools/features to hel
 - [Content Entry Creator](https://github.com/jethomps0n/Content-Entry-Creator)
 - [PDF Viewer](https://github.com/jethomps0n/PDF-Viewer)
 
+My source files and information on the technology used in this site can be found in the [source branch](https://github.com/jethomps0n/My-Portfolio-Website/tree/source#readme-top).
+
 ---
 ## Original Text
 Hi everyone! I am an aspiring student filmmaker in long need of a portfolio to showcase my work.
