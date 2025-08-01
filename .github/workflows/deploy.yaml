@@ -38,7 +38,7 @@ jobs:
           B2_BUCKET_ID: ${{ secrets.B2_BUCKET_ID }}
 
       - name: Copy .github folder into _site
-        run: cp -r .github _site/.github
+        run: cp -r .github/ _site/
 
       - name: Get latest commit message
         id: get_message
@@ -64,7 +64,7 @@ jobs:
         if: steps.check_diff.outputs.changes == 'true'
         uses: peaceiris/actions-gh-pages@v3
         with:
-          exclude_nojekyll: true
+          disable_nojekyll: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./_site
           publish_branch: main
