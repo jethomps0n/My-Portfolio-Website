@@ -37,9 +37,6 @@ jobs:
           B2_APPLICATION_KEY: ${{ secrets.B2_APPLICATION_KEY }}
           B2_BUCKET_ID: ${{ secrets.B2_BUCKET_ID }}
 
-      - name: Copy .github folder into _site
-        run: cp -r .github _site
-
       - name: Get latest commit message
         id: get_message
         run: |
@@ -50,7 +47,10 @@ jobs:
         with:
           ref: main
           path: old_site
-
+          
+      - name: Copy .github folder into _site
+        run: cp -r .github/ _site/
+        
       - name: Compare new _site to old_site
         id: check_diff
         run: |
