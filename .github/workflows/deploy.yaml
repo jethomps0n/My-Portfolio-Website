@@ -38,7 +38,7 @@ jobs:
           B2_BUCKET_ID: ${{ secrets.B2_BUCKET_ID }}
 
       - name: Copy .github folder into _site
-        run: cp -r .github/ _site/
+        run: cp -r .github _site
 
       - name: Get latest commit message
         id: get_message
