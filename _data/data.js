@@ -10,7 +10,7 @@ module.exports = async () => {
   const data = JSON.parse(json);
 
   // Skip version fetching in development mode
-  const isDevelopment = process.env.NODE_ENV === 'development' || process.env.SKIP_VERSION_FETCH === 'true';
+  const isDevelopment = process.env.NODE_ENV === 'development';
   
   if (isDevelopment) {
     console.log("⚠️  DEVELOPMENT MODE: Skipping version fetching to preserve API limits");

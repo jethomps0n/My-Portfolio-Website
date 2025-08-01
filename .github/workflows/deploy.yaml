@@ -65,5 +65,5 @@ jobs:
           publish_dir: ./_site
           publish_branch: main
           force_orphan: false
-          clean: true
+          keep_files: false
           commit_message: "${{ steps.get_message.outputs.message }}"
