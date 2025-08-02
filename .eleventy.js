@@ -1,6 +1,7 @@
 module.exports = function (eleventyConfig) {
     eleventyConfig.addPassthroughCopy("src/resources");
     eleventyConfig.addPassthroughCopy("src/README.md");
+    eleventyConfig.addPassthroughCopy(".github");
 
     // Create blog posts collection
     eleventyConfig.addCollection("blogPosts", function(collectionApi) {

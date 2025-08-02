@@ -48,9 +48,6 @@ jobs:
           ref: main
           path: old_site
           
-      - name: Copy .github folder into _site
-        run: cp -r .github/ _site/
-        
       - name: Compare new _site to old_site
         id: check_diff
         run: |
