@@ -1,0 +1,71 @@
+name: Build and Deploy site to `main`
+
+on:
+  push:
+    branches: [source]
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Update versioning or trigger rebuild'
+        required: false
+        default: 'Manual rebuild'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Clear old build
+        run: npm run prebuild
+
+      - name: Build Eleventy site
+        run: npm run build
+        env:
+          NODE_ENV: production
+          B2_APPLICATION_KEY_ID: ${{ secrets.B2_APPLICATION_KEY_ID }}
+          B2_APPLICATION_KEY: ${{ secrets.B2_APPLICATION_KEY }}
+          B2_BUCKET_ID: ${{ secrets.B2_BUCKET_ID }}
+
+      - name: Get latest commit message
+        id: get_message
+        run: |
+          echo "message=$(git log -1 --pretty=format:%s)" >> $GITHUB_OUTPUT
+
+      - name: Checkout main branch to compare output
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          path: old_site
+          
+      - name: Compare new _site to old_site
+        id: check_diff
+        run: |
+          if diff -r _site old_site > /dev/null; then
+            echo "changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy if changes exist
+        if: steps.check_diff.outputs.changes == 'true'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          disable_nojekyll: true
+          exclude_assets: ''
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          publish_branch: main
+          force_orphan: false
+          keep_files: false
+          commit_message: "${{ steps.get_message.outputs.message }}"
