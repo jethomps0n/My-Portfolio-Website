@@ -144,8 +144,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${frameHTML}
                 <div class="info">
                     <a class="expand" href="/explore/${data.slug}" tabindex="-1" aria-hidden="true"></a>
-                    <h1 class="contentTitle">${data.title}</h1>
-                    <h2 class="date"><time datetime="${dateISO}">${data.date}</time></h2>
+                    <h2 class="contentTitle">${data.title}</h2>
+                    <h3 class="date"><time datetime="${dateISO}">${data.date}</time></h3>
                     <div class="roles" aria-label="Roles">${rolesHTML}</div>
                 </div>
             `;

@@ -543,9 +543,9 @@ async function renderResults(){
 
                 const info = document.createElement('div');
                 info.className = 'result-info';
-                const h1 = document.createElement('h1');
-                h1.textContent = item.title;
-                info.appendChild(h1);
+                const h3 = document.createElement('h3');
+                h3.textContent = item.title;
+                info.appendChild(h3);
 
                 // Check if we're in mobile layout (870px and below)
                 const isMobileLayout = window.innerWidth <= 870;

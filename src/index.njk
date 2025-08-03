@@ -9,6 +9,7 @@ pagecss: <link rel="stylesheet" href="/resources/css/index.css">
 pagejs: <script src="/resources/js/index.js" defer></script>
 ---
 
+<h1 class="visually-hidden">{{ title }}</h1>
 <div id="content">
     {% set sortedData = data | sortByDate %}
     {% set firstThree = [] %}
@@ -26,8 +27,8 @@ pagejs: <script src="/resources/js/index.js" defer></script>
             </a>
             <div class="info">
                 <a class="expand" href="/explore/{{ i.slug }}" tabindex="-1" aria-hidden="true"></a>
-                <h1 class="contentTitle">{{ i.title }}</h1>
-                <h2 class="date"><time datetime="{{ i.date }}">{{ i.date }}</time></h2>
+                <h2 class="contentTitle">{{ i.title }}</h2>
+                <h3 class="date"><time datetime="{{ i.date }}">{{ i.date }}</time></h3>
                 {% set roles = i.role.split('/') %}
                 <div class="roles" aria-label="Roles">
                     {% for r in roles %}<a class="role-tag" href="/explore/?roles={{ r | urlencode }}">{{ r }}</a>{% endfor %}
