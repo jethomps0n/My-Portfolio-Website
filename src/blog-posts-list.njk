@@ -1,7 +1,7 @@
 ---
 layout: base.njk
 title: All Blog Posts
-og_title: All Blog Posts — Jonathan Thompson
+og_title: All Blog Posts – Jonathan Thompson
 description: View my complete list of blog posts.
 canonical: https://itsjonathanthompson.com/blog/posts/
 og_image:
@@ -11,7 +11,7 @@ pagination:
   data: collections.blogPosts
   size: 8
   alias: posts
-permalink: "/blog/posts/{% if pagination.pageNumber > 0 %}page-{{ pagination.pageNumber + 1 }}/{% endif %}index.html"
+permalink: "/blog/posts/{% if pagination.pageNumber > 0 %}page-{{ pagination.pageNumber + 1 }}/{% endif %}"
 ---
 
 <div id="blog-page">

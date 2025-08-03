@@ -10,7 +10,8 @@
 
     <meta name="description" content="{{ description | safe }}">
     
-    <meta property="og:title" content="{{ og_title | safe }}">
+    <meta property="og:title" content="{{ title | safe }}">
+    <meta property="og:site_name" content="{{ og_site_name | default('Jonathan Thompson') | safe }}">
     <meta property="og:description" content="{{ description | safe }}">
     <meta property="og:image" content="{{ og_image | safe }}">
     <meta property="og:url" content="{{ canonical | safe }}">
@@ -27,6 +28,22 @@
     {{ addcss | safe}}
     <link rel="stylesheet" href="/resources/css/global.css">
     {{ pagecss | safe }}
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": ["WebSite"],
+        "name": "{{ og_site_name | default('Jonathan Thompson') | safe }}",
+        "url": "https://itsjonathanthompson.com"
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": ["WebPage"],
+        "name": "{{ og_site_name | default('Jonathan Thompson') | safe }}",
+        "url": "{{ canonical | safe }}"
+      }
+    </script>
     {{ addjs | safe }}
     <script src="/resources/js/global.js" defer></script>
     {{ pagejs | safe }}

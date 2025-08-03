@@ -7,7 +7,7 @@ excerpt: "Exploring the significance of sound in film and its impact on film his
 permalink: "/blog/posts/{{ title | slugify }}/"
 layout: "blog-post.njk"
 eleventyComputed:
-    og_title: "{{ title }} — Jonathan Thompson"
+    og_title: "{{ title }} – Jonathan Thompson"
     description: "{{ excerpt | safe }}."
     canonical: "https://itsjonathanthompson.com/blog/posts/{{ title | slugify }}/"
 ---
