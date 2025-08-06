@@ -4,7 +4,7 @@ The unprocessed source files and configurations for my website.
 ## Build Tools
 - [Eleventy](https://www.11ty.dev/)
 
-## Web Technologies
+## Web Infrastructure
 - Domain Name Registrar: [Porkbun](https://porkbun.com/)
 - Web Hosting: [Cloudflare](https://pages.cloudflare.com/)
 - Cloud Storage (PDFs): [Backblaze](https://www.backblaze.com/cloud-storage)
@@ -13,7 +13,12 @@ The unprocessed source files and configurations for my website.
 - Email Hosting: [Zoho](https://www.zoho.com/mail/)
 - Code Repository: [GitHub](https://github.com/)
 
-## More Web Technologies
+## Web Technologies
+- [HTML5](https://html.spec.whatwg.org/multipage/) ([MDN](https://developer.mozilla.org/en-US/docs/Glossary/HTML5))
+- [CSS](https://www.w3.org/Style/CSS/) ([MDN](https://developer.mozilla.org/en-US/docs/Web/CSS))
+- [JavaScript](https://tc39.es/ecma262/) ([MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript))
+- [JSON](https://datatracker.ietf.org/doc/html/rfc8259) ([MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON))
+
 For a full list of web technologies used and analytics, visit
 - [w3techs](https://w3techs.com/sites/info/itsjonathanthompson.com) (content may be missing or outdated)
 - [builtwith](https://builtwith.com/itsjonathanthompson.com) (content may be missing or outdated)
