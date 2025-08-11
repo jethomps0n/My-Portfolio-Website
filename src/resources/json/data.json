@@ -964,5 +964,24 @@
     "type": "Spec Script",
     "Screenplay": "Sole",
     "versioning": "Yes"
+  },
+  {
+    "imgSrc": "/resources/images/thumbnails/flashback---future-is-now-scene-rescore-with-arrival-soundtrack-thumbnail.webp",
+    "previewSrc": "/resources/videos/previews/flashback---future-is-now-scene-rescore-with-arrival-soundtrack-preview.webm",
+    "videoSrc": "https://www.youtube.com/embed/xhOWmrg44DY",
+    "PDFSrc": "",
+    "slug": "flashback---future-is-now-scene-rescore-with-arrival-soundtrack",
+    "title": "Flashback - Future is Now Scene | RESCORE with Arrival Soundtrack",
+    "date": "August 10, 2025",
+    "role": "Editor",
+    "description": "Rescore track: One of Twelve · Jóhann Jóhannsson\nOriginal track: Future Is Now (Flashback Version) · Pilotpriest",
+    "credits": {
+      "Editor": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Rescore",
+    "Screenplay": "",
+    "versioning": ""
   }
 ]
