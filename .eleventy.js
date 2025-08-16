@@ -71,6 +71,11 @@ module.exports = function (eleventyConfig) {
             .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
     });
 
+    eleventyConfig.addFilter("isoDate", (dateString) => {
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD
+    });
+
     // Add date filter for blog posts
     eleventyConfig.addFilter("dateFormat", function(date) {
         // Handle timezone issues by treating dates as local dates
