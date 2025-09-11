@@ -10,7 +10,7 @@ The unprocessed source files and configurations for my website.
 - Cloud Storage (PDFs): [Backblaze](https://www.backblaze.com/cloud-storage)
 - Cloud Storage (Videos): [Google Drive](https://workspace.google.com/products/drive/)
 - Video Hosting: [YouTube](https://www.youtube.com/)
-- Email Hosting: [Zoho](https://www.zoho.com/mail/)
+- Email Hosting: [Zoho Mail](https://www.zoho.com/mail/)
 - Code Repository: [GitHub](https://github.com/)
 
 ## Web Technologies
