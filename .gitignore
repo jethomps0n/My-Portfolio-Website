@@ -4,3 +4,4 @@ cors-rules.json
 node_modules/
 src/blog-posts/temp/
 .vscode/
+.DS_Store
