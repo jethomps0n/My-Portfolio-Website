@@ -1003,5 +1003,24 @@
     "type": "Rescore",
     "Screenplay": "",
     "versioning": ""
+  },
+  {
+    "imgSrc": "/resources/images/thumbnails/rogue-one-rescore-thumbnail.webp",
+    "previewSrc": "/resources/videos/previews/rogue-one---destruction-of-scarif-scene-rescore-with-spaceman-soundtrack-preview.webm",
+    "videoSrc": "https://www.youtube.com/embed/Qj71uEXybiQ",
+    "PDFSrc": "",
+    "slug": "rogue-one---destruction-of-scarif-scene-rescore-with-spaceman-soundtrack",
+    "title": "Rogue One - Destruction of Scarif Scene | RESCORE with Spaceman Soundtrack",
+    "date": "April 04, 2026",
+    "role": "Editor",
+    "description": "Rescore track: Memory Is A Voyager · Max Richter\nOriginal track: Your Father Would Be Proud · Michael Giacchino",
+    "credits": {
+      "Edited by": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Rescore",
+    "Screenplay": "",
+    "versioning": ""
   }
 ]
