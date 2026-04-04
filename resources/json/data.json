@@ -1060,7 +1060,11 @@
     "date": "April 03, 2026",
     "role": "Editor",
     "description": "Rescore track: Weeds or Wildflowers · Parsonsfield\nOriginal track: Where Is My Mind? · Pixies",
-    "credits": {},
+    "credits": {
+      "Edited by": [
+        "Jonathan Thompson"
+      ]
+    },
     "type": "Rescore",
     "Screenplay": "",
     "versioning": ""
