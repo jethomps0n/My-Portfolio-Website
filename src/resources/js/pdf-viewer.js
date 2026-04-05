@@ -1,6 +1,19 @@
-import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.3.31/pdf.min.mjs';
+import * as pdfjsLib from 'https://unpkg.com/pdfjs-dist@5.3.31/build/pdf.min.mjs';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.3.31/pdf.worker.min.mjs';
+const PDFJS_BASE_URL = 'https://unpkg.com/pdfjs-dist@5.3.31';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = `${PDFJS_BASE_URL}/build/pdf.worker.min.mjs`;
+
+function createPdfDocumentConfig(pdfUrl) {
+  return {
+    url: pdfUrl,
+    cMapUrl: `${PDFJS_BASE_URL}/cmaps/`,
+    cMapPacked: true,
+    iccUrl: `${PDFJS_BASE_URL}/iccs/`,
+    standardFontDataUrl: `${PDFJS_BASE_URL}/standard_fonts/`,
+    wasmUrl: `${PDFJS_BASE_URL}/wasm/`
+  };
+}
 
 const pageMarginBottom = parseInt(
   getComputedStyle(document.documentElement).getPropertyValue('--pdf-page-margin-bottom')
@@ -136,8 +149,7 @@ class VirtualPageManager {
       // Skip rendering if no longer needed
       if (!this.renderQueue.has(pageNum)) return;
       
-      const ctx = canvas.getContext('2d', { 
-        alpha: false,
+      const ctx = canvas.getContext('2d', {
         desynchronized: true
       });
       
@@ -647,8 +659,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           sidebar.appendChild(thumbWrapper);
           
           // Render thumbnail with optimized context settings
-          const ctx = canvas.getContext('2d', { 
-            alpha: false,
+          const ctx = canvas.getContext('2d', {
             desynchronized: true // Enable desynchronized rendering for better performance
           });
           
@@ -677,7 +688,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     canvasContainer.addEventListener('scroll', updateCurrentPage, { passive: true });
   
     // Optimized PDF initialization with progressive loading
-    pdfjsLib.getDocument(url).promise.then(async (pdf) => {
+    pdfjsLib.getDocument(createPdfDocumentConfig(url)).promise.then(async (pdf) => {
       pdfDoc = pdf;
       pageCountSpan.textContent = pdfDoc.numPages;
       
