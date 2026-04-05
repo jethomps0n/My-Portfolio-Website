@@ -270,14 +270,14 @@ function setupInputEffects(form) {
     
     inputs.forEach(input => {
         // Enhanced focus effects
-        input.addEventListener('focus', (e) => {
-            e.target.style.transform = 'scale(1.02)';
-            e.target.style.transition = 'all 200ms ease';
-        });
+        // input.addEventListener('focus', (e) => {
+        //     e.target.style.transform = 'scale(1.02)';
+        //     e.target.style.transition = 'all 200ms ease';
+        // });
         
-        input.addEventListener('blur', (e) => {
-            e.target.style.transform = '';
-        });
+        // input.addEventListener('blur', (e) => {
+        //     e.target.style.transform = '';
+        // });
         
         // Character count for textarea
         if (input.tagName === 'TEXTAREA') {
