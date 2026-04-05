@@ -15,6 +15,48 @@ let authToken = null;
 let apiUrl = null;
 let downloadUrl = null;
 
+// Parse Backblaze custom metadata date format (MM-DD-YY) into UTC timestamp.
+function parseOriginalUploadDate(dateString) {
+  if (!dateString || typeof dateString !== 'string') {
+    return null;
+  }
+
+  const match = dateString.match(/^(\d{2})-(\d{2})-(\d{2})$/);
+  if (!match) {
+    return null;
+  }
+
+  const month = parseInt(match[1], 10);
+  const day = parseInt(match[2], 10);
+  const yearShort = parseInt(match[3], 10);
+  const year = yearShort >= 70 ? 1900 + yearShort : 2000 + yearShort;
+
+  const parsedDate = new Date(Date.UTC(year, month - 1, day));
+
+  // Validate to avoid JS date rollover (e.g. 02-31-24).
+  if (
+    parsedDate.getUTCFullYear() !== year ||
+    parsedDate.getUTCMonth() !== month - 1 ||
+    parsedDate.getUTCDate() !== day
+  ) {
+    return null;
+  }
+
+  return parsedDate.getTime();
+}
+
+function getVersionTimestamp(fileVersion) {
+  const originalUploadDate =
+    fileVersion?.original_upload_date || fileVersion?.fileInfo?.original_upload_date;
+  const parsedOriginalUploadDate = parseOriginalUploadDate(originalUploadDate);
+  if (parsedOriginalUploadDate !== null) {
+    return parsedOriginalUploadDate;
+  }
+
+  const uploadTimestamp = parseInt(fileVersion?.uploadTimestamp, 10);
+  return Number.isNaN(uploadTimestamp) ? null : uploadTimestamp;
+}
+
 async function authorize() {
   const keyId = process.env.B2_APPLICATION_KEY_ID;
   const key = process.env.B2_APPLICATION_KEY;
@@ -83,7 +125,8 @@ async function getFileVersions(fileName) {
     
     console.log(`Found ${data.files.length} files matching prefix`);
     
-    // Filter to exact file name matches and sort by upload timestamp
+    // Filter to exact file name matches and sort by original_upload_date first,
+    // then fallback to uploadTimestamp when original_upload_date is unavailable.
     const fileVersions = data.files
       .filter(file => {
         const matches = file.fileName === fileName && file.action === 'upload';
@@ -92,7 +135,22 @@ async function getFileVersions(fileName) {
         }
         return matches;
       })
-      .sort((a, b) => parseInt(a.uploadTimestamp) - parseInt(b.uploadTimestamp));
+      .sort((a, b) => {
+        const aTimestamp = getVersionTimestamp(a);
+        const bTimestamp = getVersionTimestamp(b);
+
+        if (aTimestamp === null && bTimestamp === null) {
+          return 0;
+        }
+        if (aTimestamp === null) {
+          return -1;
+        }
+        if (bTimestamp === null) {
+          return 1;
+        }
+
+        return aTimestamp - bTimestamp;
+      });
     
     console.log(`Found ${fileVersions.length} exact matches for: "${fileName}"`);
     
@@ -172,11 +230,14 @@ async function getVersionInfo(url) {
     hasVersions: true,
     currentVersion: currentVersionIndex,
     totalVersions: versions.length,
-    versions: versions.map((version, index) => ({
-      version: index + 1,
-      uploadDate: new Date(parseInt(version.uploadTimestamp)),
-      fileId: version.fileId
-    }))
+    versions: versions.map((version, index) => {
+      const versionTimestamp = getVersionTimestamp(version);
+      return {
+        version: index + 1,
+        uploadDate: versionTimestamp !== null ? new Date(versionTimestamp) : new Date(),
+        fileId: version.fileId
+      };
+    })
   };
 }
 
