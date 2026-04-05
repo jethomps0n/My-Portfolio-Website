@@ -1092,5 +1092,72 @@
     "type": "Rescore",
     "Screenplay": "",
     "versioning": ""
+  },
+  {
+    "imgSrc": "/resources/images/thumbnails/screenplay-thumbnail.webp",
+    "previewSrc": "",
+    "videoSrc": "",
+    "PDFSrc": "https://files.itsjonathanthompson.com/screenplays/'The_Interrogation'_Jonathan_Thompson_SAMPLE.pdf",
+    "slug": "the-interrogation",
+    "title": "The Interrogation",
+    "date": "January 20, 2026",
+    "role": "Writer",
+    "description": "An immature detective and a seasoned cop interrogate a familiar face.",
+    "credits": {
+      "Written by": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Short Film",
+    "Screenplay": "Sole",
+    "versioning": "Yes",
+    "versionInfo": {
+      "hasVersions": true,
+      "currentVersion": 2,
+      "totalVersions": 2,
+      "versions": [
+        {
+          "version": 1,
+          "uploadDate": "2023-04-14T00:00:00.000Z",
+          "fileId": "4_z36c1aa41a025830f9e730712_f100876194257c2d5_d20260405_m142500_c005_v0501041_t0057_u01775399100056"
+        },
+        {
+          "version": 2,
+          "uploadDate": "2026-01-20T00:00:00.000Z",
+          "fileId": "4_z36c1aa41a025830f9e730712_f114b1ded5596830d_d20260405_m142536_c005_v0501002_t0027_u01775399136898"
+        }
+      ]
+    }
+  },
+  {
+    "imgSrc": "/resources/images/thumbnails/screenplay-thumbnail.webp",
+    "previewSrc": "",
+    "videoSrc": "",
+    "PDFSrc": "https://files.itsjonathanthompson.com/screenplays/'Downtime'_Jonathan_Thompson_SAMPLE.pdf",
+    "slug": "downtime",
+    "title": "Downtime",
+    "date": "December 02, 2025",
+    "role": "Writer",
+    "description": "When Jay discovers that his daughter has gone missing, he does whatever it takes to get her back - including messing with time.",
+    "credits": {
+      "Written by": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Feature Film",
+    "Screenplay": "Sole",
+    "versioning": "Yes",
+    "versionInfo": {
+      "hasVersions": true,
+      "currentVersion": 1,
+      "totalVersions": 1,
+      "versions": [
+        {
+          "version": 1,
+          "uploadDate": "2025-12-02T00:00:00.000Z",
+          "fileId": "4_z36c1aa41a025830f9e730712_f108e4ff95bb56ddd_d20260405_m141836_c005_v0501025_t0006_u01775398716802"
+        }
+      ]
+    }
   }
 ]
