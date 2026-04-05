@@ -2,6 +2,46 @@ const fs = require("fs");
 const path = require("path");
 const { authorize, getVersionInfo } = require("./backblaze-version-fetcher");
 
+function isSoleScreenplay(item) {
+  const screenplayValue = item.Screenplay ?? item.screenplay;
+  return typeof screenplayValue === "string" && screenplayValue.toLowerCase() === "sole";
+}
+
+function formatDisplayDate(dateValue) {
+  const date = new Date(dateValue);
+
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "2-digit"
+  }).format(date);
+}
+
+function applyCurrentVersionDate(item) {
+  if (!isSoleScreenplay(item)) {
+    return;
+  }
+
+  const versionInfo = item.versionInfo;
+  if (!versionInfo || !versionInfo.currentVersion || !Array.isArray(versionInfo.versions)) {
+    return;
+  }
+
+  const currentVersion = versionInfo.versions[versionInfo.currentVersion - 1];
+  if (!currentVersion || !currentVersion.uploadDate) {
+    return;
+  }
+
+  const formattedCurrentVersionDate = formatDisplayDate(currentVersion.uploadDate);
+  if (formattedCurrentVersionDate) {
+    item.date = formattedCurrentVersionDate;
+  }
+}
+
 module.exports = async () => {
   const jsonPath = path.join(__dirname, "..", "src", "resources", "json", "data.json");
   const json = fs.readFileSync(jsonPath, "utf8");
@@ -55,15 +95,23 @@ module.exports = async () => {
       console.log("Skipping version information fetching - Backblaze not configured.");
     }
 
+  }
+
+  // Keep screenplay-only project dates aligned with their current screenplay version.
+  for (const item of data) {
+    applyCurrentVersionDate(item);
+  }
+
+  if (!isDevelopment) {
     // After processing all items, write the enhanced data to the _site directory
     const outputPath = path.join(__dirname, "..", "_site", "resources", "json", "data.json");
     const outputDir = path.dirname(outputPath);
-    
+
     // Ensure the directory exists
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
     }
-    
+
     // Write the processed data with version info
     fs.writeFileSync(outputPath, JSON.stringify(data, null, 2));
     console.log("Written processed data to:", outputPath);
