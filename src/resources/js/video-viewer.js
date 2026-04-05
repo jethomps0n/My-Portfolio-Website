@@ -2,6 +2,8 @@
 
 let player = null;
 let playerType = null; // 'video', 'youtube', 'iframe'
+const timestampRegex = /\b(\d{1,2}:\d{2}(?::\d{2})?)\b/g;
+const exactTimestampRegex = /^\d{1,2}:\d{2}(?::\d{2})?$/;
 
 // Timestamp parsing utility
 function parseTimestamp(timeStr) {
@@ -107,56 +109,152 @@ function updateIframeTimestamp(iframe, seconds) {
 }
 
 // Process description text and add timestamp links
+function createTimestampButton(timestamp, seconds) {
+    const button = document.createElement('button');
+    button.className = 'timestamp-link';
+    button.type = 'button';
+    button.dataset.time = String(seconds);
+    button.title = `Jump to ${timestamp}`;
+    button.setAttribute('aria-label', `Jump to ${timestamp}`);
+    button.textContent = timestamp;
+    return button;
+}
+
+function upgradeLegacyTimestampSpans(descriptionElement) {
+    let hasChanges = false;
+    const legacySpans = descriptionElement.querySelectorAll('.timestamp-text');
+
+    legacySpans.forEach(span => {
+        const rawTimestamp = (span.dataset.timestamp || span.textContent || '').trim();
+
+        if (!exactTimestampRegex.test(rawTimestamp)) {
+            return;
+        }
+
+        const seconds = parseTimestamp(rawTimestamp);
+        if (Number.isNaN(seconds) || seconds < 0) {
+            return;
+        }
+
+        span.replaceWith(createTimestampButton(rawTimestamp, seconds));
+        hasChanges = true;
+    });
+
+    return hasChanges;
+}
+
+function replaceTimestampInTextNode(textNode) {
+    const text = textNode.textContent;
+    if (!text) {
+        return false;
+    }
+
+    timestampRegex.lastIndex = 0;
+    if (!timestampRegex.test(text)) {
+        return false;
+    }
+
+    timestampRegex.lastIndex = 0;
+    const fragment = document.createDocumentFragment();
+    let lastIndex = 0;
+    let hasReplacements = false;
+    let match;
+
+    while ((match = timestampRegex.exec(text)) !== null) {
+        const matchedTimestamp = match[0];
+        const startIndex = match.index;
+        const endIndex = startIndex + matchedTimestamp.length;
+        const seconds = parseTimestamp(matchedTimestamp);
+
+        if (Number.isNaN(seconds) || seconds < 0) {
+            continue;
+        }
+
+        if (startIndex > lastIndex) {
+            fragment.appendChild(document.createTextNode(text.slice(lastIndex, startIndex)));
+        }
+
+        fragment.appendChild(createTimestampButton(matchedTimestamp, seconds));
+        lastIndex = endIndex;
+        hasReplacements = true;
+    }
+
+    if (!hasReplacements) {
+        return false;
+    }
+
+    if (lastIndex < text.length) {
+        fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+    }
+
+    textNode.replaceWith(fragment);
+    return true;
+}
+
+function convertTextNodeTimestamps(descriptionElement) {
+    const walker = document.createTreeWalker(descriptionElement, NodeFilter.SHOW_TEXT);
+    const textNodes = [];
+    let node = walker.nextNode();
+
+    while (node) {
+        const parentElement = node.parentElement;
+        if (parentElement && !parentElement.closest('.timestamp-link, .timestamp-text, script, style')) {
+            textNodes.push(node);
+        }
+        node = walker.nextNode();
+    }
+
+    let hasChanges = false;
+    textNodes.forEach(textNode => {
+        if (replaceTimestampInTextNode(textNode)) {
+            hasChanges = true;
+        }
+    });
+
+    return hasChanges;
+}
+
+function bindTimestampHandlers(descriptionElement) {
+    if (descriptionElement.dataset.timestampHandlersBound === 'true') {
+        return;
+    }
+
+    descriptionElement.addEventListener('click', event => {
+        const clickedElement = event.target instanceof Element
+            ? event.target.closest('.timestamp-link')
+            : null;
+
+        if (!clickedElement || !descriptionElement.contains(clickedElement)) {
+            return;
+        }
+
+        const seconds = parseInt(clickedElement.dataset.time, 10);
+        if (Number.isNaN(seconds)) {
+            return;
+        }
+
+        // Visual feedback on click
+        clickedElement.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            clickedElement.style.transform = '';
+        }, 150);
+
+        seekToTimestamp(seconds);
+    });
+
+    descriptionElement.dataset.timestampHandlersBound = 'true';
+}
+
 function processTimestamps() {
     const descriptionElement = document.querySelector('#description p');
     if (!descriptionElement) return;
-    
-    const text = descriptionElement.innerHTML;
-    
-    // Enhanced regex to match timestamps in various formats
-    // Matches: 0:00, 1:05, 12:34, 1:23:45, etc.
-    // Uses word boundaries to avoid matching times in other contexts
-    const timestampRegex = /\b(\d{1,2}:\d{2}(?::\d{2})?)\b/g;
-    
-    const processedText = text.replace(timestampRegex, (match, timestamp, offset, string) => {
-        // Additional validation: make sure this looks like a proper timestamp
-        const seconds = parseTimestamp(timestamp);
-        if (seconds >= 0) {
-            return `<button class="timestamp-link" type="button" data-time="${seconds}" title="Jump to ${timestamp}" aria-label="Jump to ${timestamp}">${timestamp}</button>`;
-        }
-        return match; // Return original if validation fails
-    });
-    
-    if (processedText !== text) {
-        descriptionElement.innerHTML = processedText;
-        
-        // Add event listeners to timestamp links
-        const timestampLinks = descriptionElement.querySelectorAll('.timestamp-link');
-        timestampLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const seconds = parseInt(link.dataset.time, 10);
-                
-                // Visual feedback on click
-                link.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    link.style.transform = '';
-                }, 150);
-                
-                seekToTimestamp(seconds);
-            });
-            
-            // Add keyboard support
-            link.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    link.click();
-                }
-            });
-        });
-        
-        // [DEBUGGING CODE]
-        // console.log(`Processed ${timestampLinks.length} timestamp(s) in description`);
+
+    const convertedLegacySpans = upgradeLegacyTimestampSpans(descriptionElement);
+    const convertedTextNodes = convertTextNodeTimestamps(descriptionElement);
+    const hasTimestampLinks = descriptionElement.querySelector('.timestamp-link');
+
+    if (convertedLegacySpans || convertedTextNodes || hasTimestampLinks) {
+        bindTimestampHandlers(descriptionElement);
     }
 }
 
