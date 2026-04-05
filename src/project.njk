@@ -28,6 +28,7 @@ eleventyComputed:
                     "name": "{{ i.title }}",
                     "description": "{{ i.description | striptags | escape }}",
                     "thumbnailUrl": "{% if i.imgSrc[0] == '/' %}https://itsjonathanthompson.com{{ i.imgSrc }}{% else %}{{ i.imgSrc }}{% endif %}",
+                    "duration": "{{ i.duration }}",
                     "uploadDate": "{{ i.date | isoDate }}",
                     "contentUrl": "{{ i.videoSrc }}",
                     "embedUrl": "{{ i.videoSrc }}"
