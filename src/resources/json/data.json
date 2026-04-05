@@ -1022,5 +1022,43 @@
     "type": "Rescore",
     "Screenplay": "",
     "versioning": ""
+  },
+  {
+    "imgSrc": "/resources/images/thumbnails/screenplay-thumbnail.webp",
+    "previewSrc": "",
+    "videoSrc": "",
+    "PDFSrc": "https://files.itsjonathanthompson.com/screenplays/'The_Interrogation'_Jonathan_Thompson_SAMPLE.pdf",
+    "slug": "the-interrogation",
+    "title": "The Interrogation",
+    "date": "April 05, 2026",
+    "role": "Writer",
+    "description": "An immature detective and a seasoned cop interrogate a familiar face.",
+    "credits": {
+      "Written by": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Short Film",
+    "Screenplay": "Sole",
+    "versioning": "Yes"
+  },
+  {
+    "imgSrc": "/resources/images/thumbnails/screenplay-thumbnail.webp",
+    "previewSrc": "",
+    "videoSrc": "",
+    "PDFSrc": "https://files.itsjonathanthompson.com/screenplays/'Downtime'_Jonathan_Thompson_SAMPLE.pdf",
+    "slug": "downtime",
+    "title": "Downtime",
+    "date": "April 05, 2026",
+    "role": "Writer",
+    "description": "When Jay discovers that his daughter has gone missing, he does whatever it takes to get her back - including messing with time.",
+    "credits": {
+      "Written by": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Feature Film",
+    "Screenplay": "Sole",
+    "versioning": "Yes"
   }
 ]
