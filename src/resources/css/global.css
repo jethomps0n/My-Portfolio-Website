@@ -353,7 +353,7 @@ footer a {
 }
 
 #footer-middle:hover {
-    transform: translateY(-3px);
+    /* transform: translateY(-3px); */
     box-shadow: 0px 50px 120px 8px hsla(0, 0%, 0%, 0.35);
 }
 
