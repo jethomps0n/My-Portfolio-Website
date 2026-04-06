@@ -30,7 +30,7 @@ pagejs: <script src="/resources/js/index.js" defer></script>
           {% endif %}
         {% endif %}
          {% if i.Screenplay == "Yes" or i.Screenplay == "Sole" %}
-          — Screenplay{% if i.versioning == "Yes" or i.versioning == "Completed" %} (v{{ i.versionInfo.currentVersion }}){% endif %}
+          — {% if i.Screenplay != "Sole" %}Contains{% endif %} Screenplay{% if i.versioning == "Yes" or i.versioning == "Completed" %} (v{{ i.versionInfo.currentVersion }}){% endif %}
         {% endif %}
       </li>
     {% endfor %}
