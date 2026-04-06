@@ -16,40 +16,12 @@ eleventyExcludeFromCollections: true
     <loc>https://itsjonathanthompson.com/contact/</loc>
     <priority>0.8</priority>
   </url>
-  <url>
-    <loc>https://itsjonathanthompson.com/explore/?roles=Writer</loc>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://itsjonathanthompson.com/explore/?roles=Editor</loc>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://itsjonathanthompson.com/explore/?roles=Director</loc>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://itsjonathanthompson.com/explore/?roles=Producer</loc>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://itsjonathanthompson.com/explore/?roles=DP</loc>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://itsjonathanthompson.com/explore/?types=Short%20Film</loc>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://itsjonathanthompson.com/explore/?types=Rescore</loc>
-    <priority>0.5</priority>
-  </url>
   <!-- Dynamically Generated -->
 {%- for page in collections.all %}
 {%- if page.url != '/' and page.url != '/about/' and page.url != '/contact/' and page.data.sitemap != false %}
   <url>
     <loc>https://itsjonathanthompson.com{{ page.url }}</loc>
-    <priority>{% if page.url == '/explore/' %}0.9{% elif page.url == '/blog/' %}0.7{% elif page.url.indexOf('/explore/') != -1 %}0.6{% elif page.url == '/blog/posts/' %}0.5{% elif page.url == '/blog/tags/' %}0.5{% elif page.url.indexOf('/blog/posts/') != -1 %}0.4{% elif page.url.indexOf('/blog/tags/') != -1 %}0.4{% else %}0.5{% endif %}</priority>
+    <priority>{% if page.url == '/explore/' %}0.9{% elif page.url == '/blog/' %}0.6{% elif page.url.indexOf('/explore/') != -1 %}0.8{% elif page.url == '/blog/posts/' %}0.5{% elif page.url == '/blog/tags/' %}0.5{% elif page.url.indexOf('/blog/posts/') != -1 %}0.4{% elif page.url.indexOf('/blog/tags/') != -1 %}0.4{% else %}0.5{% endif %}</priority>
   </url>
 {%- endif %}
 {%- endfor %}

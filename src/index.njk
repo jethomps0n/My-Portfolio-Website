@@ -10,6 +10,32 @@ pagejs: <script src="/resources/js/index.js" defer></script>
 ---
 
 <h1 class="visually-hidden">{{ title }}</h1>
+<section class="visually-hidden" aria-labelledby="all-works-index">
+  <h2 id="all-works-index">All works</h2>
+  <ul>
+    {% set sortedData = data | sortByDate %}
+    {% for i in sortedData %}
+      {% set roles = i.role.split('/') %}
+      <li>
+        <a href="/explore/{{ i.slug }}/">{{ i.title }}</a>
+        {% if i.date %} — <time datetime="{{ i.date | isoDate }}">{{ i.date }}</time>{% endif %}
+        {% if roles.length or i.type %}
+          —
+          {% if roles.length %}
+            {{ roles | join(", ") }}
+          {% endif %}
+          {% if roles.length and i.type %} — {% endif %}
+          {% if i.type %}
+            {{ i.type }}
+          {% endif %}
+        {% endif %}
+         {% if i.Screenplay == "Yes" or i.Screenplay == "Sole" %}
+          — Screenplay{% if i.versioning == "Yes" or i.versioning == "Completed" %} (v{{ i.versionInfo.currentVersion }}){% endif %}
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+</section>
 <div id="content">
     {% set sortedData = data | sortByDate %}
     {% set firstThree = [] %}
