@@ -35,6 +35,45 @@ pagejs: <script src="/resources/js/index.js" defer></script>
       </li>
     {% endfor %}
   </ul>
+
+  {% set roleSet = [] %}
+  {% set typeSet = [] %}
+
+  {% for item in data %}
+    {% if item.role %}
+      {% for r in item.role.split('/') %}
+        {% set rClean = r | trim %}
+        {% if rClean and (rClean not in roleSet) %}
+          {% set roleSet = roleSet.concat([rClean]) %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    {% if item.type %}
+      {% set tClean = item.type | trim %}
+      {% if tClean and (tClean not in typeSet) %}
+        {% set typeSet = typeSet.concat([tClean]) %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+
+  <h3>Browse by role</h3>
+  <ul>
+    {% for role in roleSet %}
+      <li>
+        <a href="/explore/?roles={{ role | urlencode }}">{{ role }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <h3>Browse by type</h3>
+  <ul>
+    {% for t in typeSet %}
+      <li>
+        <a href="/explore/?types={{ t | urlencode }}">{{ t }}</a>
+      </li>
+    {% endfor %}
+  </ul>
 </section>
 <div id="content">
     {% set sortedData = data | sortByDate %}
