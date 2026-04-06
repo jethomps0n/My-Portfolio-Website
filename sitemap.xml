@@ -12,34 +12,6 @@
     <loc>https://itsjonathanthompson.com/contact/</loc>
     <priority>0.8</priority>
   </url>
-  <url>
-    <loc>https://itsjonathanthompson.com/explore/?roles=Writer</loc>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://itsjonathanthompson.com/explore/?roles=Editor</loc>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://itsjonathanthompson.com/explore/?roles=Director</loc>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://itsjonathanthompson.com/explore/?roles=Producer</loc>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://itsjonathanthompson.com/explore/?roles=DP</loc>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://itsjonathanthompson.com/explore/?types=Short%20Film</loc>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://itsjonathanthompson.com/explore/?types=Rescore</loc>
-    <priority>0.5</priority>
-  </url>
   <!-- Dynamically Generated -->
   <url>
     <loc>https://itsjonathanthompson.com/blog/posts/my-favorite-twd-edits/</loc>
@@ -91,7 +63,7 @@
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/blog/</loc>
-    <priority>0.7</priority>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/</loc>
@@ -99,142 +71,142 @@
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/kill-bill-vol-2---the-bride-bb-scene-rescore-with-the-last-of-us-part-ii-soundtrack/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/ad-astra---final-scene-rescore-with-a-quiet-place-soundtrack/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/stranger-things-4-soundtrack---s04e07-vecnas-origin-theme-mix-slowed-reverb/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/stranger-things-4-soundtrack---s04e07-vecnas-origin-theme-mix-v2-fixed/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/stranger-things-4-soundtrack---s04e07-vecnas-origin-theme-mix-v1/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/dear-black-umich/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/the-orb/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/life-is-strange-episode-2---final-scene-rescore-with-the-walking-dead-soundtrack/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/that-one-romcom-from-2003/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/a-classic-man-a-video-on-music-in-moonlight/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/1899-s01e08---maura-inserts-the-key-scene-rescore-with-maniac-soundtrack/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/palm-springs---looking-for-sarah-scene-rescore-with-the-walking-dead-game-soundtrack/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/scott-pilgrim-vs-the-world---date-scene-rescore-with-the-secret-life-of-walter-mitty-soundtrack/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/the-walking-dead-game-a-new-frontier-s03e03---opening-credits-scene-rescore-ft-john-paesano/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/looper---opening-scene-rescore-with-extraction-soundtrack/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/westworld-s01e10---final-scene-rescore-with-top-boy-soundtrack/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/detachment---a-day-of-chaos-scene-rescore-with-the-departed-soundtrack/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/voto-latino-post-debate-ads/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/bloody-caps/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/clocks/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/love-at-first-sight/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/the-final-draft/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/plumb-out-of-time/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/crooked/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/the-next-level/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/the-rise-before/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/the-trail-of-inspiration/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/time-after-time/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/water/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/gen-v---pain/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/flashback---future-is-now-scene-rescore-with-arrival-soundtrack/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/the-leftovers---digging-up-patti-scene-rescore-with-the-walking-dead-soundtrack/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/rogue-one---destruction-of-scarif-scene-rescore-with-spaceman-soundtrack/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/the-interrogation/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/explore/downtime/</loc>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
 </urlset>
