@@ -1194,5 +1194,37 @@
         }
       ]
     }
+  },
+  {
+    "imgSrc": "/resources/images/thumbnails/screenplay-thumbnail.webp",
+    "previewSrc": "",
+    "videoSrc": "",
+    "PDFSrc": "https://files.itsjonathanthompson.com/screenplays/'Ghost'_Jonathan_Thompson_SAMPLE.pdf",
+    "slug": "ghost",
+    "title": "Ghost",
+    "date": "March 18, 2024",
+    "duration": "",
+    "role": "Writer",
+    "description": "In the near future, where humanoid androids populate jobs and holographic advertisements clutter the sky, a detective goes on a search for his kidnapped sister with the only information known about her abductor, a ghost tattoo.",
+    "credits": {
+      "Written by": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Short Film",
+    "Screenplay": "Sole",
+    "versioning": "Yes",
+    "versionInfo": {
+      "hasVersions": true,
+      "currentVersion": 1,
+      "totalVersions": 1,
+      "versions": [
+        {
+          "version": 1,
+          "uploadDate": "2024-03-18T00:00:00.000Z",
+          "fileId": "4_z36c1aa41a025830f9e730712_f115076257c4cc8c3_d20260408_m043954_c005_v0501038_t0053_u01775623194187"
+        }
+      ]
+    }
   }
 ]
