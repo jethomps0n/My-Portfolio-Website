@@ -1095,5 +1095,25 @@
     "Screenplay": "Sole",
     "versioning": "Yes",
     "duration": ""
+  },
+  {
+    "imgSrc": "/resources/images/thumbnails/screenplay-thumbnail.webp",
+    "previewSrc": "",
+    "videoSrc": "",
+    "PDFSrc": "https://files.itsjonathanthompson.com/screenplays/'Ghost'_Jonathan_Thompson_SAMPLE.pdf",
+    "slug": "ghost",
+    "title": "Ghost",
+    "date": "April 08, 2026",
+    "duration": "",
+    "role": "Writer",
+    "description": "In the near future, where humanoid androids populate jobs and holographic advertisements clutter the sky, a detective goes on a search for his kidnapped sister with the only information known about her abductor, a ghost tattoo.",
+    "credits": {
+      "Written by": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Short Film",
+    "Screenplay": "Sole",
+    "versioning": "Yes"
   }
 ]
