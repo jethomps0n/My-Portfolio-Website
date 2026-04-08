@@ -1,0 +1,68 @@
+---
+layout: base.njk
+title: Website Index List
+description: Fallback index list when JavaScript is disabled.
+canonical: https://itsjonathanthompson.com/index-list/
+sitemap: false
+pagejs: <meta name="robots" content="noindex,follow">
+---
+
+<h1>{{ title }}</h1>
+
+<section aria-labelledby="all-works-index">
+	<h2 id="all-works-index">All works</h2>
+	<ul>
+		{% set sortedData = data | sortByDate %}
+		{% for i in sortedData %}
+			{% set roles = i.role.split('/') %}
+			<li>
+				<a href="/explore/{{ i.slug }}/">{{ i.title }}</a>
+				{% if i.date %} - <time datetime="{{ i.date | isoDate }}">{{ i.date }}</time>{% endif %}
+				{% if roles.length or i.type %}
+					-
+					{% if roles.length %}
+						{{ roles | join(", ") }}
+					{% endif %}
+					{% if roles.length and i.type %} - {% endif %}
+					{% if i.type %}
+						{{ i.type }}
+					{% endif %}
+				{% endif %}
+				{% if i.Screenplay == "Yes" or i.Screenplay == "Sole" %}
+					- {% if i.Screenplay != "Sole" %}Contains{% endif %} Screenplay{% if i.versioning == "Yes" or i.versioning == "Completed" %} (v{{ i.versionInfo.currentVersion }}){% endif %}
+				{% endif %}
+			</li>
+		{% endfor %}
+	</ul>
+</section>
+
+<section aria-labelledby="all-blogs-index">
+	<h2 id="all-blogs-index">All blogs</h2>
+	<ul>
+		{% for post in collections.blogPosts %}
+			<li>
+				<a href="{{ post.url }}">{{ post.data.title }}</a>
+				{% if post.data.date %} - <time datetime="{{ post.data.date | isoDate }}">{{ post.data.date | dateFormat }}</time>{% endif %}
+			</li>
+		{% endfor %}
+	</ul>
+</section>
+
+<section aria-labelledby="contact-info-index">
+	<h2 id="contact-info-index">Contact info</h2>
+	<ul>
+		<li><a href="mailto:jonathan@itsjonathanthompson.com">Email</a> - jonathan@itsjonathanthompson.com</li>
+		<li><a href="https://www.linkedin.com/in/jethompsn/" target="_blank" rel="noopener noreferrer">LinkedIn</a> - @jethompsn</li>
+		<li><a href="https://www.youtube.com/@jethompsn" target="_blank" rel="noopener noreferrer">YouTube</a> - @jethompsn</li>
+		<li><a href="https://www.instagram.com/jethompsn/" target="_blank" rel="noopener noreferrer">Instagram</a> - @jethompsn</li>
+		<li><a href="https://github.com/jethomps0n" target="_blank" rel="noopener noreferrer">GitHub</a> - @jethomps0n</li>
+		<li><a href="https://letterboxd.com/Jonathan_T/" target="_blank" rel="noopener noreferrer">Letterboxd</a> - @Jonathan_T</li>
+	</ul>
+</section>
+
+<section aria-labelledby="resume-index">
+    <h2 id="resume-index">My Resume</h2>
+    <ul>
+        <li><a href="/resume/">View resume</a></li>
+    </ul>
+</section>
