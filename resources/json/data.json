@@ -992,12 +992,12 @@
     "imgSrc": "/resources/images/thumbnails/screenplay-thumbnail.webp",
     "previewSrc": "",
     "videoSrc": "",
-    "PDFSrc": "https://files.itsjonathanthompson.com/screenplays/'Water'_Jonathan_Thompson.pdf",
+    "PDFSrc": "https://files.itsjonathanthompson.com/screenplays/'Water'_Jonathan_Thompson_SAMPLE.pdf",
     "slug": "water",
     "title": "Water",
     "date": "November 02, 2025",
     "role": "Writer",
-    "description": "Water. The most essential resource of mankind...\nWe drink it. We clean with it. Now - we FIGHT with it.",
+    "description": "A team of two seeks out to eliminate other teams in an elite water gun battle.\n\n------------------------\n\nThe short film will be releasing soon, on 4/16/25 at 9:30PM EST! Check back in on this page then!",
     "credits": {
       "Story by": [
         "Jonathan Thompson",
@@ -1019,17 +1019,17 @@
         {
           "version": 1,
           "uploadDate": "2025-01-20T00:00:00.000Z",
-          "fileId": "4_z36c1aa41a025830f9e730712_f11179f6e0d97be45_d20260405_m143020_c005_v0501035_t0004_u01775399420403"
+          "fileId": "4_z36c1aa41a025830f9e730712_f107eb7ded924a591_d20260409_m130647_c005_v0501042_t0050_u01775740007335"
         },
         {
           "version": 2,
           "uploadDate": "2025-09-18T00:00:00.000Z",
-          "fileId": "4_z36c1aa41a025830f9e730712_f119ee26a8be59d99_d20260405_m143036_c005_v0501033_t0058_u01775399436266"
+          "fileId": "4_z36c1aa41a025830f9e730712_f1184e183d5d704d3_d20260409_m130700_c005_v0501038_t0040_u01775740020173"
         },
         {
           "version": 3,
           "uploadDate": "2025-11-02T00:00:00.000Z",
-          "fileId": "4_z36c1aa41a025830f9e730712_f110bfeead8a00752_d20260405_m143059_c005_v0501032_t0038_u01775399459462"
+          "fileId": "4_z36c1aa41a025830f9e730712_f11415a376d84f945_d20260409_m130719_c005_v0501040_t0038_u01775740039931"
         }
       ]
     }
