@@ -953,28 +953,100 @@
     "duration": ""
   },
   {
-    "imgSrc": "/resources/images/thumbnails/screenplay-thumbnail.webp",
-    "previewSrc": "",
-    "videoSrc": "",
+    "imgSrc": "/resources/images/thumbnails/water-thumbnail.webp",
+    "previewSrc": "/resources/videos/previews/water-preview.webm",
+    "videoSrc": "https://www.youtube.com/embed/9pWdUAuBeRg",
     "PDFSrc": "https://files.itsjonathanthompson.com/screenplays/'Water'_Jonathan_Thompson_SAMPLE.pdf",
     "slug": "water",
     "title": "Water",
-    "date": "January 20, 2025",
-    "role": "Writer",
-    "description": "A team of two seeks out to eliminate other teams in an elite water gun battle.\n\n------------------------\n\nThe short film will be releasing soon, on 4/16/25 at 9:30PM EST! Check back in on this page then!",
+    "date": "April 16, 2026",
+    "role": "Director/Writer/Editor",
+    "description": "A team of two seeks out to eliminate other teams in an elite water gun battle.\n\n------------------------\n\nI am very excited to be releasing my first short film here on my channel. This film was produced by M-agination Films, a film organization at the University of Michigan. I wrote, directed, and edited this thing. The entire film was shot over the course of three continuous days (with the exception of some in-studio footage which was shot on a separate, abbreviated fourth day.)\n\nThe editing process took a lot longer - I'd say I spent about 3-4 months working on the edit (with maybe a fourth of that just working on the sound design and audio mix.) I'm very satisfied with how the final cut turned out and I hope you enjoy the film as much as I do. I can't wait to be making more films in the future, of which I'll be sharing soon.",
     "credits": {
-      "Written by": [
+      "Written and Directed by": [
         "Jonathan Thompson"
       ],
       "Story by": [
         "Jonathan Thompson",
         "Jack Buchholz"
+      ],
+      "Produced by": [
+        "Charlie Woodman"
+      ],
+      "Associate Producers": [
+        "Emmett Heisen",
+        "Clara Squio De Cezaro"
+      ],
+      "Lead Cast": [
+        "Zeke Zahroni as Mark",
+        "J.L. Mendez as Lynn",
+        "Prudence Soto as Eli",
+        "Peter Zhao as Jarod (Blue Shirt Guy)",
+        "Audrey Colbourn as Kylie (Blue Sweater Girl)"
+      ],
+      "Supporting Cast": [
+        "Clara Squio De Cezaro as Ava (Couch Girl)",
+        "Emmet Heisen as Jack (Couch Guy)",
+        "Jeff Brill as Analyst (Dave)",
+        "Kiana Pandit as Talk Show Host (Sandra)",
+        "Bjorn Nelson as Male News Anchor"
+      ],
+      "Director of Photography": [
+        "Jack Buchholz"
+      ],
+      "Production Designer": [
+        "Jasmin Rhymes"
+      ],
+      "Edited by": [
+        "Jonathan Thompson"
+      ],
+      "Music by": [
+        "Faith Smith"
+      ],
+      "Costume Designer": [
+        "Erin Case"
+      ],
+      "Assistant Director": [
+        "Sumin Seo"
+      ],
+      "Script Supervisor": [
+        "Hannah Mills"
+      ],
+      "Assistant Camera": [
+        "Jasmine Chou"
+      ],
+      "Sound Recordist": [
+        "Zachary Forman"
+      ],
+      "Gaffer": [
+        "Sammi Smith"
+      ],
+      "Editing Consultants": [
+        "Vera Sivrieva",
+        "Devin Hurd"
+      ],
+      "Graphic Designer": [
+        "Prudence Soto"
+      ],
+      "Still Photographer": [
+        "Eli Iacovoni"
+      ],
+      "Production Assistants": [
+        "Mia Aponte",
+        "Hailey Beels",
+        "Ruby Belmonte",
+        "Tara McIntosh"
+      ],
+      "Special Thanks": [
+        "Bryan Riley",
+        "Eric Weseman",
+        "Myles Zhang"
       ]
     },
     "type": "Short Film",
-    "Screenplay": "Sole",
+    "Screenplay": "Yes",
     "versioning": "Completed",
-    "duration": ""
+    "duration": "PT14M12S"
   },
   {
     "imgSrc": "/resources/images/thumbnails/screenplay-thumbnail.webp",
