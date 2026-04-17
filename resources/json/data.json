@@ -992,7 +992,7 @@
     "imgSrc": "/resources/images/thumbnails/water-thumbnail.webp",
     "previewSrc": "/resources/videos/previews/water-preview.webm",
     "videoSrc": "https://www.youtube.com/embed/EuX2dMJvvBg",
-    "PDFSrc": "https://files.itsjonathanthompson.com/screenplays/'Water'_Jonathan_Thompson_SAMPLE.pdf",
+    "PDFSrc": "https://files.itsjonathanthompson.com/screenplays/'Water'_Jonathan_Thompson.pdf",
     "slug": "water",
     "title": "Water",
     "date": "April 16, 2026",
@@ -1091,17 +1091,17 @@
         {
           "version": 1,
           "uploadDate": "2025-01-20T00:00:00.000Z",
-          "fileId": "4_z36c1aa41a025830f9e730712_f107eb7ded924a591_d20260409_m130647_c005_v0501042_t0050_u01775740007335"
+          "fileId": "4_z36c1aa41a025830f9e730712_f1045efa268d5f22b_d20260417_m042110_c005_v0501044_t0032_u01776399670920"
         },
         {
           "version": 2,
           "uploadDate": "2025-09-18T00:00:00.000Z",
-          "fileId": "4_z36c1aa41a025830f9e730712_f1184e183d5d704d3_d20260409_m130700_c005_v0501038_t0040_u01775740020173"
+          "fileId": "4_z36c1aa41a025830f9e730712_f1123983ab92bd35c_d20260417_m042123_c005_v0521006_t0058_u01776399683260"
         },
         {
           "version": 3,
           "uploadDate": "2025-11-02T00:00:00.000Z",
-          "fileId": "4_z36c1aa41a025830f9e730712_f1123a1c31ba3fd74_d20260409_m155219_c005_v0501041_t0000_u01775749939376"
+          "fileId": "4_z36c1aa41a025830f9e730712_f1166e6b57a511125_d20260417_m042134_c005_v0501004_t0035_u01776399694927"
         }
       ]
     }
