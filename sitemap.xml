@@ -30,8 +30,20 @@
     <priority>0.4</priority>
   </url>
   <url>
+    <loc>https://itsjonathanthompson.com/blog/posts/i-extended-the-image-of-rick-on-the-bridge/</loc>
+    <priority>0.4</priority>
+  </url>
+  <url>
     <loc>https://itsjonathanthompson.com/blog/posts/</loc>
     <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://itsjonathanthompson.com/blog/tags/the-walking-dead/</loc>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://itsjonathanthompson.com/blog/tags/film-tv/</loc>
+    <priority>0.4</priority>
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/blog/tags/post-production/</loc>
@@ -43,14 +55,6 @@
   </url>
   <url>
     <loc>https://itsjonathanthompson.com/blog/tags/rescores/</loc>
-    <priority>0.4</priority>
-  </url>
-  <url>
-    <loc>https://itsjonathanthompson.com/blog/tags/the-walking-dead/</loc>
-    <priority>0.4</priority>
-  </url>
-  <url>
-    <loc>https://itsjonathanthompson.com/blog/tags/film-tv/</loc>
     <priority>0.4</priority>
   </url>
   <url>
