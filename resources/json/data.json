@@ -1298,5 +1298,25 @@
         }
       ]
     }
+  },
+  {
+    "imgSrc": "/resources/images/thumbnails/interstellar-rescore.webp",
+    "previewSrc": "/resources/videos/previews/interstellar---docking-scene-rescore-with-escape-from-new-york-soundtrack-preview.webm",
+    "videoSrc": "https://www.youtube.com/embed/lRA4G6E4KjE",
+    "PDFSrc": "",
+    "slug": "interstellar---docking-scene-rescore-with-escape-from-new-york-soundtrack",
+    "title": "Interstellar - Docking Scene | RESCORE with Escape From New York Soundtrack",
+    "date": "July 07, 2026",
+    "duration": "PT4M5S",
+    "role": "Editor",
+    "description": "Rescore track: Over The Wall (Film Version) · John Carpenter · Alan Howarth\nOriginal track: No Time for Caution · Hans Zimmer",
+    "credits": {
+      "Edited by": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Rescore",
+    "Screenplay": "",
+    "versioning": ""
   }
 ]
