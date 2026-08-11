@@ -1318,5 +1318,25 @@
     "type": "Rescore",
     "Screenplay": "",
     "versioning": ""
+  },
+  {
+    "imgSrc": "/resources/images/thumbnails/f1-rescore-thumbnail.webp",
+    "previewSrc": "/resources/videos/previews/f1-plan-c-for-combat-scene-rescore-with-spider-man-brand-new-day-soundtrack-preview.webm",
+    "videoSrc": "https://www.youtube.com/embed/ODjn5tbZOp8",
+    "PDFSrc": "",
+    "slug": "f1-plan-c-for-combat-scene-rescore-with-spider-man-brand-new-day-soundtrack",
+    "title": "F1 - Plan C for Combat Scene | RESCORE with Spider-Man: Brand New Day Soundtrack",
+    "date": "August 11, 2026",
+    "duration": "PT4M22S",
+    "role": "Editor",
+    "description": "Rescore track: Wolf Like Me · TV on the Radio\nOriginal track: Lose My Mind (feat. Doja Cat) · Don Toliver · Doja Cat",
+    "credits": {
+      "Edited by": [
+        "Jonathan Thompson"
+      ]
+    },
+    "type": "Rescore",
+    "Screenplay": "",
+    "versioning": ""
   }
 ]
