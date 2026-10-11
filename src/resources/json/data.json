@@ -1227,5 +1227,64 @@
     "type": "Rescore",
     "Screenplay": "",
     "versioning": ""
+  },
+  {
+    "imgSrc": "https://i.ytimg.com/vi/3CQIYBV07m8/maxresdefault.jpg",
+    "previewSrc": "/resources/videos/previews/here-we-try-to-cook-for-the-rha-preview.webm",
+    "videoSrc": "https://www.youtube.com/embed/3CQIYBV07m8",
+    "PDFSrc": "",
+    "slug": "here-we-try-to-cook-for-the-rha",
+    "title": "Here We Try to Cook for The RHA",
+    "date": "October 10, 2026",
+    "duration": "PT20M33S",
+    "role": "Editor/Producer/Camera Operator",
+    "description": "Jack and Tony try their best to win the Resident Hall Association's annual cooking competition. Can they win? The bigger question is can they cook?",
+    "credits": {
+      "Executive Producers": [
+        "Jack Buchholz",
+        "Tony Liu"
+      ],
+      "Producers": [
+        "Brock McIntyre",
+        "Sammi Smith",
+        "Jonathan Thompson"
+      ],
+      "Developed by": [
+        "Jack Buchholz",
+        "Tony Liu",
+        "Brock McIntyre",
+        "Sammi Smith",
+        "Jonathan Thompson"
+      ],
+      "Segment Producer": [
+        "Jack Buchholz"
+      ],
+      "Camera Operators": [
+        "Sammi Smith",
+        "Jonathan Thompson"
+      ],
+      "Sound Recordist": [
+        "Brock McIntyre"
+      ],
+      "Outreach Coordinator": [
+        "Sammi Smith"
+      ],
+      "Post-Production Supervisor": [
+        "Jonathan Thompson"
+      ],
+      "Editor": [
+        "Jonathan Thompson"
+      ],
+      "Graphic Artists": [
+        "Jack Buchholz",
+        "Prudence Soto"
+      ],
+      "Special Thanks": [
+        "U of M Residential Halls Association"
+      ]
+    },
+    "type": "Show",
+    "Screenplay": "",
+    "versioning": ""
   }
 ]
